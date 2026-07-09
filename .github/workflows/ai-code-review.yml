@@ -1,0 +1,75 @@
+# Reusable workflow: AI code review.
+# Consumers call this via `uses: your-org/ff-sec-action/.github/workflows/ai-code-review.yml@v1`.
+# NOTE: the `uses:` ref on the action step below must be kept in sync with release tags
+# (reusable workflows cannot reference sibling actions by relative path without a checkout).
+name: AI Code Review (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      model:
+        type: string
+        required: false
+        default: claude-opus-4-8
+      domain:
+        type: string
+        required: false
+        default: filecoin
+      effort:
+        type: string
+        required: false
+        default: high
+      max-tokens:
+        type: string
+        required: false
+        default: "16000"
+      max-diff-bytes:
+        type: string
+        required: false
+        default: "400000"
+      exclude-pattern:
+        type: string
+        required: false
+        default: ""
+      fail-on-severity:
+        type: string
+        required: false
+        default: none
+      post-comment:
+        type: string
+        required: false
+        default: "true"
+    secrets:
+      anthropic-api-key:
+        required: true
+    outputs:
+      findings-count:
+        value: ${{ jobs.review.outputs.findings-count }}
+      highest-severity:
+        value: ${{ jobs.review.outputs.highest-severity }}
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    outputs:
+      findings-count: ${{ steps.ai-review.outputs.findings-count }}
+      highest-severity: ${{ steps.ai-review.outputs.highest-severity }}
+    steps:
+      # No checkout: the action works from the PR diff via the GitHub API and
+      # never executes PR code.
+      - name: AI code review
+        id: ai-review
+        uses: your-org/ff-sec-action/actions/ai-code-review@v1
+        with:
+          anthropic-api-key: ${{ secrets.anthropic-api-key }}
+          model: ${{ inputs.model }}
+          domain: ${{ inputs.domain }}
+          effort: ${{ inputs.effort }}
+          max-tokens: ${{ inputs.max-tokens }}
+          max-diff-bytes: ${{ inputs.max-diff-bytes }}
+          exclude-pattern: ${{ inputs.exclude-pattern }}
+          fail-on-severity: ${{ inputs.fail-on-severity }}
+          post-comment: ${{ inputs.post-comment }}

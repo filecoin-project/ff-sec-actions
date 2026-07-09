@@ -1,0 +1,98 @@
+name: AI Code Review
+description: >-
+  Reviews a pull request diff with the Claude API using an organization domain
+  prompt (Filecoin by default). Posts a sticky PR comment with structured
+  findings. Operates on the diff only — never checks out or executes PR code.
+author: ff-sec
+
+inputs:
+  anthropic-api-key:
+    description: Anthropic API key.
+    required: true
+  github-token:
+    description: Token used to read the PR diff and post the review comment.
+    required: false
+    default: ${{ github.token }}
+  model:
+    description: Claude model ID.
+    required: false
+    default: claude-opus-4-8
+  domain:
+    description: Domain prompt to use — resolves prompts/<domain>.md in this repo.
+    required: false
+    default: filecoin
+  prompt-file:
+    description: Absolute path to a prompt file; overrides `domain` when set.
+    required: false
+    default: ""
+  effort:
+    description: "Model effort level: low | medium | high | max."
+    required: false
+    default: high
+  max-tokens:
+    description: Maximum response tokens.
+    required: false
+    default: "16000"
+  max-diff-bytes:
+    description: Diff bytes sent to the model; larger diffs are truncated.
+    required: false
+    default: "400000"
+  exclude-pattern:
+    description: >-
+      Extended regex of file paths to strip from the diff before review.
+      Leave empty for the built-in default (lockfiles, vendor, generated code).
+    required: false
+    default: ""
+  fail-on-severity:
+    description: "Fail the job if any finding is at or above: critical | high | medium | low. Use `none` to never fail."
+    required: false
+    default: none
+  post-comment:
+    description: Post/update the sticky PR comment. Set "false" for outputs and job summary only.
+    required: false
+    default: "true"
+
+outputs:
+  findings-count:
+    description: Number of findings reported.
+    value: ${{ steps.review.outputs.findings_count }}
+  highest-severity:
+    description: Highest severity among findings (critical/high/medium/low/info/none).
+    value: ${{ steps.review.outputs.highest_severity }}
+  findings-json:
+    description: Path to the raw findings JSON file.
+    value: ${{ steps.review.outputs.findings_json }}
+
+runs:
+  using: composite
+  steps:
+    - id: review
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+        GH_TOKEN: ${{ inputs.github-token }}
+        MODEL: ${{ inputs.model }}
+        EFFORT: ${{ inputs.effort }}
+        MAX_TOKENS: ${{ inputs.max-tokens }}
+        MAX_DIFF_BYTES: ${{ inputs.max-diff-bytes }}
+        EXCLUDE_RE: ${{ inputs.exclude-pattern }}
+        FAIL_ON_SEVERITY: ${{ inputs.fail-on-severity }}
+        POST_COMMENT: ${{ inputs.post-comment }}
+        DOMAIN: ${{ inputs.domain }}
+        PROMPT_FILE_OVERRIDE: ${{ inputs.prompt-file }}
+        ACTION_PATH: ${{ github.action_path }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPO: ${{ github.repository }}
+      run: |
+        if [ -z "${PR_NUMBER}" ]; then
+          echo "::error::ai-code-review must run on a pull_request event."
+          exit 1
+        fi
+        if [ -n "${PROMPT_FILE_OVERRIDE}" ]; then
+          export PROMPT_FILE="${PROMPT_FILE_OVERRIDE}"
+        else
+          export PROMPT_FILE="${ACTION_PATH}/../../prompts/${DOMAIN}.md"
+        fi
+        export BASE_PROMPT_FILE="${ACTION_PATH}/../../prompts/base-reviewer.md"
+        export SCHEMA_FILE="${ACTION_PATH}/scripts/schema.json"
+        bash "${ACTION_PATH}/scripts/review.sh"

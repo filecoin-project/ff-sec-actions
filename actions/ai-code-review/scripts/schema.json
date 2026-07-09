@@ -1,0 +1,73 @@
+{
+  "type": "object",
+  "properties": {
+    "summary": {
+      "type": "string",
+      "description": "Two to four sentences: what the change does and the overall review verdict, written for the PR author."
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"],
+      "description": "Overall risk of merging this change as-is."
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low", "info"]
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "How certain the finding is real given only the diff context."
+          },
+          "category": {
+            "type": "string",
+            "description": "Short label, e.g. consensus-determinism, actor-safety, overflow, dos, gas, error-handling, concurrency, crypto, logic, quality, performance, testing."
+          },
+          "file": {
+            "type": "string",
+            "description": "Repo-relative path of the affected file."
+          },
+          "location": {
+            "type": "string",
+            "description": "Line number or range from the diff (e.g. '142' or '142-158'), or 'n/a'."
+          },
+          "title": {
+            "type": "string",
+            "description": "One-line statement of the defect."
+          },
+          "description": {
+            "type": "string",
+            "description": "What is wrong and the concrete failure scenario: inputs/state that trigger it and the consequence."
+          },
+          "recommendation": {
+            "type": "string",
+            "description": "Specific fix or verification step."
+          }
+        },
+        "required": [
+          "severity",
+          "confidence",
+          "category",
+          "file",
+          "location",
+          "title",
+          "description",
+          "recommendation"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "positive_observations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Things done well worth reinforcing (good invariant checks, tests, safe patterns). Empty array if none stand out."
+    }
+  },
+  "required": ["summary", "risk_level", "findings", "positive_observations"],
+  "additionalProperties": false
+}
