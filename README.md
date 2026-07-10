@@ -33,205 +33,34 @@ ff-sec-action/
 │   ├── base-reviewer.md          # Always included: review behavior + output rules
 │   ├── filecoin.md               # Filecoin/FVM/Lotus/FEVM domain context
 │   └── default.md                # Generic fallback for non-Filecoin repos
+├── docs/
+│   └── CONSUMING.md              # Full consumer guide (start here to use this repo)
 └── examples/                     # Copy-paste workflows for consumer repos
-    └── consumer-ai-code-review.yml
+    ├── consumer-ai-code-review.yml
+    ├── consumer-manual-ai-code-review.yml
+    └── consumer-security-pipeline.yml
 ```
 
 ---
 
 # Using this repository in your project
 
-There are three ways to consume this repo, from highest-level to lowest-level.
-All of them pin a release tag (`@v1`) — see [Versioning](#versioning-and-rollout).
+**Full consumer guide: [docs/CONSUMING.md](docs/CONSUMING.md)** — quick start,
+all inputs/outputs, trigger guidance, and troubleshooting. The short version:
 
-## 1. Reusable workflows (recommended)
+1. Set the `ANTHROPIC_API_KEY` (and optionally `GITLEAKS_LICENSE`) org secrets.
+2. Copy the workflow you want from [`examples/`](examples/) into your repo's
+   `.github/workflows/`:
+   - `consumer-ai-code-review.yml` — AI review on every PR
+   - `consumer-manual-ai-code-review.yml` — AI review on demand
+   - `consumer-security-pipeline.yml` — the full scanner suite (Semgrep, Trivy,
+     Gitleaks, CodeQL, SBOM, Scorecard, Slither, …)
+3. Use `@main` until a `v1` tag exists, then pin `@v1`.
 
-A reusable workflow is a complete job: permissions, runner, and steps are
-pre-wired. You call it with `uses:` at the **job** level.
-
-```yaml
-# .github/workflows/ai-review.yml in your repo
-name: AI Code Review
-on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-
-concurrency:
-  group: ai-review-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
-
-jobs:
-  review:
-    if: ${{ !github.event.pull_request.draft }}
-    uses: filecoin-project/ff-sec-actions/.github/workflows/ai-code-review.yml@v1
-    with:
-      domain: filecoin            # picks prompts/filecoin.md
-      fail-on-severity: none      # or: critical | high | medium
-    secrets:
-      anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
-```
-
-Prerequisite: an `ANTHROPIC_API_KEY` **organization secret** scoped to the
-repos that need it (Org settings → Secrets and variables → Actions).
-
-Consuming a **private** central repo also requires allowing access: this repo's
-Settings → Actions → General → "Accessible from repositories in the
-organization".
-
-## 2. Composite actions
-
-Use the action directly when you want the step inside your own job — custom
-setup, matrix builds, chaining with other steps, or acting on the outputs.
-
-```yaml
-jobs:
-  review:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write        # needed to post the review comment
-    steps:
-      - uses: filecoin-project/ff-sec-actions/actions/ai-code-review@v1
-        id: ai
-        with:
-          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
-          domain: filecoin
-
-      # Outputs are available to later steps:
-      - if: steps.ai.outputs.highest-severity == 'critical'
-        run: echo "::error::Critical finding — page the security channel" && exit 1
-```
-
-Every action documents its inputs/outputs in its `action.yml` and in the
-per-action section below.
-
-## 3. Standalone scripts
-
-Scripts under `scripts/` (and action-internal scripts, at your own risk) can be
-run outside GitHub Actions — locally, in another CI system, or in a cron job.
-Two patterns:
-
-**a. Sparse checkout of this repo in your job:**
-
-```yaml
-steps:
-  - uses: actions/checkout@v4
-    with:
-      repository: filecoin-project/ff-sec-actions
-      ref: v1                      # or a full SHA for the strictest pinning
-      path: .ff-sec
-  - run: bash .ff-sec/scripts/<script>.sh
-    env:
-      # see the script's header comment for required env vars
-```
-
-**b. Locally, from a clone:**
-
-```sh
-git clone --depth 1 --branch v1 https://github.com/filecoin-project/ff-sec-actions
-bash ff-sec-action/scripts/<script>.sh
-```
-
-Every standalone script declares its required env vars at the top of the file
-and fails fast with a clear message when one is missing. Example — running the
-AI review against any PR from your terminal:
-
-```sh
-PR_NUMBER=123 REPO=filecoin-project/some-repo \
-ANTHROPIC_API_KEY=... GH_TOKEN=$(gh auth token) \
-PROMPT_FILE=prompts/filecoin.md BASE_PROMPT_FILE=prompts/base-reviewer.md \
-SCHEMA_FILE=actions/ai-code-review/scripts/schema.json \
-POST_COMMENT=false \
-bash actions/ai-code-review/scripts/review.sh
-```
-
-## Choosing a trigger
-
-| Trigger | Use for | Notes |
-|---|---|---|
-| `pull_request` | Review every PR before merge | The default. Fork PRs don't get org secrets — internal PRs reviewed, fork PRs skipped, which is the safe default. |
-| `push` (branch-filtered) | Auditing commits landing on release/main branches | Pair with a commit-oriented action variant (roadmap). |
-| `schedule` | Periodic full-repo or dependency sweeps | For future audit actions. |
-| `workflow_dispatch` | Manual/on-demand runs | Useful while trialing an action. |
-
-Avoid `pull_request_target` unless you fully understand the secret-exposure
-tradeoffs for forks.
-
-## Action catalog
-
-### `actions/ai-code-review`
-
-Reviews the PR diff with the Claude API using a domain prompt, returns
-schema-enforced findings, posts a sticky PR comment, and can gate the job on
-severity. Operates on the diff via the GitHub API — **never checks out or
-executes PR code**.
-
-| Input | Default | Notes |
-|---|---|---|
-| `anthropic-api-key` | — (required) | Pass from secrets |
-| `github-token` | `${{ github.token }}` | Needs `pull-requests: write` to comment |
-| `pr-number` | current PR event | Set explicitly for `workflow_dispatch` runs |
-| `repo` | current repository | Cross-repo runs need a `github-token` with access to that repo |
-| `model` | `claude-opus-4-8` | Any current Claude model ID |
-| `domain` | `filecoin` | Resolves `prompts/<domain>.md` |
-| `prompt-file` | `""` | Absolute path override; beats `domain` |
-| `effort` | `high` | `low` \| `medium` \| `high` \| `max` |
-| `max-tokens` | `16000` | Response budget |
-| `max-diff-bytes` | `400000` | Diff truncated beyond this |
-| `exclude-pattern` | built-in | Extended regex of paths to drop from the diff |
-| `fail-on-severity` | `none` | `none` \| `critical` \| `high` \| `medium` \| `low` |
-| `post-comment` | `true` | Set `false` for summary/outputs only |
-
-Outputs: `findings-count`, `highest-severity`, `findings-json` (path to the raw
-JSON, usable by downstream steps for artifacts or custom gating).
-
-## Workflow catalog: security pipeline
-
-Ported from fil-one's `security.yaml` + the Slither half of `contracts-ci.yaml`,
-generalized for any repo in the org. Two consumption modes:
-
-**Umbrella — the whole pipeline in one job** (see
-`examples/consumer-security-pipeline.yml` for the full file with permissions):
-
-```yaml
-jobs:
-  security:
-    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@main
-    with:
-      package-manager: pnpm            # pnpm | npm | none (Go/Rust/etc.)
-      skip-dirs: node_modules,contracts/lib
-      enable-slither: true             # Solidity repos
-    secrets:
-      gitleaks-license: ${{ secrets.GITLEAKS_LICENSE }}
-```
-
-**À la carte — call any scanner as its own job:**
-
-| Workflow | What it runs | Default posture |
-|---|---|---|
-| `sec-semgrep.yml` | Custom rules (`.semgrep.yml`, auto-detected) + community rulesets | Advisory (`blocking` input to gate) |
-| `sec-codeql.yml` | CodeQL, `languages` JSON-array input | Requires GHAS |
-| `sec-dependencies.yml` | pnpm/npm audit (optional) + Trivy fs scan | Advisory |
-| `sec-secrets.yml` | Gitleaks over full history (`.gitleaks.toml` auto-detected) | **Blocking** |
-| `sec-iac.yml` | Trivy config/IaC misconfiguration scan | Advisory |
-| `sec-licenses.yml` | Trivy license scan | Advisory |
-| `sec-dependency-review.yml` | New/changed deps on PRs, license denylist | Blocking at `high` |
-| `sec-sbom.yml` | CycloneDX SBOM (Anchore/Syft) | Informational |
-| `sec-scorecard.yml` | OpenSSF Scorecard | Advisory |
-| `sec-slither.yml` | Slither for Foundry/Solidity (`slither.config.json` auto-detected) | Advisory |
-
-Shared conventions (all scanners):
-
-- **SARIF everywhere**: results upload as artifacts always, and to the GitHub
-  Security tab when the calling repo sets the variable `ENABLE_GHAS='true'`.
-- **Repo config files are auto-detected** — `.semgrep.yml`, `.gitleaks.toml`,
-  `.trivyignore`, `slither.config.json` are used when present, skipped when not,
-  so the same workflow drops into any repo unchanged.
-- **Advisory by default, gate deliberately** — scanners run with
-  `continue-on-error` until a repo flips the per-scanner `blocking` input.
-- **Pinned SHAs** on every third-party action, carried from the fil-one audit.
-- Caller must grant permissions ≥ what the jobs need — copy the `permissions:`
-  block from the example.
+Three consumption surfaces, in order of preference: **reusable workflows**
+(whole pre-wired job), **composite actions** (a step inside your own job), and
+**standalone scripts** (outside Actions entirely). All are documented with
+copy-paste examples in [docs/CONSUMING.md](docs/CONSUMING.md).
 
 ---
 
@@ -284,8 +113,8 @@ release events. See [Versioning](#versioning-and-rollout).
      need more, install it in a step and document why.
 4. If the action is AI-backed, don't inline prompts — put shared behavior in
    `prompts/` and reference it, so prompt improvements ship independently.
-5. Add a consumer example in `examples/` and a section in this README's
-   [Action catalog](#action-catalog).
+5. Add a consumer example in `examples/` and document inputs/outputs in
+   [docs/CONSUMING.md](docs/CONSUMING.md).
 
 ## Adding a reusable workflow
 
@@ -362,8 +191,8 @@ Guidelines:
   jq empty actions/**/scripts/*.json             # JSON validity
   ```
 - **Local dry-run:** every script must be runnable locally with env vars (see
-  [Standalone scripts](#3-standalone-scripts)) — use a real PR in a sandbox
-  repo and `POST_COMMENT=false`-style flags.
+  the standalone-scripts section of [docs/CONSUMING.md](docs/CONSUMING.md)) —
+  use a real PR in a sandbox repo and `POST_COMMENT=false`-style flags.
 - **Manual run (fastest end-to-end):** Actions tab → "AI Code Review (manual)"
   → Run workflow. Pick your branch, give it a PR number (any PR in this repo,
   or another repo via the `repo` input + a `GH_PAT` secret). It checks out the
