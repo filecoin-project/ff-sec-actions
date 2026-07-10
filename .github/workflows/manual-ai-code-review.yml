@@ -1,6 +1,11 @@
 # Manual test harness for the ai-code-review action.
 # Run from the Actions tab (workflow_dispatch) against any PR number.
 #
+# ⚠️ THIS FILE IS FOR THE ff-sec-actions REPO ONLY — do NOT copy it into a
+# consumer repo (the `uses: ./actions/...` local path only exists here).
+# Consumers wanting a manual run should copy
+# examples/consumer-manual-ai-code-review.yml instead.
+#
 # This checks out THIS repo at the ref you dispatch from and runs the LOCAL
 # action (./actions/ai-code-review), so you can test branch changes before
 # tagging a release — unlike the reusable workflow, which uses the pinned @v1.
