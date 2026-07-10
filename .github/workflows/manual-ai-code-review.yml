@@ -1,0 +1,80 @@
+# Manual test harness for the ai-code-review action.
+# Run from the Actions tab (workflow_dispatch) against any PR number.
+#
+# This checks out THIS repo at the ref you dispatch from and runs the LOCAL
+# action (./actions/ai-code-review), so you can test branch changes before
+# tagging a release — unlike the reusable workflow, which uses the pinned @v1.
+#
+# Notes:
+# - Requires the ANTHROPIC_API_KEY secret on this repo (or via the org).
+# - `repo` defaults to this repository. To review a PR in ANOTHER repo, the
+#   default github.token won't have access — add a GH_PAT secret (fine-grained
+#   PAT with Pull requests read/write on the target repo) and it is used
+#   automatically when present.
+# - post-comment defaults to "false" for safe testing: results go to the job
+#   summary only. Flip to "true" to exercise the sticky-comment path.
+name: AI Code Review (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: PR number to review
+        required: true
+      repo:
+        description: owner/repo containing the PR (blank = this repo)
+        required: false
+        default: ""
+      domain:
+        description: Domain prompt (prompts/<domain>.md)
+        required: false
+        default: filecoin
+      model:
+        description: Claude model ID
+        required: false
+        default: claude-opus-4-8
+      effort:
+        description: "Effort: low | medium | high | max"
+        required: false
+        default: high
+      fail-on-severity:
+        description: "Fail job at/above: none | critical | high | medium | low"
+        required: false
+        default: none
+      post-comment:
+        description: Post the sticky PR comment (job summary always written)
+        required: false
+        type: choice
+        options: ["false", "true"]
+        default: "false"
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout this repo (the action + prompts under test)
+        uses: actions/checkout@v4
+
+      - name: AI code review
+        id: ai
+        uses: ./actions/ai-code-review
+        with:
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github-token: ${{ secrets.GH_PAT || github.token }}
+          pr-number: ${{ inputs.pr-number }}
+          repo: ${{ inputs.repo }}
+          domain: ${{ inputs.domain }}
+          model: ${{ inputs.model }}
+          effort: ${{ inputs.effort }}
+          fail-on-severity: ${{ inputs.fail-on-severity }}
+          post-comment: ${{ inputs.post-comment }}
+
+      - name: Report outputs
+        if: always()
+        run: |
+          echo "findings-count:    ${{ steps.ai.outputs.findings-count }}"
+          echo "highest-severity:  ${{ steps.ai.outputs.highest-severity }}"
+          echo "findings-json:     ${{ steps.ai.outputs.findings-json }}"

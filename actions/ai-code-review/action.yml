@@ -13,6 +13,14 @@ inputs:
     description: Token used to read the PR diff and post the review comment.
     required: false
     default: ${{ github.token }}
+  pr-number:
+    description: PR number to review. Defaults to the current pull_request event (set explicitly for workflow_dispatch runs).
+    required: false
+    default: ""
+  repo:
+    description: owner/repo containing the PR. Defaults to the current repository (cross-repo runs need a github-token with access to that repo).
+    required: false
+    default: ""
   model:
     description: Claude model ID.
     required: false
@@ -81,11 +89,11 @@ runs:
         DOMAIN: ${{ inputs.domain }}
         PROMPT_FILE_OVERRIDE: ${{ inputs.prompt-file }}
         ACTION_PATH: ${{ github.action_path }}
-        PR_NUMBER: ${{ github.event.pull_request.number }}
-        REPO: ${{ github.repository }}
+        PR_NUMBER: ${{ inputs.pr-number || github.event.pull_request.number }}
+        REPO: ${{ inputs.repo || github.repository }}
       run: |
         if [ -z "${PR_NUMBER}" ]; then
-          echo "::error::ai-code-review must run on a pull_request event."
+          echo "::error::No PR to review: run on a pull_request event or set the pr-number input."
           exit 1
         fi
         if [ -n "${PROMPT_FILE_OVERRIDE}" ]; then

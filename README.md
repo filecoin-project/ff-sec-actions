@@ -9,7 +9,7 @@ Consumer repositories reference this repo for **composite actions**, **reusable
 workflows**, and **standalone scripts**, so review logic, prompts, and policy
 live in one place and roll out to every repo by bumping a tag.
 
-Replace `your-org` throughout with the GitHub organization this repo lives in.
+Replace `filecoin-project` throughout with the GitHub organization this repo lives in.
 
 ## Repository layout
 
@@ -22,7 +22,8 @@ ff-sec-action/
 │           ├── review.sh
 │           └── schema.json
 ├── .github/workflows/            # Reusable workflows (whole job, workflow_call)
-│   └── ai-code-review.yml
+│   ├── ai-code-review.yml
+│   └── manual-ai-code-review.yml # workflow_dispatch test harness (runs the local action)
 ├── scripts/                      # Standalone scripts runnable outside any action
 ├── prompts/                      # Domain knowledge as data, not code
 │   ├── base-reviewer.md          # Always included: review behavior + output rules
@@ -58,7 +59,7 @@ concurrency:
 jobs:
   review:
     if: ${{ !github.event.pull_request.draft }}
-    uses: your-org/ff-sec-action/.github/workflows/ai-code-review.yml@v1
+    uses: filecoin-project/ff-sec-actions/.github/workflows/ai-code-review.yml@v1
     with:
       domain: filecoin            # picks prompts/filecoin.md
       fail-on-severity: none      # or: critical | high | medium
@@ -86,7 +87,7 @@ jobs:
       contents: read
       pull-requests: write        # needed to post the review comment
     steps:
-      - uses: your-org/ff-sec-action/actions/ai-code-review@v1
+      - uses: filecoin-project/ff-sec-actions/actions/ai-code-review@v1
         id: ai
         with:
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -112,7 +113,7 @@ Two patterns:
 steps:
   - uses: actions/checkout@v4
     with:
-      repository: your-org/ff-sec-action
+      repository: filecoin-project/ff-sec-actions
       ref: v1                      # or a full SHA for the strictest pinning
       path: .ff-sec
   - run: bash .ff-sec/scripts/<script>.sh
@@ -123,7 +124,7 @@ steps:
 **b. Locally, from a clone:**
 
 ```sh
-git clone --depth 1 --branch v1 https://github.com/your-org/ff-sec-action
+git clone --depth 1 --branch v1 https://github.com/filecoin-project/ff-sec-actions
 bash ff-sec-action/scripts/<script>.sh
 ```
 
@@ -132,7 +133,7 @@ and fails fast with a clear message when one is missing. Example — running the
 AI review against any PR from your terminal:
 
 ```sh
-PR_NUMBER=123 REPO=your-org/some-repo \
+PR_NUMBER=123 REPO=filecoin-project/some-repo \
 ANTHROPIC_API_KEY=... GH_TOKEN=$(gh auth token) \
 PROMPT_FILE=prompts/filecoin.md BASE_PROMPT_FILE=prompts/base-reviewer.md \
 SCHEMA_FILE=actions/ai-code-review/scripts/schema.json \
@@ -165,6 +166,8 @@ executes PR code**.
 |---|---|---|
 | `anthropic-api-key` | — (required) | Pass from secrets |
 | `github-token` | `${{ github.token }}` | Needs `pull-requests: write` to comment |
+| `pr-number` | current PR event | Set explicitly for `workflow_dispatch` runs |
+| `repo` | current repository | Cross-repo runs need a `github-token` with access to that repo |
 | `model` | `claude-opus-4-8` | Any current Claude model ID |
 | `domain` | `filecoin` | Resolves `prompts/<domain>.md` |
 | `prompt-file` | `""` | Absolute path override; beats `domain` |
@@ -253,7 +256,7 @@ Guidelines:
   this repo: it owns `runs-on`, `permissions` (least privilege), and secret
   plumbing — the action owns the logic. That keeps both surfaces in sync.
 - Reference the sibling action by **full path with a tag**
-  (`uses: your-org/ff-sec-action/actions/<name>@v1`), not a relative path —
+  (`uses: filecoin-project/ff-sec-actions/actions/<name>@v1`), not a relative path —
   relative references don't resolve without a checkout. Keep the tag in sync
   when releasing (grep for `@v1` before tagging).
 - Mirror the composite action's inputs 1:1 with the same names and defaults so
@@ -309,8 +312,15 @@ Guidelines:
 - **Local dry-run:** every script must be runnable locally with env vars (see
   [Standalone scripts](#3-standalone-scripts)) — use a real PR in a sandbox
   repo and `POST_COMMENT=false`-style flags.
-- **End-to-end:** open a PR against a sandbox repo whose workflow points at
-  your branch: `uses: your-org/ff-sec-action/actions/<name>@<your-branch>`.
+- **Manual run (fastest end-to-end):** Actions tab → "AI Code Review (manual)"
+  → Run workflow. Pick your branch, give it a PR number (any PR in this repo,
+  or another repo via the `repo` input + a `GH_PAT` secret). It checks out the
+  selected branch and runs the **local** action, so branch changes are tested
+  before any tag exists. `post-comment` defaults to `false` — results land in
+  the job summary.
+- **End-to-end from a consumer:** open a PR against a sandbox repo whose
+  workflow points at your branch:
+  `uses: filecoin-project/ff-sec-actions/actions/<name>@<your-branch>`.
   Verify the comment, job summary, outputs, and the failure gate.
 - PRs to this repo get reviewed by the org security team (add a `CODEOWNERS`
   entry for your action's directory if you want ownership).

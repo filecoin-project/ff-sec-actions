@@ -1,5 +1,5 @@
 # Reusable workflow: AI code review.
-# Consumers call this via `uses: your-org/ff-sec-action/.github/workflows/ai-code-review.yml@v1`.
+# Consumers call this via `uses: filecoin-project/ff-sec-actions/.github/workflows/ai-code-review.yml@v1`.
 # NOTE: the `uses:` ref on the action step below must be kept in sync with release tags
 # (reusable workflows cannot reference sibling actions by relative path without a checkout).
 name: AI Code Review (reusable)
@@ -62,7 +62,7 @@ jobs:
       # never executes PR code.
       - name: AI code review
         id: ai-review
-        uses: your-org/ff-sec-action/actions/ai-code-review@v1
+        uses: filecoin-project/ff-sec-actions/actions/ai-code-review@v1
         with:
           anthropic-api-key: ${{ secrets.anthropic-api-key }}
           model: ${{ inputs.model }}
