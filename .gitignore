@@ -1,0 +1,4 @@
+# Local dev harness artifacts: fetched diffs, API responses (may contain
+# reviewed code excerpts), and secrets. Never commit these.
+scripts/dev/fixtures/
+scripts/dev/.env

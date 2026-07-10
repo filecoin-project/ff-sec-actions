@@ -23,7 +23,11 @@ ff-sec-action/
 │           └── schema.json
 ├── .github/workflows/            # Reusable workflows (whole job, workflow_call)
 │   ├── ai-code-review.yml
-│   └── manual-ai-code-review.yml # workflow_dispatch test harness (runs the local action)
+│   ├── manual-ai-code-review.yml # workflow_dispatch test harness (runs the local action)
+│   ├── security-pipeline.yml     # Umbrella: full security pipeline with scanner toggles
+│   └── sec-*.yml                 # Individual scanners (semgrep, codeql, dependencies,
+│                                 #   secrets, iac, licenses, dependency-review, sbom,
+│                                 #   scorecard, slither) — callable à la carte
 ├── scripts/                      # Standalone scripts runnable outside any action
 ├── prompts/                      # Domain knowledge as data, not code
 │   ├── base-reviewer.md          # Always included: review behavior + output rules
@@ -180,6 +184,54 @@ executes PR code**.
 
 Outputs: `findings-count`, `highest-severity`, `findings-json` (path to the raw
 JSON, usable by downstream steps for artifacts or custom gating).
+
+## Workflow catalog: security pipeline
+
+Ported from fil-one's `security.yaml` + the Slither half of `contracts-ci.yaml`,
+generalized for any repo in the org. Two consumption modes:
+
+**Umbrella — the whole pipeline in one job** (see
+`examples/consumer-security-pipeline.yml` for the full file with permissions):
+
+```yaml
+jobs:
+  security:
+    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@main
+    with:
+      package-manager: pnpm            # pnpm | npm | none (Go/Rust/etc.)
+      skip-dirs: node_modules,contracts/lib
+      enable-slither: true             # Solidity repos
+    secrets:
+      gitleaks-license: ${{ secrets.GITLEAKS_LICENSE }}
+```
+
+**À la carte — call any scanner as its own job:**
+
+| Workflow | What it runs | Default posture |
+|---|---|---|
+| `sec-semgrep.yml` | Custom rules (`.semgrep.yml`, auto-detected) + community rulesets | Advisory (`blocking` input to gate) |
+| `sec-codeql.yml` | CodeQL, `languages` JSON-array input | Requires GHAS |
+| `sec-dependencies.yml` | pnpm/npm audit (optional) + Trivy fs scan | Advisory |
+| `sec-secrets.yml` | Gitleaks over full history (`.gitleaks.toml` auto-detected) | **Blocking** |
+| `sec-iac.yml` | Trivy config/IaC misconfiguration scan | Advisory |
+| `sec-licenses.yml` | Trivy license scan | Advisory |
+| `sec-dependency-review.yml` | New/changed deps on PRs, license denylist | Blocking at `high` |
+| `sec-sbom.yml` | CycloneDX SBOM (Anchore/Syft) | Informational |
+| `sec-scorecard.yml` | OpenSSF Scorecard | Advisory |
+| `sec-slither.yml` | Slither for Foundry/Solidity (`slither.config.json` auto-detected) | Advisory |
+
+Shared conventions (all scanners):
+
+- **SARIF everywhere**: results upload as artifacts always, and to the GitHub
+  Security tab when the calling repo sets the variable `ENABLE_GHAS='true'`.
+- **Repo config files are auto-detected** — `.semgrep.yml`, `.gitleaks.toml`,
+  `.trivyignore`, `slither.config.json` are used when present, skipped when not,
+  so the same workflow drops into any repo unchanged.
+- **Advisory by default, gate deliberately** — scanners run with
+  `continue-on-error` until a repo flips the per-scanner `blocking` input.
+- **Pinned SHAs** on every third-party action, carried from the fil-one audit.
+- Caller must grant permissions ≥ what the jobs need — copy the `permissions:`
+  block from the example.
 
 ---
 

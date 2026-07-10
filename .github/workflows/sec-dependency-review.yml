@@ -1,0 +1,36 @@
+# Reusable: PR dependency review (new/changed dependencies on pull requests).
+# Ported from fil-one security.yaml (job: dependency-review).
+# Only meaningful on pull_request events — the caller (or the umbrella
+# security-pipeline) gates on event type.
+name: Dependency Review (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      fail-on-severity:
+        description: Fail the check at/above this advisory severity.
+        type: string
+        required: false
+        default: high
+      deny-licenses:
+        description: Comma-separated licenses to block.
+        type: string
+        required: false
+        default: GPL-3.0, AGPL-3.0
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: ${{ inputs.fail-on-severity }}
+          deny-licenses: ${{ inputs.deny-licenses }}
+          comment-summary-in-pr: always

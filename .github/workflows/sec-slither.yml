@@ -1,0 +1,73 @@
+# Reusable: Slither static analysis for Solidity/Foundry contracts.
+# Ported from fil-one contracts-ci.yaml (the security half of check-contracts).
+# Scan-focused: build/test stay in the consumer's CI; this runs Slither + SARIF.
+name: Slither (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      target:
+        description: Directory containing the contracts (slither target).
+        type: string
+        required: false
+        default: "."
+      slither-config:
+        description: Path to slither.config.json (used only if present).
+        type: string
+        required: false
+        default: slither.config.json
+      slither-args:
+        description: Extra slither CLI args (e.g. --filter-paths "contracts/lib").
+        type: string
+        required: false
+        default: ""
+      solc-version:
+        description: solc version for slither.
+        type: string
+        required: false
+        default: 0.8.13
+      blocking:
+        description: Fail the job on findings.
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  slither:
+    name: Slither
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          submodules: recursive # Foundry lib/ dependencies
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@c7450ba673e133f5ee30098b3b54f444d3a2ca2d # v1
+
+      - name: Run Slither
+        uses: crytic/slither-action@b52cc1cbfee9ca3e8722dd5224299d16c9a6b80f # v0.4.2
+        with:
+          target: ${{ inputs.target }}
+          slither-config: ${{ hashFiles(inputs.slither-config) != '' && inputs.slither-config || '' }}
+          slither-args: ${{ inputs.slither-args }}
+          sarif: slither-results.sarif
+          solc-version: ${{ inputs.solc-version }}
+        continue-on-error: ${{ !inputs.blocking }}
+
+      - name: Upload Slither results
+        if: always() && hashFiles('slither-results.sarif') != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: slither-results
+          path: slither-results.sarif
+
+      - name: Upload SARIF to GitHub Security tab
+        if: always() && vars.ENABLE_GHAS == 'true' && hashFiles('slither-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        with:
+          sarif_file: slither-results.sarif
+          category: slither

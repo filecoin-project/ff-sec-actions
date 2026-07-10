@@ -1,0 +1,92 @@
+# Reusable: Semgrep SAST (custom rules + community rulesets).
+# Ported from fil-one security.yaml (job: semgrep), generalized.
+# The custom-config step is skipped automatically when the repo has no such file.
+name: Semgrep SAST (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      custom-config:
+        description: Path to the repo's custom Semgrep rules (skipped if absent).
+        type: string
+        required: false
+        default: .semgrep.yml
+      community-configs:
+        description: Space-separated Semgrep registry rulesets ("" to skip).
+        type: string
+        required: false
+        default: p/typescript p/jwt p/owasp-top-ten p/secrets p/security-audit
+      semgrep-image:
+        description: Semgrep container image (pin a version).
+        type: string
+        required: false
+        default: semgrep/semgrep:1.93.0
+      blocking:
+        description: Fail the job on custom-rule findings (community rules are always advisory).
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  semgrep:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    container:
+      image: ${{ inputs.semgrep-image }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Run Semgrep (custom rules)
+        if: hashFiles(inputs.custom-config) != ''
+        run: |
+          semgrep scan \
+            --config "${{ inputs.custom-config }}" \
+            --sarif --output semgrep-custom.sarif \
+            --error \
+            --verbose
+        continue-on-error: ${{ !inputs.blocking }}
+
+      - name: Run Semgrep (community rules — advisory)
+        if: always() && inputs.community-configs != ''
+        run: |
+          args=""
+          for cfg in ${{ inputs.community-configs }}; do
+            args="$args --config $cfg"
+          done
+          semgrep scan $args \
+            --metrics=off \
+            --sarif --output semgrep-community.sarif \
+            --verbose
+        continue-on-error: true # Community rules may be noisy
+
+      - name: Upload custom-rule results
+        if: always() && hashFiles('semgrep-custom.sarif') != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: semgrep-custom-results
+          path: semgrep-custom.sarif
+
+      - name: Upload community-rule results
+        if: always() && hashFiles('semgrep-community.sarif') != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: semgrep-community-results
+          path: semgrep-community.sarif
+
+      - name: Upload custom SARIF to GitHub Security tab
+        if: always() && vars.ENABLE_GHAS == 'true' && hashFiles('semgrep-custom.sarif') != ''
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        with:
+          sarif_file: semgrep-custom.sarif
+          category: semgrep-custom
+
+      - name: Upload community SARIF to GitHub Security tab
+        if: always() && vars.ENABLE_GHAS == 'true' && hashFiles('semgrep-community.sarif') != ''
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        with:
+          sarif_file: semgrep-community.sarif
+          category: semgrep-community

@@ -1,0 +1,53 @@
+# Full security pipeline for a CONSUMER repo — one job, all scanners.
+# Drop into the consumer repo as .github/workflows/security.yml.
+#
+# Optional per-repo config files (auto-detected, all can be omitted):
+#   .semgrep.yml, .gitleaks.toml, .trivyignore, slither.config.json
+# Optional repo/org variable: ENABLE_GHAS='true' uploads SARIF to the Security tab.
+# Optional secret: GITLEAKS_LICENSE (required for org-owned repos).
+#
+# Use @main until ff-sec-actions tags a v1 release, then switch to @v1.
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 2 * * 0' # Weekly: Sunday 2am UTC
+  workflow_dispatch:
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+# The reusable workflow's jobs inherit at most these permissions.
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+  pull-requests: write # dependency-review PR comments
+  id-token: write      # OpenSSF Scorecard
+
+jobs:
+  security:
+    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@main
+    with:
+      # Node monorepo example (fil-one-like). For Go/Rust repos: package-manager: none
+      package-manager: pnpm
+      skip-dirs: node_modules,contracts/lib,.sst
+      # Opt-in scanners:
+      enable-scorecard: true
+      # enable-codeql: true            # requires GHAS
+      # enable-slither: true           # Solidity/Foundry repos
+      # slither-target: contracts
+    secrets:
+      gitleaks-license: ${{ secrets.GITLEAKS_LICENSE }}
+
+  # À la carte alternative — call individual scanners as separate jobs:
+  # semgrep:
+  #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@main
+  # secrets-scan:
+  #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@main
+  #   secrets:
+  #     gitleaks-license: ${{ secrets.GITLEAKS_LICENSE }}

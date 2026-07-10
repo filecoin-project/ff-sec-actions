@@ -1,0 +1,107 @@
+# Reusable: dependency vulnerability scanning — package-manager audit + Trivy fs.
+# Ported from fil-one security.yaml (job: dependencies); pnpm made optional so
+# non-Node repos get the Trivy scan alone.
+name: Dependency Scan (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      package-manager:
+        description: "Run a native advisory audit first: pnpm | npm | none."
+        type: string
+        required: false
+        default: none
+      node-version:
+        description: Node version for pnpm/npm audits.
+        type: string
+        required: false
+        default: "24"
+      audit-level:
+        description: Minimum severity for the package-manager audit.
+        type: string
+        required: false
+        default: moderate
+      audit-blocking:
+        description: Fail the job on package-manager audit findings.
+        type: boolean
+        required: false
+        default: false
+      severity:
+        description: Trivy severities to report.
+        type: string
+        required: false
+        default: CRITICAL,HIGH,MEDIUM
+      skip-dirs:
+        description: Comma-separated dirs Trivy should skip.
+        type: string
+        required: false
+        default: node_modules
+      trivyignore-file:
+        description: Path to a .trivyignore (used only if present).
+        type: string
+        required: false
+        default: .trivyignore
+
+jobs:
+  dependencies:
+    name: Dependency Scan
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up pnpm
+        if: inputs.package-manager == 'pnpm'
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
+      - name: Set up Node
+        if: inputs.package-manager == 'pnpm' || inputs.package-manager == 'npm'
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: ${{ inputs.package-manager }}
+
+      - name: pnpm audit
+        if: inputs.package-manager == 'pnpm'
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm audit --prod --audit-level=${{ inputs.audit-level }}
+        continue-on-error: ${{ !inputs.audit-blocking }}
+
+      - name: npm audit
+        if: inputs.package-manager == 'npm'
+        run: |
+          npm ci
+          npm audit --omit=dev --audit-level=${{ inputs.audit-level }}
+        continue-on-error: ${{ !inputs.audit-blocking }}
+
+      # trivy-action internally uses actions/cache@v4 (Node 20). Monitor:
+      # https://github.com/aquasecurity/trivy-action/releases
+      - name: Trivy vulnerability scan (fs mode)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-deps.sarif
+          severity: ${{ inputs.severity }}
+          trivyignores: ${{ hashFiles(inputs.trivyignore-file) != '' && inputs.trivyignore-file || '' }}
+          skip-dirs: ${{ inputs.skip-dirs }}
+        continue-on-error: true
+
+      - name: Upload Trivy dependency results
+        if: always() && hashFiles('trivy-deps.sarif') != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: trivy-deps-results
+          path: trivy-deps.sarif
+
+      - name: Upload SARIF to GitHub Security tab
+        if: always() && vars.ENABLE_GHAS == 'true' && hashFiles('trivy-deps.sarif') != ''
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        with:
+          sarif_file: trivy-deps.sarif
+          category: trivy-dependencies

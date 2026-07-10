@@ -1,0 +1,180 @@
+# Umbrella reusable workflow: the full security pipeline (ported from fil-one).
+# One `uses:` line in a consumer repo runs every enabled scanner as parallel jobs;
+# each scanner is also individually callable (sec-*.yml) for repos that want à la carte.
+#
+# NOTE: nested `uses:` refs below must be kept in sync with release tags —
+# grep for '@main' before tagging v1.
+#
+# Conventions carried from fil-one:
+# - Repo/org variable ENABLE_GHAS='true' turns on SARIF upload to the Security tab
+#   (vars resolve from the CALLING repo).
+# - Scanners are advisory by default; flip per-scanner `blocking` inputs to gate.
+# - Repo config files (.semgrep.yml, .gitleaks.toml, .trivyignore,
+#   slither.config.json) are auto-detected and skipped when absent.
+name: Security Pipeline (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      # ── Scanner toggles ──────────────────────────────
+      enable-semgrep:
+        type: boolean
+        required: false
+        default: true
+      enable-codeql:
+        description: Requires GHAS on the calling repo.
+        type: boolean
+        required: false
+        default: false
+      enable-dependencies:
+        type: boolean
+        required: false
+        default: true
+      enable-secrets:
+        type: boolean
+        required: false
+        default: true
+      enable-iac:
+        type: boolean
+        required: false
+        default: true
+      enable-licenses:
+        type: boolean
+        required: false
+        default: true
+      enable-dependency-review:
+        description: PR events only (auto-skipped otherwise).
+        type: boolean
+        required: false
+        default: true
+      enable-sbom:
+        description: Runs on push/schedule/dispatch (auto-skipped on PRs).
+        type: boolean
+        required: false
+        default: true
+      enable-scorecard:
+        description: Runs on push/schedule/dispatch (auto-skipped on PRs).
+        type: boolean
+        required: false
+        default: false
+      enable-slither:
+        description: For Solidity/Foundry repos.
+        type: boolean
+        required: false
+        default: false
+      # ── Shared configuration ─────────────────────────
+      package-manager:
+        description: "pnpm | npm | none — drives audits, license scan, and SBOM completeness."
+        type: string
+        required: false
+        default: none
+      node-version:
+        type: string
+        required: false
+        default: "24"
+      skip-dirs:
+        description: Comma-separated dirs Trivy scans should skip.
+        type: string
+        required: false
+        default: node_modules
+      # ── Per-scanner configuration ────────────────────
+      semgrep-community-configs:
+        type: string
+        required: false
+        default: p/typescript p/jwt p/owasp-top-ten p/secrets p/security-audit
+      codeql-languages:
+        description: 'JSON array, e.g. ["javascript-typescript","go"].'
+        type: string
+        required: false
+        default: '["javascript-typescript"]'
+      dependency-review-fail-on-severity:
+        type: string
+        required: false
+        default: high
+      deny-licenses:
+        type: string
+        required: false
+        default: GPL-3.0, AGPL-3.0
+      slither-target:
+        type: string
+        required: false
+        default: "."
+      slither-args:
+        type: string
+        required: false
+        default: ""
+      solc-version:
+        type: string
+        required: false
+        default: 0.8.13
+    secrets:
+      gitleaks-license:
+        description: Gitleaks license key (required for org-owned repos).
+        required: false
+
+jobs:
+  semgrep:
+    if: inputs.enable-semgrep
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@main
+    with:
+      community-configs: ${{ inputs.semgrep-community-configs }}
+
+  codeql:
+    if: inputs.enable-codeql
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-codeql.yml@main
+    with:
+      languages: ${{ inputs.codeql-languages }}
+
+  dependencies:
+    if: inputs.enable-dependencies
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@main
+    with:
+      package-manager: ${{ inputs.package-manager }}
+      node-version: ${{ inputs.node-version }}
+      skip-dirs: ${{ inputs.skip-dirs }}
+
+  secrets-scan:
+    if: inputs.enable-secrets
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@main
+    secrets:
+      gitleaks-license: ${{ secrets.gitleaks-license }}
+
+  iac:
+    if: inputs.enable-iac
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@main
+    with:
+      skip-dirs: ${{ inputs.skip-dirs }}
+
+  licenses:
+    if: inputs.enable-licenses
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-licenses.yml@main
+    with:
+      package-manager: ${{ inputs.package-manager }}
+      node-version: ${{ inputs.node-version }}
+      skip-dirs: ${{ inputs.skip-dirs }}
+
+  dependency-review:
+    if: inputs.enable-dependency-review && github.event_name == 'pull_request'
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependency-review.yml@main
+    with:
+      fail-on-severity: ${{ inputs.dependency-review-fail-on-severity }}
+      deny-licenses: ${{ inputs.deny-licenses }}
+
+  sbom:
+    if: inputs.enable-sbom && github.event_name != 'pull_request'
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-sbom.yml@main
+    with:
+      package-manager: ${{ inputs.package-manager }}
+      node-version: ${{ inputs.node-version }}
+
+  scorecard:
+    if: inputs.enable-scorecard && github.event_name != 'pull_request'
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-scorecard.yml@main
+
+  slither:
+    if: inputs.enable-slither
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-slither.yml@main
+    with:
+      target: ${{ inputs.slither-target }}
+      slither-args: ${{ inputs.slither-args }}
+      solc-version: ${{ inputs.solc-version }}

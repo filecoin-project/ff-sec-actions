@@ -1,0 +1,60 @@
+# Reusable: IaC misconfiguration scanning (Trivy config mode).
+# Ported from fil-one security.yaml (job: iac).
+name: Trivy IaC Scan (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      severity:
+        description: Trivy severities to report.
+        type: string
+        required: false
+        default: CRITICAL,HIGH,MEDIUM
+      skip-dirs:
+        description: Comma-separated dirs Trivy should skip.
+        type: string
+        required: false
+        default: node_modules
+      blocking:
+        description: Fail the job on findings.
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  iac:
+    name: Trivy IaC Scan
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      # trivy-action internally uses actions/cache@v4 (Node 20). Monitor:
+      # https://github.com/aquasecurity/trivy-action/releases
+      - name: Trivy IaC misconfiguration scan
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
+        with:
+          scan-type: config
+          scan-ref: .
+          format: sarif
+          output: trivy-iac.sarif
+          severity: ${{ inputs.severity }}
+          skip-dirs: ${{ inputs.skip-dirs }}
+        continue-on-error: ${{ !inputs.blocking }}
+
+      - name: Upload Trivy IaC results
+        if: always() && hashFiles('trivy-iac.sarif') != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: trivy-iac-results
+          path: trivy-iac.sarif
+
+      - name: Upload SARIF to GitHub Security tab
+        if: always() && vars.ENABLE_GHAS == 'true' && hashFiles('trivy-iac.sarif') != ''
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        with:
+          sarif_file: trivy-iac.sarif
+          category: trivy-iac
