@@ -6,7 +6,8 @@
 # Optional repo/org variable: ENABLE_GHAS='true' uploads SARIF to the Security tab.
 # Optional secret: GITLEAKS_LICENSE (required for org-owned repos).
 #
-# Use @main until ff-sec-actions tags a v1 release, then switch to @v1.
+# Pilot only: the umbrella and its nested workflows still use @main. Do not
+# treat this as a reproducible release until the G0 release work is complete.
 name: Security
 
 on:
@@ -27,17 +28,17 @@ permissions:
   contents: read
   security-events: write
   pull-requests: write # dependency-review PR comments
-  id-token: write      # OpenSSF Scorecard
 
 jobs:
   security:
     uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@main
     with:
-      # Node monorepo example (fil-one-like). For Go/Rust repos: package-manager: none
-      package-manager: pnpm
+      # Safe baseline: inspect manifests and lockfiles without running package
+      # installation hooks from repository content.
+      package-manager: none
       skip-dirs: node_modules,contracts/lib,.sst
       # Opt-in scanners:
-      enable-scorecard: true
+      # enable-scorecard: true          # also grant id-token: write
       # enable-codeql: true            # requires GHAS
       # enable-slither: true           # Solidity/Foundry repos
       # slither-target: contracts

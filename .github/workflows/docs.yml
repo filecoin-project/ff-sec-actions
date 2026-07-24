@@ -1,0 +1,45 @@
+name: Documentation Contract
+
+on:
+  pull_request:
+    paths:
+      - README.md
+      - CONTEXT.md
+      - docs/**
+      - examples/**
+      - actions/**
+      - prompts/**
+      - .github/workflows/**
+      - scripts/check-docs.sh
+  push:
+    branches: [main]
+    paths:
+      - README.md
+      - CONTEXT.md
+      - docs/**
+      - examples/**
+      - actions/**
+      - prompts/**
+      - .github/workflows/**
+      - scripts/check-docs.sh
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  documentation-contract:
+    name: Documentation Contract
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout documentation and examples
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Validate documentation navigation and local links
+        run: bash scripts/check-docs.sh
+
+      - name: Validate workflow and example syntax
+        # actionlint v1.7.12, pinned to the release commit.
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@914e7df21a07ef503a81201c76d2b11c789d3fca .github/workflows/*.yml examples/*.yml

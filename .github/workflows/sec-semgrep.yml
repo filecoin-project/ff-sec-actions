@@ -52,12 +52,16 @@ jobs:
 
       - name: Run Semgrep (community rules — advisory)
         if: always() && inputs.community-configs != ''
+        shell: bash
+        env:
+          COMMUNITY_CONFIGS: ${{ inputs.community-configs }}
         run: |
-          args=""
-          for cfg in ${{ inputs.community-configs }}; do
-            args="$args --config $cfg"
+          read -r -a configs <<< "$COMMUNITY_CONFIGS"
+          args=()
+          for cfg in "${configs[@]}"; do
+            args+=(--config "$cfg")
           done
-          semgrep scan $args \
+          semgrep scan "${args[@]}" \
             --metrics=off \
             --sarif --output semgrep-community.sarif \
             --verbose

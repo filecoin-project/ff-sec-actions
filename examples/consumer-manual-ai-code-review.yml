@@ -9,7 +9,8 @@
 #   (ff-sec-actions Settings -> Actions -> General -> Access)
 # - This file must be on the default branch before it appears in the Actions tab
 #
-# Use @main until a v1 tag exists in ff-sec-actions; switch to @v1 after tagging.
+# Pilot ref: immutable reviewed commit. Replace only after reviewing a newer
+# release; no v1 release exists yet.
 name: AI Code Review (manual)
 
 on:
@@ -37,7 +38,7 @@ jobs:
       pull-requests: write
     steps:
       # No checkout needed: the action fetches the PR diff via the GitHub API.
-      - uses: filecoin-project/ff-sec-actions/actions/ai-code-review@main
+      - uses: filecoin-project/ff-sec-actions/actions/ai-code-review@6c57a546abf8cce8e32599009941bf6019e9a354
         id: ai
         with:
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
