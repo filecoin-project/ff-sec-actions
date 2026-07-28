@@ -1,0 +1,459 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-07-28",
+  "source": "docs/reference/execution-trust.md",
+  "tiers": {
+    "ecosystem-baseline": {
+      "release_allowed": true,
+      "purpose": "Inspect untrusted Consumer Project content on pull_request with contents:read only.",
+      "consumer_code_execution": "forbidden",
+      "secrets": "forbidden",
+      "write_permissions": "forbidden",
+      "oidc": "forbidden",
+      "checkout_credentials": "must-not-persist",
+      "runner": "ephemeral-github-hosted",
+      "cache": "forbidden until a profile-specific namespace, provenance, and poisoning test are approved",
+      "external_transfer": "public source and scanner queries only; private source requires a separately approved egress design"
+    },
+    "privileged-publisher": {
+      "release_allowed": true,
+      "purpose": "Publish already-produced evidence through PR, security-event, artifact, or OIDC-backed channels.",
+      "consumer_code_execution": "forbidden",
+      "secrets": "only the credential required for the named publisher",
+      "write_permissions": "only the named destination",
+      "oidc": "only when the publisher contract requires it",
+      "checkout_credentials": "must-not-persist",
+      "runner": "ephemeral-github-hosted",
+      "cache": "forbidden; publishers consume validated run-bound evidence only",
+      "external_transfer": "only the declared evidence destination"
+    },
+    "privileged-build-analysis": {
+      "release_allowed": true,
+      "purpose": "Build, compile, install, fuzz, or otherwise execute Consumer Project-controlled behavior after explicit opt-in.",
+      "consumer_code_execution": "allowed and assumed hostile",
+      "secrets": "forbidden",
+      "write_permissions": "forbidden",
+      "oidc": "forbidden",
+      "checkout_credentials": "must-not-persist",
+      "runner": "ephemeral-github-hosted only",
+      "cache": "forbidden until a profile-specific namespace, provenance, and poisoning test are approved",
+      "external_transfer": "dependency and tool endpoints only; outputs cross into publisher jobs as untrusted evidence"
+    },
+    "privileged-external-analysis": {
+      "release_allowed": true,
+      "purpose": "Send explicitly scoped source or metadata to an external analysis provider and optionally publish its result.",
+      "consumer_code_execution": "forbidden",
+      "secrets": "provider credential allowed",
+      "write_permissions": "optional destination-specific publisher permission",
+      "oidc": "forbidden unless separately designed",
+      "checkout_credentials": "checkout of Consumer Project content forbidden",
+      "runner": "ephemeral-github-hosted",
+      "cache": "forbidden",
+      "external_transfer": "declared provider under documented privacy, retention, and cost policy"
+    },
+    "legacy-mixed": {
+      "release_allowed": false,
+      "purpose": "Record a pre-v1 surface that mixes incompatible authority or execution tiers and must be split or replaced.",
+      "consumer_code_execution": "may occur",
+      "secrets": "may occur",
+      "write_permissions": "may occur",
+      "oidc": "may occur",
+      "checkout_credentials": "may persist",
+      "runner": "current implementation",
+      "cache": "current implementation",
+      "external_transfer": "current implementation"
+    },
+    "control-repository-ci": {
+      "release_allowed": false,
+      "purpose": "Develop and validate the Control Repository itself; not a Consumer Project evaluation tier.",
+      "consumer_code_execution": "not applicable",
+      "secrets": "only on trusted manual or protected events",
+      "write_permissions": "job-specific",
+      "oidc": "job-specific",
+      "checkout_credentials": "must-not-persist",
+      "runner": "ephemeral-github-hosted",
+      "cache": "job-specific; never shared with Consumer Project evaluation",
+      "external_transfer": "development dependencies and explicitly tested providers"
+    }
+  },
+  "surfaces": [
+    {
+      "path": ".github/workflows/ai-code-review.yml",
+      "scope": "consumer",
+      "current_tier": "privileged-external-analysis",
+      "target_tier": "privileged-external-analysis",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": true,
+        "secret_context": true,
+        "write_permissions": ["pull-requests"],
+        "execution_markers": [],
+        "mutable_references": true,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-api", "anthropic-api"],
+      "migration": ["Replace the unresolved @v1 action reference with the immutable release graph.", "Keep Consumer Project checkout and execution forbidden."]
+    },
+    {
+      "path": ".github/workflows/docs.yml",
+      "scope": "control-repository",
+      "current_tier": "control-repository-ci",
+      "target_tier": "control-repository-ci",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": ["control-script"],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-action-download", "go-module-proxy"],
+      "migration": ["Add execution-trust and workflow-security contracts to this job."]
+    },
+    {
+      "path": ".github/workflows/manual-ai-code-review.yml",
+      "scope": "control-repository",
+      "current_tier": "control-repository-ci",
+      "target_tier": "control-repository-ci",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": true,
+        "explicit_permissions": true,
+        "secret_context": true,
+        "write_permissions": ["pull-requests"],
+        "execution_markers": ["local-action"],
+        "mutable_references": true,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-api", "github-action-download", "anthropic-api"],
+      "migration": ["Pin checkout and disable persisted credentials.", "Keep this workflow manual and restricted to trusted Control Repository refs."]
+    },
+    {
+      "path": ".github/workflows/sec-codeql.yml",
+      "scope": "consumer",
+      "current_tier": "legacy-mixed",
+      "target_tier": "privileged-build-analysis",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": true,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": ["security-events"],
+        "execution_markers": ["codeql-autobuild"],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-action-download", "language-package-registries", "github-code-scanning"],
+      "migration": ["Remove write authority and persisted credentials from the build job.", "Publish its result from a separate privileged-publisher job."]
+    },
+    {
+      "path": ".github/workflows/sec-dependencies.yml",
+      "scope": "consumer",
+      "current_tier": "legacy-mixed",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": true,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": ["security-events"],
+        "execution_markers": ["package-install"],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": true,
+        "self_hosted_runner": false
+      },
+      "network": ["github-action-download", "node-package-registry", "vulnerability-database", "github-code-scanning"],
+      "migration": ["Make the baseline lockfile-only with no install hooks.", "Move native install-dependent audits and SARIF publishing into separate privileged tiers."]
+    },
+    {
+      "path": ".github/workflows/sec-dependency-review.yml",
+      "scope": "consumer",
+      "current_tier": "legacy-mixed",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": true,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": ["pull-requests"],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-api", "github-action-download"],
+      "migration": ["Disable persisted checkout credentials.", "Make PR commenting optional and keep dependency evaluation separate from publication."]
+    },
+    {
+      "path": ".github/workflows/sec-iac.yml",
+      "scope": "consumer",
+      "current_tier": "legacy-mixed",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": true,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": ["security-events"],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": true,
+        "self_hosted_runner": false
+      },
+      "network": ["github-action-download", "vulnerability-and-policy-database", "github-code-scanning"],
+      "migration": ["Run inspection with contents:read only and no persisted credentials.", "Split optional SARIF upload into a privileged-publisher job."]
+    },
+    {
+      "path": ".github/workflows/sec-licenses.yml",
+      "scope": "consumer",
+      "current_tier": "legacy-mixed",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": true,
+        "explicit_permissions": false,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": ["package-install"],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": true,
+        "self_hosted_runner": false
+      },
+      "network": ["github-action-download", "node-package-registry", "license-database"],
+      "migration": ["Declare contents:read explicitly and disable persisted credentials.", "Use manifest and lockfile evidence without dependency installation."]
+    },
+    {
+      "path": ".github/workflows/sec-sbom.yml",
+      "scope": "consumer",
+      "current_tier": "legacy-mixed",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": true,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": ["package-install"],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": true,
+        "self_hosted_runner": false
+      },
+      "network": ["github-action-download", "node-package-registry"],
+      "migration": ["Generate the baseline SBOM from manifests and lockfiles without install hooks.", "Represent build-enhanced SBOM completeness as a separate privileged analysis."]
+    },
+    {
+      "path": ".github/workflows/sec-scorecard.yml",
+      "scope": "consumer",
+      "current_tier": "legacy-mixed",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": ["id-token", "security-events"],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": true,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-api", "github-action-download", "github-oidc", "openssf-results-api"],
+      "migration": ["Keep OIDC and security-event permission isolated to this named publisher."]
+    },
+    {
+      "path": ".github/workflows/sec-secrets.yml",
+      "scope": "consumer",
+      "current_tier": "legacy-mixed",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": true,
+        "explicit_permissions": true,
+        "secret_context": true,
+        "write_permissions": ["security-events"],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-api", "github-action-download", "gitleaks-license-service"],
+      "migration": ["Replace the required organization license secret with a secretless detector path.", "Use contents:read only and separate evidence publication."]
+    },
+    {
+      "path": ".github/workflows/sec-semgrep.yml",
+      "scope": "consumer",
+      "current_tier": "legacy-mixed",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": true,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": ["security-events"],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": true,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["container-registry", "github-action-download", "semgrep-rule-registry", "github-code-scanning"],
+      "migration": ["Pin the scanner image by digest, use contents:read only, and disable persisted credentials.", "Split optional SARIF publication from inspection."]
+    },
+    {
+      "path": ".github/workflows/sec-slither.yml",
+      "scope": "consumer",
+      "current_tier": "legacy-mixed",
+      "target_tier": "privileged-build-analysis",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": true,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": ["security-events"],
+        "execution_markers": ["slither-analysis", "recursive-submodules"],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-action-download", "submodule-origins", "foundry-and-solc-downloads", "github-code-scanning"],
+      "migration": ["Run compilation and analysis with no secrets, writes, OIDC, or persisted credentials.", "Treat recursive submodules and analyzer output as untrusted; publish separately."]
+    },
+    {
+      "path": ".github/workflows/security-pipeline.yml",
+      "scope": "consumer",
+      "current_tier": "legacy-mixed",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": false,
+        "secret_context": true,
+        "write_permissions": [],
+        "execution_markers": [],
+        "mutable_references": true,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["delegated-to-called-workflows"],
+      "migration": ["Replace the mixed umbrella with a strict baseline plus separately opted-in privileged jobs.", "Generate immutable nested references from one reviewed release commit."]
+    },
+    {
+      "path": "examples/consumer-ai-code-review.yml",
+      "scope": "example",
+      "current_tier": "privileged-external-analysis",
+      "target_tier": "privileged-external-analysis",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": true,
+        "secret_context": true,
+        "write_permissions": ["pull-requests"],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-api", "anthropic-api"],
+      "migration": ["Replace the reviewed pilot SHA only with a reviewed immutable release SHA."]
+    },
+    {
+      "path": "examples/consumer-manual-ai-code-review.yml",
+      "scope": "example",
+      "current_tier": "privileged-external-analysis",
+      "target_tier": "privileged-external-analysis",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": true,
+        "secret_context": true,
+        "write_permissions": ["pull-requests"],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-api", "anthropic-api"],
+      "migration": ["Replace the reviewed pilot SHA only with a reviewed immutable release SHA."]
+    },
+    {
+      "path": "examples/consumer-security-pipeline.yml",
+      "scope": "example",
+      "current_tier": "legacy-mixed",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": true,
+        "secret_context": true,
+        "write_permissions": ["pull-requests", "security-events"],
+        "execution_markers": [],
+        "mutable_references": true,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["delegated-to-security-pipeline"],
+      "migration": ["Replace with the immutable secretless Ecosystem Baseline example.", "Show privileged publishers and build analyses as separate opt-in jobs."]
+    },
+    {
+      "path": "actions/ai-code-review/action.yml",
+      "scope": "consumer",
+      "current_tier": "privileged-external-analysis",
+      "target_tier": "privileged-external-analysis",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": false,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-api", "anthropic-api"],
+      "migration": ["Keep Consumer Project checkout and code execution forbidden.", "Add bounded context, privacy, completion, and result contracts under the AI assurance tasks."]
+    }
+  ]
+}

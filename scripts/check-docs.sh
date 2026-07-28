@@ -38,12 +38,16 @@ required_pages=(
   "docs/operators/README.md"
   "docs/reference/README.md"
   "docs/reference/current-contracts.md"
+  "docs/reference/execution-trust.md"
   "docs/DOCUMENTATION-ARCHITECTURE.md"
   "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md"
   "roadmap/README.md"
   "roadmap/state.json"
+  "security/execution-trust.json"
+  "scripts/check-execution-trust.sh"
   "scripts/roadmap.sh"
   "scripts/test-roadmap.sh"
+  "threat-model/execution-trust/threat-model-report.md"
 )
 
 for path in "${required_pages[@]}"; do
@@ -126,6 +130,11 @@ done < <(find . -type f -name '*.md' -not -path './.git/*' -not -path './scripts
 if [ -f "roadmap/state.json" ] && [ -f "scripts/roadmap.sh" ]; then
   bash scripts/roadmap.sh validate \
     || report_error "machine-readable roadmap state is invalid"
+fi
+
+if [ -f "security/execution-trust.json" ] && [ -f "scripts/check-execution-trust.sh" ]; then
+  bash scripts/check-execution-trust.sh \
+    || report_error "execution-trust classification is invalid or stale"
 fi
 
 if [ "$failures" -gt 0 ]; then

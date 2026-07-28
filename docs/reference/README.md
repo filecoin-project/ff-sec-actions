@@ -6,6 +6,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 ## Consumer-Facing Contracts
 
 - [Current pre-v1 contracts](current-contracts.md)
+- [Execution trust tiers](execution-trust.md)
 
 ## Reusable Workflows
 

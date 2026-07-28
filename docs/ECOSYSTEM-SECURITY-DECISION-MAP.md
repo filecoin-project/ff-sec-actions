@@ -136,7 +136,7 @@ reproducibility boundary.
 ## execution-trust: Isolate Untrusted Repository Content
 
 Blocked by: product-contract
-Status: open
+Status: resolved
 Type: Prototype
 
 ### Question
@@ -146,11 +146,22 @@ what token, credential, network, runner, and OIDC boundaries apply to each?
 
 ### Answer
 
-Pending. Recommended invariant: the Ecosystem Baseline never executes
-repository code or install hooks and receives read-only contents permission
-only. Any evaluation that must build or execute code runs in a separately
-named, explicitly opted-in trust tier with no persisted credentials, secrets,
-write token, or OIDC authority.
+The [execution-trust contract](reference/execution-trust.md) defines four
+release-allowed tiers: a secretless, read-only, non-executing
+`ecosystem-baseline`; a no-checkout `privileged-publisher`; an explicitly
+opted-in `privileged-build-analysis` with no secrets, writes, OIDC, persisted
+credentials, or durable runner; and a no-execution
+`privileged-external-analysis` with one declared provider and bounded data
+transfer. `legacy-mixed` records pre-v1 violations and is never releasable;
+`control-repository-ci` is not a Consumer Project tier.
+
+The machine-readable [`security/execution-trust.json`](../security/execution-trust.json)
+classifies every current workflow, example, and action, including its token,
+secret, network, runner, cache, and OIDC behavior and target migration. The
+[threat model](../threat-model/execution-trust/threat-model-report.md) records
+15 threats and their follow-on controls. CI rejects missing surfaces,
+implementation/classification drift, or any release-allowed current tier that
+violates its execution and authority contract.
 
 ## evaluation-contract: Separate Evidence, Completion, And Policy
 

@@ -10,10 +10,13 @@ on:
       - actions/**
       - prompts/**
       - roadmap/**
+      - security/**
+      - threat-model/**
       - .github/workflows/**
       - scripts/check-docs.sh
       - scripts/roadmap.sh
       - scripts/test-roadmap.sh
+      - scripts/check-execution-trust.sh
   push:
     branches: [main]
     paths:
@@ -24,10 +27,13 @@ on:
       - actions/**
       - prompts/**
       - roadmap/**
+      - security/**
+      - threat-model/**
       - .github/workflows/**
       - scripts/check-docs.sh
       - scripts/roadmap.sh
       - scripts/test-roadmap.sh
+      - scripts/check-execution-trust.sh
   workflow_dispatch:
 
 permissions:
@@ -48,6 +54,9 @@ jobs:
 
       - name: Test machine-readable roadmap state
         run: bash scripts/test-roadmap.sh
+
+      - name: Validate execution-trust classification
+        run: bash scripts/check-execution-trust.sh
 
       - name: Validate workflow and example syntax
         # actionlint v1.7.12, pinned to the release commit.

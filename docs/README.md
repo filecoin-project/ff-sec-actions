@@ -34,6 +34,7 @@ policy, exceptions, upgrades, and rollback across projects.
 
 - [Reference index](reference/README.md)
 - [Current pre-v1 workflow contracts](reference/current-contracts.md)
+- [Execution trust tiers](reference/execution-trust.md)
 - [Documentation architecture](DOCUMENTATION-ARCHITECTURE.md)
 - [Ecosystem security decision map](ECOSYSTEM-SECURITY-DECISION-MAP.md)
 - [Machine-readable implementation roadmap](../roadmap/README.md)

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-28T00:00:00Z",
+  "updated_at": "2026-07-28T20:57:58Z",
   "current_task_id": null,
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
@@ -51,7 +51,10 @@
       "title": "Establish navigable documentation foundation",
       "objective": "Give consumers, maintainers, and rollout operators tested paths into the platform.",
       "blocked_by": [],
-      "decision_refs": ["documentation-system", "product-contract"],
+      "decision_refs": [
+        "documentation-system",
+        "product-contract"
+      ],
       "acceptance_criteria": [
         "The root README routes all three audiences.",
         "Consumer, maintainer, operator, architecture, and current-contract pages are indexed and link-checked."
@@ -76,8 +79,12 @@
       "status": "done",
       "title": "Create canonical machine-readable roadmap state",
       "objective": "Make roadmap order, dependencies, status, acceptance criteria, and verification queryable by people and automation.",
-      "blocked_by": ["FOUND-01"],
-      "decision_refs": ["documentation-system"],
+      "blocked_by": [
+        "FOUND-01"
+      ],
+      "decision_refs": [
+        "documentation-system"
+      ],
       "acceptance_criteria": [
         "One JSON state file contains every implementation task in dependency order.",
         "A checked-in command validates, queries, and deliberately updates task status."
@@ -99,11 +106,15 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "decision",
-      "status": "pending",
+      "status": "done",
       "title": "Define execution trust tiers",
       "objective": "Classify every evaluation as inspection-only or code-executing and define its token, secret, network, runner, cache, and OIDC boundary.",
-      "blocked_by": ["STATE-01"],
-      "decision_refs": ["execution-trust"],
+      "blocked_by": [
+        "STATE-01"
+      ],
+      "decision_refs": [
+        "execution-trust"
+      ],
       "acceptance_criteria": [
         "Every existing workflow is assigned to the Ecosystem Baseline or a named Privileged Analysis tier.",
         "The baseline is specified as read-only, secretless, and non-executing on untrusted pull requests."
@@ -112,10 +123,13 @@
         "A contract test compares workflow behavior with the recorded trust classification."
       ],
       "artifacts": [
-        "docs/reference/execution-trust.md"
+        "docs/reference/execution-trust.md",
+        "security/execution-trust.json",
+        "scripts/check-execution-trust.sh",
+        "threat-model/execution-trust/threat-model-report.md"
       ],
-      "started_at": null,
-      "completed_at": null
+      "started_at": "2026-07-28T20:37:46Z",
+      "completed_at": "2026-07-28T20:57:58Z"
     },
     {
       "id": "G0-02",
@@ -126,8 +140,13 @@
       "status": "pending",
       "title": "Enforce least privilege and safe checkout",
       "objective": "Give each workflow only its documented permissions and prevent checkout credentials from persisting.",
-      "blocked_by": ["G0-01"],
-      "decision_refs": ["known-blockers", "execution-trust"],
+      "blocked_by": [
+        "G0-01"
+      ],
+      "decision_refs": [
+        "known-blockers",
+        "execution-trust"
+      ],
       "acceptance_criteria": [
         "Every job has explicit permissions and every checkout sets persist-credentials to false.",
         "OIDC, PR write, and security-event write permissions exist only in jobs that need them."
@@ -150,8 +169,13 @@
       "status": "pending",
       "title": "Remove package lifecycle execution from inspection workflows",
       "objective": "Inspect manifests, lockfiles, licenses, and SBOM inputs without running consumer installation hooks.",
-      "blocked_by": ["G0-01"],
-      "decision_refs": ["known-blockers", "execution-trust"],
+      "blocked_by": [
+        "G0-01"
+      ],
+      "decision_refs": [
+        "known-blockers",
+        "execution-trust"
+      ],
       "acceptance_criteria": [
         "Baseline dependency, license, and SBOM workflows do not run npm, pnpm, Cargo, Go, or other project hooks.",
         "Build-dependent completeness is isolated behind explicit opt-in and reported as such."
@@ -176,8 +200,13 @@
       "status": "pending",
       "title": "Make scanner exit and gate semantics honest",
       "objective": "Prevent findings and operational failures from being hidden by unconditional advisory execution.",
-      "blocked_by": ["G0-01"],
-      "decision_refs": ["known-blockers", "evaluation-contract"],
+      "blocked_by": [
+        "G0-01"
+      ],
+      "decision_refs": [
+        "known-blockers",
+        "evaluation-contract"
+      ],
       "acceptance_criteria": [
         "Every scanner distinguishes finding thresholds from tool failure.",
         "Every supported gate input is exposed and forwarded through the umbrella surface."
@@ -201,8 +230,13 @@
       "status": "pending",
       "title": "Add completion status to existing evaluations",
       "objective": "Represent complete, incomplete, skipped, and error independently from finding severity.",
-      "blocked_by": ["G0-04"],
-      "decision_refs": ["evaluation-contract", "known-blockers"],
+      "blocked_by": [
+        "G0-04"
+      ],
+      "decision_refs": [
+        "evaluation-contract",
+        "known-blockers"
+      ],
       "acceptance_criteria": [
         "Each existing evaluation emits a machine-readable completion status.",
         "AI refusal, truncation, missing secrets, event skips, and tool outages cannot appear as zero-findings completion."
@@ -225,8 +259,13 @@
       "status": "pending",
       "title": "Provide secretless secret scanning",
       "objective": "Run useful secret detection for organization repositories and fork pull requests without a required license secret.",
-      "blocked_by": ["G0-01"],
-      "decision_refs": ["execution-trust", "fork-pr-model"],
+      "blocked_by": [
+        "G0-01"
+      ],
+      "decision_refs": [
+        "execution-trust",
+        "fork-pr-model"
+      ],
       "acceptance_criteria": [
         "The default secret scanner works without repository or organization secrets.",
         "PR-diff and scheduled full-history scopes are explicit and independently testable."
@@ -249,8 +288,13 @@
       "status": "pending",
       "title": "Add consumer GitHub Actions security evaluation",
       "objective": "Detect mutable references, excessive permissions, dangerous triggers, expression injection, persisted credentials, and OIDC exposure in consumer workflows.",
-      "blocked_by": ["G0-01"],
-      "decision_refs": ["scanner-runtime", "execution-trust"],
+      "blocked_by": [
+        "G0-01"
+      ],
+      "decision_refs": [
+        "scanner-runtime",
+        "execution-trust"
+      ],
       "acceptance_criteria": [
         "The baseline includes pinned workflow syntax and security analyzers.",
         "High-confidence workflow supply-chain defects produce actionable locations and remediation."
@@ -273,8 +317,12 @@
       "status": "pending",
       "title": "Choose the cross-organization distribution model",
       "objective": "Confirm whether immutable public reusable workflows are sufficient for initial self-service delivery and define when a GitHub App becomes justified.",
-      "blocked_by": ["STATE-01"],
-      "decision_refs": ["distribution-model"],
+      "blocked_by": [
+        "STATE-01"
+      ],
+      "decision_refs": [
+        "distribution-model"
+      ],
       "acceptance_criteria": [
         "The initial delivery mechanism, access assumptions, and escalation criteria are recorded.",
         "The decision covers independent organizations, public/private repositories, forks, updates, and rollback."
@@ -297,8 +345,12 @@
       "status": "pending",
       "title": "Make consumer pins cover the complete execution graph",
       "objective": "Ensure one reviewed consumer SHA immutably selects nested workflows, actions, containers, prompts, rules, and third-party dependencies.",
-      "blocked_by": ["G0-08"],
-      "decision_refs": ["release-integrity"],
+      "blocked_by": [
+        "G0-08"
+      ],
+      "decision_refs": [
+        "release-integrity"
+      ],
       "acceptance_criteria": [
         "No released execution path resolves mutable main, branch, floating tag, or unpinned container references.",
         "Consumers can upgrade and roll back by changing one reviewed reference."
@@ -322,8 +374,17 @@
       "status": "pending",
       "title": "Prove fork-safe baseline behavior",
       "objective": "Give external contributions deterministic baseline evaluation without secrets or privileged triggers.",
-      "blocked_by": ["G0-02", "G0-03", "G0-05", "G0-06", "G0-07"],
-      "decision_refs": ["fork-pr-model", "execution-trust"],
+      "blocked_by": [
+        "G0-02",
+        "G0-03",
+        "G0-05",
+        "G0-06",
+        "G0-07"
+      ],
+      "decision_refs": [
+        "fork-pr-model",
+        "execution-trust"
+      ],
       "acceptance_criteria": [
         "Ordinary pull_request events from forks run every declared baseline evaluation or report an explicit skip.",
         "No pull_request_target path checks out or executes untrusted fork content."
@@ -346,8 +407,14 @@
       "status": "pending",
       "title": "Enforce the G0 trustworthy-foundation gate",
       "objective": "Turn every G0 trust claim into a required regression test and block release when one fails.",
-      "blocked_by": ["G0-09", "G0-10"],
-      "decision_refs": ["known-blockers", "verification-system"],
+      "blocked_by": [
+        "G0-09",
+        "G0-10"
+      ],
+      "decision_refs": [
+        "known-blockers",
+        "verification-system"
+      ],
       "acceptance_criteria": [
         "Permissions, no-execution, gate semantics, completion, fork behavior, and release integrity are CI requirements.",
         "The current consumer examples pass the same checks as released surfaces."
@@ -370,8 +437,12 @@
       "status": "pending",
       "title": "Finalize the Evaluation Result contract",
       "objective": "Version one schema for tool identity, scope, completion, coverage, findings, suppressions, timing, and evidence.",
-      "blocked_by": ["G0-11"],
-      "decision_refs": ["evaluation-contract"],
+      "blocked_by": [
+        "G0-11"
+      ],
+      "decision_refs": [
+        "evaluation-contract"
+      ],
       "acceptance_criteria": [
         "Completion, findings, and Merge Gate policy are separate fields with explicit semantics.",
         "Schema evolution and unknown-field behavior are documented."
@@ -395,8 +466,13 @@
       "status": "pending",
       "title": "Implement the scanner adapter contract",
       "objective": "Give every evaluation the same lifecycle for immutable invocation, raw evidence, normalization, and exit handling.",
-      "blocked_by": ["EVAL-01"],
-      "decision_refs": ["scanner-runtime", "evaluation-contract"],
+      "blocked_by": [
+        "EVAL-01"
+      ],
+      "decision_refs": [
+        "scanner-runtime",
+        "evaluation-contract"
+      ],
       "acceptance_criteria": [
         "One vertical scanner slice implements the entire adapter contract without tool-specific policy leakage.",
         "Operational errors and malformed output cannot be normalized as clean findings."
@@ -419,8 +495,12 @@
       "status": "pending",
       "title": "Aggregate one Evidence Bundle and profile conclusion",
       "objective": "Present humans and automation with one authoritative completion, findings, coverage, and policy surface.",
-      "blocked_by": ["EVAL-02"],
-      "decision_refs": ["evidence-interface"],
+      "blocked_by": [
+        "EVAL-02"
+      ],
+      "decision_refs": [
+        "evidence-interface"
+      ],
       "acceptance_criteria": [
         "The pipeline emits a versioned JSON Evidence Bundle and readable job summary.",
         "One stable required check evaluates completion and the consumer-selected Merge Gate."
@@ -444,8 +524,13 @@
       "status": "pending",
       "title": "Release the secretless Ecosystem Baseline",
       "objective": "Combine workflow security, secret detection, recursive lockfile vulnerabilities, IaC, and conservative static analysis without executing project code.",
-      "blocked_by": ["EVAL-03"],
-      "decision_refs": ["scanner-runtime", "execution-trust"],
+      "blocked_by": [
+        "EVAL-03"
+      ],
+      "decision_refs": [
+        "scanner-runtime",
+        "execution-trust"
+      ],
       "acceptance_criteria": [
         "The baseline is useful for supported Go, Rust, JavaScript, Solidity, infrastructure, and monorepo repositories without secrets.",
         "Unsupported or unavailable coverage is visible in the Evidence Bundle."
@@ -469,8 +554,13 @@
       "status": "pending",
       "title": "Split fast PR and deep scheduled evaluation lanes",
       "objective": "Keep pull-request feedback timely while retaining full-history and whole-repository coverage on trusted events.",
-      "blocked_by": ["BASE-01"],
-      "decision_refs": ["scanner-runtime", "fork-pr-model"],
+      "blocked_by": [
+        "BASE-01"
+      ],
+      "decision_refs": [
+        "scanner-runtime",
+        "fork-pr-model"
+      ],
       "acceptance_criteria": [
         "PR evaluation is change-aware and stays within a documented runtime budget.",
         "Push and schedule evaluation covers full history or repository scope where required."
@@ -493,8 +583,12 @@
       "status": "pending",
       "title": "Finalize the supported Security Profile taxonomy",
       "objective": "Define required, optional, unsupported, and privileged evaluations for real Filecoin project classes.",
-      "blocked_by": ["EVAL-01"],
-      "decision_refs": ["profile-taxonomy"],
+      "blocked_by": [
+        "EVAL-01"
+      ],
+      "decision_refs": [
+        "profile-taxonomy"
+      ],
       "acceptance_criteria": [
         "Go node, Rust/FVM actor, service, Solidity/FEVM, and infrastructure profiles have owners and coverage statements.",
         "Consensus-critical and funds-moving projects have explicit human-review requirements."
@@ -517,8 +611,13 @@
       "status": "pending",
       "title": "Implement profile detection and composition",
       "objective": "Select profiles from repository signals and compose them by path for monorepos without hiding ambiguity.",
-      "blocked_by": ["PROF-01"],
-      "decision_refs": ["profile-taxonomy", "scanner-runtime"],
+      "blocked_by": [
+        "PROF-01"
+      ],
+      "decision_refs": [
+        "profile-taxonomy",
+        "scanner-runtime"
+      ],
       "acceptance_criteria": [
         "Detection recognizes supported manifests, build files, infrastructure, and Filecoin-specific signals.",
         "Ambiguous and unsupported components produce explicit coverage gaps rather than guesses."
@@ -541,8 +640,14 @@
       "status": "pending",
       "title": "Ship the Go node and service profile",
       "objective": "Add low-noise Go dependency reachability, static analysis, and a separately trusted build tier suitable for node and service repositories.",
-      "blocked_by": ["PROF-02", "BASE-01"],
-      "decision_refs": ["profile-taxonomy", "scanner-runtime"],
+      "blocked_by": [
+        "PROF-02",
+        "BASE-01"
+      ],
+      "decision_refs": [
+        "profile-taxonomy",
+        "scanner-runtime"
+      ],
       "acceptance_criteria": [
         "The profile includes pinned govulncheck and appropriate CodeQL/static analysis with documented build requirements.",
         "Fork-safe inspection and trusted build-dependent coverage remain separate."
@@ -566,8 +671,14 @@
       "status": "pending",
       "title": "Pass the G1 internal-alpha gate",
       "objective": "Prove the immutable baseline and one vertical profile can be adopted end to end by a new consumer.",
-      "blocked_by": ["BASE-02", "PROF-03"],
-      "decision_refs": ["verification-system", "consumer-migration"],
+      "blocked_by": [
+        "BASE-02",
+        "PROF-03"
+      ],
+      "decision_refs": [
+        "verification-system",
+        "consumer-migration"
+      ],
       "acceptance_criteria": [
         "A sandbox consumer installs through the documented quickstart without source assistance.",
         "Upgrade, rollback, findings, incomplete execution, and required-check behavior are exercised."
@@ -590,8 +701,14 @@
       "status": "pending",
       "title": "Ship the Rust and FVM actor profile",
       "objective": "Add RustSec or OSV dependency analysis, dependency policy, no-build static analysis, and actor-aware controls.",
-      "blocked_by": ["PROF-02", "BASE-01"],
-      "decision_refs": ["profile-taxonomy", "scanner-runtime"],
+      "blocked_by": [
+        "PROF-02",
+        "BASE-01"
+      ],
+      "decision_refs": [
+        "profile-taxonomy",
+        "scanner-runtime"
+      ],
       "acceptance_criteria": [
         "The profile covers advisories, licenses, sources, unsafe-code evidence, and supported static analysis.",
         "Actor-specific limitations and trusted WASM/build analysis are explicit."
@@ -615,8 +732,14 @@
       "status": "pending",
       "title": "Ship the JavaScript and TypeScript service profile",
       "objective": "Turn the current strongest generic coverage into a deterministic service profile with no-install and trusted-build tiers.",
-      "blocked_by": ["PROF-02", "BASE-01"],
-      "decision_refs": ["profile-taxonomy", "scanner-runtime"],
+      "blocked_by": [
+        "PROF-02",
+        "BASE-01"
+      ],
+      "decision_refs": [
+        "profile-taxonomy",
+        "scanner-runtime"
+      ],
       "acceptance_criteria": [
         "Semgrep, CodeQL, lockfile vulnerabilities, dependency review, and IaC defaults are versioned and tested.",
         "npm and pnpm install hooks are never required for baseline coverage."
@@ -640,8 +763,14 @@
       "status": "pending",
       "title": "Ship the Solidity and FEVM profile",
       "objective": "Combine safe source inspection with an explicit trusted Foundry, Slither, fuzz, and invariant-testing tier.",
-      "blocked_by": ["PROF-02", "BASE-01"],
-      "decision_refs": ["profile-taxonomy", "execution-trust"],
+      "blocked_by": [
+        "PROF-02",
+        "BASE-01"
+      ],
+      "decision_refs": [
+        "profile-taxonomy",
+        "execution-trust"
+      ],
       "acceptance_criteria": [
         "Slither configuration and compiler resolution are deterministic and path-aware.",
         "Build, fuzz, and invariant execution has no secrets, persisted credentials, write token, or OIDC."
@@ -665,8 +794,14 @@
       "status": "pending",
       "title": "Ship the infrastructure and container profile",
       "objective": "Evaluate IaC, Kubernetes, Dockerfiles, container images, and build provenance with deployable policy defaults.",
-      "blocked_by": ["PROF-02", "BASE-01"],
-      "decision_refs": ["profile-taxonomy", "scanner-runtime"],
+      "blocked_by": [
+        "PROF-02",
+        "BASE-01"
+      ],
+      "decision_refs": [
+        "profile-taxonomy",
+        "scanner-runtime"
+      ],
       "acceptance_criteria": [
         "Source configuration and built-image evaluation are distinct trust tiers.",
         "The profile reports misconfiguration, vulnerable image content, and missing or invalid provenance."
@@ -690,8 +825,17 @@
       "status": "pending",
       "title": "Support composed monorepo evaluation",
       "objective": "Run multiple profiles by path while preserving scope, deduplication, runtime limits, and a single repository conclusion.",
-      "blocked_by": ["PROF-03", "PROF-04", "PROF-05", "PROF-06", "PROF-07"],
-      "decision_refs": ["profile-taxonomy", "evidence-interface"],
+      "blocked_by": [
+        "PROF-03",
+        "PROF-04",
+        "PROF-05",
+        "PROF-06",
+        "PROF-07"
+      ],
+      "decision_refs": [
+        "profile-taxonomy",
+        "evidence-interface"
+      ],
       "acceptance_criteria": [
         "Each component has an explicit profile, path scope, completion status, and findings set.",
         "Shared dependencies and findings are deduplicated without hiding component-specific impact."
@@ -714,8 +858,15 @@
       "status": "pending",
       "title": "Convert Filecoin invariants into deterministic controls",
       "objective": "Move high-confidence consensus, actor, FEVM, node-liveness, RPC, and storage-provider checks from prompt guidance into testable rules and invariants.",
-      "blocked_by": ["PROF-03", "PROF-04", "PROF-06"],
-      "decision_refs": ["scanner-runtime", "verification-system"],
+      "blocked_by": [
+        "PROF-03",
+        "PROF-04",
+        "PROF-06"
+      ],
+      "decision_refs": [
+        "scanner-runtime",
+        "verification-system"
+      ],
       "acceptance_criteria": [
         "Each rule names its supported scope, failure scenario, severity, precision expectation, and owner.",
         "Rules with unacceptable false positives remain advisory or are excluded from Merge Gates."
@@ -739,8 +890,14 @@
       "status": "pending",
       "title": "Pass the multi-profile effectiveness gate",
       "objective": "Demonstrate safety, portability, completion reliability, useful detection, and acceptable noise across representative profiles.",
-      "blocked_by": ["PROF-08", "FILE-01", "BASE-03"],
-      "decision_refs": ["verification-system"],
+      "blocked_by": [
+        "PROF-08",
+        "FILE-01",
+        "BASE-03"
+      ],
+      "decision_refs": [
+        "verification-system"
+      ],
       "acceptance_criteria": [
         "Go, Rust, service, Solidity, infrastructure, and monorepo fixtures meet declared recall, precision, runtime, and completion thresholds.",
         "Upgrade, rollback, outage, malformed evidence, and suppression behavior are exercised."
@@ -764,8 +921,14 @@
       "status": "pending",
       "title": "Choose safe privileged-analysis behavior for forks",
       "objective": "Define no-checkout, maintainer-approved, or app-mediated paths for analyses requiring secrets or write access.",
-      "blocked_by": ["G0-10", "EVAL-01"],
-      "decision_refs": ["fork-pr-model", "distribution-model"],
+      "blocked_by": [
+        "G0-10",
+        "EVAL-01"
+      ],
+      "decision_refs": [
+        "fork-pr-model",
+        "distribution-model"
+      ],
       "acceptance_criteria": [
         "Every fork receives evaluated, skipped, pending, or incomplete status for each privileged analysis.",
         "No design combines untrusted checkout or execution with secrets or write authority."
@@ -788,8 +951,14 @@
       "status": "pending",
       "title": "Make AI review bounded and completion-aware",
       "objective": "Partition large diffs, collect deterministic context, handle refusal and truncation honestly, and emit the Evaluation Result contract.",
-      "blocked_by": ["PRIV-01", "EVAL-02"],
-      "decision_refs": ["ai-assurance", "evaluation-contract"],
+      "blocked_by": [
+        "PRIV-01",
+        "EVAL-02"
+      ],
+      "decision_refs": [
+        "ai-assurance",
+        "evaluation-contract"
+      ],
       "acceptance_criteria": [
         "Large changes are partitioned with a coverage manifest instead of byte-truncated mid-diff.",
         "Refusal, partial output, missing secrets, invalid schema, and provider outage produce explicit non-complete status."
@@ -812,8 +981,14 @@
       "status": "pending",
       "title": "Validate AI findings, privacy, and cost",
       "objective": "Measure AI review as attributable evidence rather than treating model output or availability as correctness.",
-      "blocked_by": ["PRIV-02", "FILE-01"],
-      "decision_refs": ["ai-assurance", "verification-system"],
+      "blocked_by": [
+        "PRIV-02",
+        "FILE-01"
+      ],
+      "decision_refs": [
+        "ai-assurance",
+        "verification-system"
+      ],
       "acceptance_criteria": [
         "Findings have independent validation or are clearly marked unvalidated with confidence.",
         "Data handling, retention, model changes, per-run limits, and cost budgets are documented and enforced."
@@ -836,8 +1011,13 @@
       "status": "pending",
       "title": "Establish ownership and vulnerability response",
       "objective": "Protect the control repository with explicit owners, review rules, private reporting, support, and emergency response.",
-      "blocked_by": ["G0-09", "EVAL-01"],
-      "decision_refs": ["governance-model"],
+      "blocked_by": [
+        "G0-09",
+        "EVAL-01"
+      ],
+      "decision_refs": [
+        "governance-model"
+      ],
       "acceptance_criteria": [
         "CODEOWNERS covers workflows, actions, schemas, profiles, prompts, rules, and releases.",
         "SECURITY, support, incident, and emergency revocation processes name accountable maintainers."
@@ -862,8 +1042,15 @@
       "status": "pending",
       "title": "Automate signed releases, compatibility, and revocation",
       "objective": "Publish immutable, reviewable versions with changelogs, compatibility guarantees, dependency updates, rollback, and emergency revocation.",
-      "blocked_by": ["GOV-01", "VERIFY-01", "PRIV-03"],
-      "decision_refs": ["governance-model", "release-integrity"],
+      "blocked_by": [
+        "GOV-01",
+        "VERIFY-01",
+        "PRIV-03"
+      ],
+      "decision_refs": [
+        "governance-model",
+        "release-integrity"
+      ],
       "acceptance_criteria": [
         "Release artifacts and refs are signed or attested and generated only from protected reviewed commits.",
         "Compatibility, deprecation, upgrade, rollback, and revocation policies are executable and documented."
@@ -888,8 +1075,12 @@
       "status": "pending",
       "title": "Generate reference documentation from released metadata",
       "objective": "Keep workflow inputs, outputs, permissions, secrets, profiles, schemas, and versions synchronized with implementation.",
-      "blocked_by": ["GOV-02"],
-      "decision_refs": ["documentation-system"],
+      "blocked_by": [
+        "GOV-02"
+      ],
+      "decision_refs": [
+        "documentation-system"
+      ],
       "acceptance_criteria": [
         "Released contracts generate consumer reference tables and examples.",
         "Documentation CI detects every metadata, example, and implementation disagreement."
@@ -912,8 +1103,13 @@
       "status": "pending",
       "title": "Build profile selection and migration tooling",
       "objective": "Generate a minimal pinned consumer workflow and compatibility report without copying platform implementation.",
-      "blocked_by": ["DOC-01", "PROF-08"],
-      "decision_refs": ["consumer-migration"],
+      "blocked_by": [
+        "DOC-01",
+        "PROF-08"
+      ],
+      "decision_refs": [
+        "consumer-migration"
+      ],
       "acceptance_criteria": [
         "The tool detects profiles, explains ambiguity, emits minimal permissions, and records coverage gaps.",
         "It supports install, upgrade, policy tightening, rollback, and visible time-bounded exceptions."
@@ -936,8 +1132,12 @@
       "status": "pending",
       "title": "Pilot representative Filecoin projects",
       "objective": "Exercise self-service adoption across low-, medium-, and consensus-critical repositories in independent organizations.",
-      "blocked_by": ["MIG-01"],
-      "decision_refs": ["ecosystem-rollout"],
+      "blocked_by": [
+        "MIG-01"
+      ],
+      "decision_refs": [
+        "ecosystem-rollout"
+      ],
       "acceptance_criteria": [
         "Pilot cohorts include every supported profile, forks, monorepos, and varied criticality.",
         "Each pilot records installation effort, completion, findings, noise, runtime, remediation, upgrade, and rollback."
@@ -960,8 +1160,13 @@
       "status": "pending",
       "title": "Operationalize staged Merge Gates and support",
       "objective": "Move projects from observation to critical-only and profile policy without surprise blocking or permanent exceptions.",
-      "blocked_by": ["ROLL-01"],
-      "decision_refs": ["consumer-migration", "ecosystem-rollout"],
+      "blocked_by": [
+        "ROLL-01"
+      ],
+      "decision_refs": [
+        "consumer-migration",
+        "ecosystem-rollout"
+      ],
       "acceptance_criteria": [
         "Gate stages, triage ownership, suppression expiry, escalation, and rollback are documented and exercised.",
         "Consumer Engineers and Rollout Operators have named support and feedback channels."
@@ -984,8 +1189,14 @@
       "status": "pending",
       "title": "Pass the public-v1 release gate",
       "objective": "Publish v1 only after trust, effectiveness, profiles, governance, migration, documentation, and support evidence is reviewed.",
-      "blocked_by": ["ROLL-02"],
-      "decision_refs": ["verification-system", "governance-model", "ecosystem-rollout"],
+      "blocked_by": [
+        "ROLL-02"
+      ],
+      "decision_refs": [
+        "verification-system",
+        "governance-model",
+        "ecosystem-rollout"
+      ],
       "acceptance_criteria": [
         "Every G3 exit criterion has durable evidence and an accountable approver.",
         "The public release is immutable, documented, supportable, upgradeable, and revocable."
@@ -1008,8 +1219,12 @@
       "status": "pending",
       "title": "Operate ecosystem health and effectiveness continuously",
       "objective": "Measure whether adoption improves security outcomes rather than merely increasing workflow count.",
-      "blocked_by": ["REL-01"],
-      "decision_refs": ["ecosystem-rollout"],
+      "blocked_by": [
+        "REL-01"
+      ],
+      "decision_refs": [
+        "ecosystem-rollout"
+      ],
       "acceptance_criteria": [
         "Operators track adoption, version drift, completion, triage time, confirmed findings, false positives, remediation, runtime, and cost without collecting consumer source.",
         "Profile owners review effectiveness and update or retire controls on a recurring schedule."

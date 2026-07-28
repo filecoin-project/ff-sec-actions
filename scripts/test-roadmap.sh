@@ -15,7 +15,15 @@ fail() {
 
 fresh_state() {
   local name="$1"
-  cp "$canonical_state" "$test_directory/$name.json"
+  jq '
+    .current_task_id = null
+    | .tasks |= map(
+        if .id == "FOUND-01" or .id == "STATE-01" then .
+        else .status = "pending"
+          | .started_at = null
+          | .completed_at = null
+        end)
+  ' "$canonical_state" > "$test_directory/$name.json"
   printf '%s\n' "$test_directory/$name.json"
 }
 
