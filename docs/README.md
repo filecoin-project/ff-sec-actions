@@ -36,6 +36,7 @@ policy, exceptions, upgrades, and rollback across projects.
 - [Current pre-v1 workflow contracts](reference/current-contracts.md)
 - [Documentation architecture](DOCUMENTATION-ARCHITECTURE.md)
 - [Ecosystem security decision map](ECOSYSTEM-SECURITY-DECISION-MAP.md)
+- [Machine-readable implementation roadmap](../roadmap/README.md)
 
 ## Executable Examples
 
@@ -45,6 +46,7 @@ policy, exceptions, upgrades, and rollback across projects.
 
 ## Current Planning Status
 
-This repository is pre-v1. The decision map is authoritative for release
-readiness; planned pages and profiles are not documented as available until
-their implementation and contract tests exist.
+This repository is pre-v1. The decision map is authoritative for product
+decisions, and the machine-readable roadmap is authoritative for implementation
+order and status. Planned pages and profiles are not documented as available
+until their implementation and contract tests exist.

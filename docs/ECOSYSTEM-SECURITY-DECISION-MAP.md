@@ -4,8 +4,11 @@ Goal: make `ff-sec-actions` a robust, reusable security-evaluation platform for
 independent Filecoin ecosystem projects without turning a green check into a
 false claim of safety.
 
-This map is the canonical planning artifact. Resolve unblocked tickets in
-document order unless a ticket is explicitly selected.
+This map is the canonical decision artifact. The
+[machine-readable roadmap](../roadmap/README.md) is the canonical implementation
+queue for task order, dependencies, acceptance criteria, verification, and
+status. Resolve open decision tickets when their corresponding roadmap task is
+claimed.
 
 ## Target Architecture
 
@@ -364,7 +367,9 @@ published coverage matrix.
 
 ## Implementation Sequence
 
-After resolving the frontier, implementation should follow dependency order:
+The executable sequence is maintained in [`roadmap/state.json`](../roadmap/state.json)
+and validated by `bash scripts/roadmap.sh validate`. At a phase level, work
+follows this dependency order:
 
 1. Complete the `known-blockers` remediation lane and enforce G0.
 2. Build the immutable release and execution foundations.

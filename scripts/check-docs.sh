@@ -40,6 +40,10 @@ required_pages=(
   "docs/reference/current-contracts.md"
   "docs/DOCUMENTATION-ARCHITECTURE.md"
   "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md"
+  "roadmap/README.md"
+  "roadmap/state.json"
+  "scripts/roadmap.sh"
+  "scripts/test-roadmap.sh"
 )
 
 for path in "${required_pages[@]}"; do
@@ -118,6 +122,11 @@ while IFS= read -r document; do
       || true
   )
 done < <(find . -type f -name '*.md' -not -path './.git/*' -not -path './scripts/dev/fixtures/*' | sort)
+
+if [ -f "roadmap/state.json" ] && [ -f "scripts/roadmap.sh" ]; then
+  bash scripts/roadmap.sh validate \
+    || report_error "machine-readable roadmap state is invalid"
+fi
 
 if [ "$failures" -gt 0 ]; then
   printf 'documentation checks failed with %s error(s).\n' "$failures" >&2

@@ -12,3 +12,11 @@ system, or on a schedule. Conventions (enforced in review):
 See the "Adding a standalone script" section in the repo README before adding
 one. If a script earns a permanent place in CI, promote it to a composite
 action under `actions/`.
+
+## Roadmap State
+
+`roadmap.sh` validates, queries, and deliberately updates the canonical
+implementation queue in [`roadmap/state.json`](../roadmap/state.json). Run
+`bash scripts/roadmap.sh help` for its command contract. Mutations require
+`ROADMAP_ALLOW_WRITE=true`; reads and validation are the default. The isolated
+contract suite is `bash scripts/test-roadmap.sh`.

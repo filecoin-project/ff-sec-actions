@@ -9,8 +9,11 @@ on:
       - examples/**
       - actions/**
       - prompts/**
+      - roadmap/**
       - .github/workflows/**
       - scripts/check-docs.sh
+      - scripts/roadmap.sh
+      - scripts/test-roadmap.sh
   push:
     branches: [main]
     paths:
@@ -20,8 +23,11 @@ on:
       - examples/**
       - actions/**
       - prompts/**
+      - roadmap/**
       - .github/workflows/**
       - scripts/check-docs.sh
+      - scripts/roadmap.sh
+      - scripts/test-roadmap.sh
   workflow_dispatch:
 
 permissions:
@@ -39,6 +45,9 @@ jobs:
 
       - name: Validate documentation navigation and local links
         run: bash scripts/check-docs.sh
+
+      - name: Test machine-readable roadmap state
+        run: bash scripts/test-roadmap.sh
 
       - name: Validate workflow and example syntax
         # actionlint v1.7.12, pinned to the release commit.

@@ -39,6 +39,9 @@ selection, policy, exceptions, health, and rollback.
 
 The [documentation home](docs/README.md) is the complete navigation index.
 
+The [machine-readable implementation roadmap](roadmap/README.md) shows the
+dependency-ordered work queue and the commands used to claim and complete work.
+
 ## What Exists Today?
 
 | Capability | Surface | Current status |
@@ -62,6 +65,7 @@ docs/                    consumer, maintainer, operator, and reference guides
 examples/                executable consumer workflow examples
 prompts/                 shared and Filecoin-specific AI review guidance
 scripts/                 local tooling and documentation checks
+roadmap/                 canonical machine-readable implementation state
 ```
 
 ## Trust Boundaries
