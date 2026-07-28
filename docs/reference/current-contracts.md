@@ -97,8 +97,6 @@ Source:
 
 | Input | Default | Notes |
 |---|---|---|
-| `package-manager` | `none` | `pnpm`, `npm`, or `none` |
-| `node-version` | `24` | Used by npm/pnpm paths |
 | `skip-dirs` | `node_modules` | Comma-separated Trivy exclusions |
 | `semgrep-community-configs` | TypeScript/JWT/OWASP/secrets/security-audit sets | Space-separated registry configs |
 | `codeql-languages` | `["javascript-typescript"]` | JSON array |
@@ -116,8 +114,8 @@ Current umbrella limitations:
 - Semgrep, dependency, IaC, license, and Slither blocking controls are not all
   exposed or forwarded;
 - the parent workflow does not aggregate one Evaluation Result;
-- npm/pnpm paths in dependency, license, and SBOM workflows install
-  dependencies and may execute lifecycle scripts;
+- dependency, license, and SBOM evidence is manifest/lockfile based and can be
+  incomplete when packages appear only after installation or a build;
 - callers must currently grant the cap required by all enabled nested jobs.
 
 ## Individual Scanner Workflows
@@ -126,7 +124,7 @@ Current umbrella limitations:
 |---|---|---|
 | `sec-semgrep.yml` | Custom and community SARIF artifacts | Custom rules can block à la carte; community rules are advisory |
 | `sec-codeql.yml` | GitHub code-scanning analysis | CodeQL analysis controls failure |
-| `sec-dependencies.yml` | Native audit plus Trivy SARIF | Native audit can block à la carte; Trivy is advisory |
+| `sec-dependencies.yml` | Manifest/lockfile Trivy SARIF | Advisory; native package-manager reachability is excluded |
 | `sec-secrets.yml` | Gitleaks summary/artifact | Blocking |
 | `sec-iac.yml` | Trivy SARIF | `blocking` exists, but Trivy finding exit semantics need G0 correction |
 | `sec-licenses.yml` | Trivy table in logs | Advisory; no artifact is currently uploaded |

@@ -46,10 +46,11 @@ umbrella blocking inputs consistent.
 
 ## Dependency, License, Or SBOM Work Fails
 
-- Confirm the selected package manager matches the repository.
-- Prefer `package-manager: none` for the current safe baseline.
-- Current npm/pnpm modes install dependencies and may run lifecycle scripts;
-  do not enable them on untrusted content until G0 hardening lands.
+- Confirm the repository contains a supported manifest or lockfile and that it
+  is not excluded by `skip-dirs`.
+- Do not add package installation to the baseline workflow as a workaround.
+- If complete evidence requires installation or a build, record the baseline
+  limitation and use a separately isolated Privileged Build Analysis.
 
 ## Escalation Information
 

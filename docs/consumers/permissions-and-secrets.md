@@ -13,8 +13,7 @@ untrusted PR behavior understood.
 - Grant `security-events: write` only to jobs that upload SARIF.
 - Grant `id-token: write` only to Scorecard or another explicitly documented
   OIDC consumer.
-- Set `persist-credentials: false` whenever checked-out content or dependencies
-  can execute.
+- Set `persist-credentials: false` on every checkout.
 - Do not expose secrets to a job that executes untrusted repository content.
 
 ## Current Capability Matrix
@@ -24,16 +23,16 @@ untrusted PR behavior understood.
 | AI code review | `ANTHROPIC_API_KEY` | PR comment write when enabled | No; reads metadata and diff through API |
 | Semgrep | None | SARIF upload when enabled | Analyzes checked-out files; does not intentionally build the project |
 | CodeQL | None | Security-event upload | Autobuild can execute project build behavior |
-| Dependency audit | None | SARIF upload when enabled | Current npm/pnpm path installs dependencies and may run lifecycle scripts |
+| Dependency evidence | None | SARIF upload when enabled | No; inspects manifests and lockfiles, with build-dependent reachability explicitly excluded |
 | Gitleaks | License may be required | Security-event/artifact behavior | Scans repository history |
 | Trivy IaC | None | SARIF upload when enabled | Analyzes configuration files |
-| License/SBOM | None | Artifact upload | Current npm/pnpm path installs dependencies and may run lifecycle scripts |
+| License/SBOM | None | Artifact upload | No; source-manifest evidence may omit build-generated or runtime-loaded packages |
 | Scorecard | None | OIDC and security-event upload | Does not intentionally execute project code |
 | Slither | None | SARIF upload when enabled | Builds/analyzes Solidity and can involve project build configuration |
 
-The G0 work will remove unnecessary lifecycle execution and make each called
-workflow reduce its own permissions. Until then, do not use the broad umbrella
-permission example as proof that every nested job needs every permission.
+G0-02 and G0-03 enforce exact job permissions, safe checkout, and non-executing
+dependency, license, and SBOM inspection. The umbrella caller still grants an
+upper cap; each nested job reduces that cap to its reviewed policy.
 
 ## Fork Pull Requests
 

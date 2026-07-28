@@ -63,15 +63,6 @@ on:
         required: false
         default: false
       # ── Shared configuration ─────────────────────────
-      package-manager:
-        description: "pnpm | npm | none — drives audits, license scan, and SBOM completeness."
-        type: string
-        required: false
-        default: none
-      node-version:
-        type: string
-        required: false
-        default: "24"
       skip-dirs:
         description: Comma-separated dirs Trivy scans should skip.
         type: string
@@ -140,8 +131,6 @@ jobs:
       security-events: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@main
     with:
-      package-manager: ${{ inputs.package-manager }}
-      node-version: ${{ inputs.node-version }}
       skip-dirs: ${{ inputs.skip-dirs }}
 
   secrets-scan:
@@ -170,8 +159,6 @@ jobs:
       contents: read
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-licenses.yml@main
     with:
-      package-manager: ${{ inputs.package-manager }}
-      node-version: ${{ inputs.node-version }}
       skip-dirs: ${{ inputs.skip-dirs }}
 
   dependency-review:
@@ -189,9 +176,6 @@ jobs:
     permissions:
       contents: read
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-sbom.yml@main
-    with:
-      package-manager: ${{ inputs.package-manager }}
-      node-version: ${{ inputs.node-version }}
 
   scorecard:
     if: inputs.enable-scorecard && github.event_name != 'pull_request'

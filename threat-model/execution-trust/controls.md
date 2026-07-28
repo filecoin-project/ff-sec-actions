@@ -130,7 +130,7 @@ weaken this tier; they create a new Privileged Analysis design.
 
 | Threat | Disposition | Control or rationale |
 |---|---|---|
-| T1 | Follow-on | G0-03 implements SR1 no-install behavior; high priority, medium effort |
+| T1 | Mitigated | G0-03 removes package-manager execution and tests a malicious lifecycle-hook fixture under SR1 |
 | T2 | Follow-on | G0-03/G0-11 enforce build isolation and publication separation under SR1; high priority, medium effort |
 | T3 | Mitigated | G0-02 disables persisted credentials and tests negative checkout fixtures under SR1 |
 | T4 | Mitigated | G0-02 enforces an exact per-job authority policy and rejects missing/excessive permissions |
@@ -148,9 +148,9 @@ weaken this tier; they create a new Privileged Analysis design.
 
 ## Accepted Risks Register
 
-No execution-trust threats are accepted. T3 and T4 are mitigated by G0-02;
-current `legacy-mixed` behavior remains pre-v1 debt and cannot pass a release
-gate.
+No execution-trust threats are accepted. T3 and T4 are mitigated by G0-02, and
+T1 is mitigated by G0-03. Current `legacy-mixed` behavior remains pre-v1 debt
+and cannot pass a release gate.
 
 ## Follow-On Controls
 

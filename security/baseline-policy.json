@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflows": {
+    ".github/workflows/sec-dependencies.yml": {
+      "coverage_mode": "manifest-and-lockfile",
+      "allowed_actions": [
+        "actions/checkout",
+        "actions/upload-artifact",
+        "aquasecurity/trivy-action",
+        "github/codeql-action/upload-sarif"
+      ],
+      "limitations": [
+        "Native package-manager reachability and installed dependency state are excluded.",
+        "Build-generated manifests are excluded."
+      ]
+    },
+    ".github/workflows/sec-licenses.yml": {
+      "coverage_mode": "manifest-and-lockfile",
+      "allowed_actions": [
+        "actions/checkout",
+        "aquasecurity/trivy-action"
+      ],
+      "limitations": [
+        "Licenses visible only after installation or a project build are excluded."
+      ]
+    },
+    ".github/workflows/sec-sbom.yml": {
+      "coverage_mode": "source-manifest",
+      "allowed_actions": [
+        "actions/checkout",
+        "anchore/sbom-action"
+      ],
+      "limitations": [
+        "The SBOM is source-manifest evidence, not a build-complete inventory.",
+        "Generated, vendored-at-build, and runtime-loaded packages may be absent."
+      ]
+    }
+  }
+}

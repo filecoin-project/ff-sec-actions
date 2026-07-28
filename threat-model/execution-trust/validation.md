@@ -7,7 +7,7 @@ already been remediated.
 | SR | Threat | Test | Type | Pass criteria | Status |
 |---|---|---|---|---|---|
 | SR1 | T1-T4, T8, T14 | `bash scripts/check-execution-trust.sh` | Positive | Every workflow/action/example is classified and observed flags match source | PASS |
-| SR1 | T1 | Run future baseline against a fixture whose `preinstall` writes a sentinel | Negative | Sentinel absent; Completion Status is complete | UNTESTED |
+| SR1 | T1 | `bash scripts/test-baseline-no-exec.sh` with a sentinel-writing `preinstall` fixture | Negative | Policy accepts manifest inspection, rejects package-manager execution, and the sentinel remains absent | PASS |
 | SR1 | T2 | Run a build-marker fixture in baseline and privileged-build tiers | Negative/Positive | Baseline never builds; privileged tier builds with no secret/write/OIDC/persisted credential | UNTESTED |
 | SR1 | T3 | `bash scripts/test-workflow-security.sh` persisted-credential fixture | Negative | Every checkout is followed by `persist-credentials: false` | PASS |
 | SR1 | T4 | `bash scripts/test-workflow-security.sh` missing/excess-authority fixtures | Negative | CI rejects implicit or policy-incompatible authority | PASS |
@@ -40,10 +40,10 @@ already been remediated.
 
 | Category | Tests | Pass | Fail | Untested |
 |---|---:|---:|---:|---:|
-| SR1: Tier separation | 5 | 3 | 0 | 2 |
+| SR1: Tier separation | 5 | 4 | 0 | 1 |
 | SR2: Supply-chain immutability | 3 | 0 | 2 | 1 |
 | SR3: Fork/shared-state isolation | 3 | 0 | 0 | 3 |
 | SR4: Secrets/external transfer | 3 | 0 | 0 | 3 |
 | SR5: Evidence/completion | 2 | 0 | 0 | 2 |
 | SR6: Runner isolation | 1 | 0 | 0 | 1 |
-| **Total** | **17** | **3** | **2** | **12** |
+| **Total** | **17** | **4** | **2** | **11** |

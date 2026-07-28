@@ -1,20 +1,10 @@
-# Reusable: SBOM generation (Anchore/Syft, CycloneDX by default).
-# Ported from fil-one security.yaml (job: sbom). Node install is optional —
-# an installed node_modules yields a more complete SBOM for Node repos.
+# Reusable: source manifest SBOM generation (Anchore/Syft, CycloneDX default).
+# Build-enhanced package discovery belongs in a separate privileged analysis.
 name: SBOM Generation (reusable)
 
 on:
   workflow_call:
     inputs:
-      package-manager:
-        description: "Install deps before generating: pnpm | npm | none."
-        type: string
-        required: false
-        default: none
-      node-version:
-        type: string
-        required: false
-        default: "24"
       format:
         description: SBOM format.
         type: string
@@ -36,26 +26,6 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-
-      - name: Set up pnpm
-        if: inputs.package-manager == 'pnpm'
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-
-      - name: Set up Node
-        if: inputs.package-manager == 'pnpm' || inputs.package-manager == 'npm'
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
-        with:
-          node-version: ${{ inputs.node-version }}
-          cache: ${{ inputs.package-manager }}
-
-      - name: Install dependencies
-        if: inputs.package-manager != 'none'
-        run: |
-          if [ "${{ inputs.package-manager }}" = "pnpm" ]; then
-            pnpm install --frozen-lockfile
-          else
-            npm ci
-          fi
 
       - name: Generate SBOM
         uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0

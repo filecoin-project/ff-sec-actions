@@ -95,11 +95,11 @@ repository configuration as well as this repository's source contract.
 | `.github/workflows/docs.yml` | `control-repository-ci` | `control-repository-ci` | Keep repository contracts in its validation job. |
 | `.github/workflows/manual-ai-code-review.yml` | `control-repository-ci` | `control-repository-ci` | Pin checkout and keep trusted manual scope. |
 | `.github/workflows/sec-codeql.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority from build; publish separately. |
-| `.github/workflows/sec-dependencies.yml` | `legacy-mixed` | `ecosystem-baseline` | Make the baseline lockfile-only and cacheless; move install-dependent work and publishing out. |
+| `.github/workflows/sec-dependencies.yml` | `legacy-mixed` | `ecosystem-baseline` | Disable shared cache and move SARIF publication out; keep build-dependent work separate. |
 | `.github/workflows/sec-dependency-review.yml` | `legacy-mixed` | `ecosystem-baseline` | Separate baseline evaluation from optional commenting. |
 | `.github/workflows/sec-iac.yml` | `legacy-mixed` | `ecosystem-baseline` | Inspect read-only without shared cache; move optional SARIF upload to a publisher. |
-| `.github/workflows/sec-licenses.yml` | `legacy-mixed` | `ecosystem-baseline` | Inspect manifests and lockfiles without installation or shared cache. |
-| `.github/workflows/sec-sbom.yml` | `legacy-mixed` | `ecosystem-baseline` | Generate the baseline SBOM without install hooks or shared cache; keep build-enhanced output separate. |
+| `.github/workflows/sec-licenses.yml` | `legacy-mixed` | `ecosystem-baseline` | Disable shared cache; keep build-dependent evidence separate. |
+| `.github/workflows/sec-sbom.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep build-enhanced SBOM evidence in a separate Privileged Build Analysis. |
 | `.github/workflows/sec-scorecard.yml` | `legacy-mixed` | `ecosystem-baseline` | Separate read-only evaluation from the named OIDC/security-event publisher. |
 | `.github/workflows/sec-secrets.yml` | `legacy-mixed` | `ecosystem-baseline` | Use a secretless detector and separate evidence publication. |
 | `.github/workflows/sec-semgrep.yml` | `legacy-mixed` | `ecosystem-baseline` | Pin the image by digest, inspect read-only, and publish separately. |
@@ -121,6 +121,8 @@ Run the contracts locally:
 bash scripts/check-execution-trust.sh
 bash scripts/check-workflow-security.sh
 bash scripts/test-workflow-security.sh
+bash scripts/check-baseline-no-exec.sh
+bash scripts/test-baseline-no-exec.sh
 ```
 
 The command fails when a workflow, example, or action is unclassified; a
@@ -145,6 +147,13 @@ purposes:
 | `pull-requests: write` | Optional AI or dependency-review pull-request publication |
 | `security-events: write` | SARIF publication by the named scanner path; inspection/publication separation remains follow-on work |
 | `id-token: write` | OpenSSF Scorecard publication only, outside pull-request execution |
+
+The baseline no-execution contract compares the dependency, license, and SBOM
+workflows with [`security/baseline-policy.json`](../../security/baseline-policy.json).
+It permits only reviewed manifest-inspection actions and rejects shell steps or
+package-manager inputs. Build-enhanced completeness is not currently provided;
+its limitations are explicit and any future implementation must be a separate,
+opt-in Privileged Build Analysis.
 
 When adding or changing a surface:
 

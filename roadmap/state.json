@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-28T23:45:51Z",
+  "updated_at": "2026-07-28T23:52:25Z",
   "current_task_id": null,
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
@@ -169,7 +169,7 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
+      "status": "done",
       "title": "Remove package lifecycle execution from inspection workflows",
       "objective": "Inspect manifests, lockfiles, licenses, and SBOM inputs without running consumer installation hooks.",
       "blocked_by": [
@@ -189,10 +189,13 @@
       "artifacts": [
         ".github/workflows/sec-dependencies.yml",
         ".github/workflows/sec-licenses.yml",
-        ".github/workflows/sec-sbom.yml"
+        ".github/workflows/sec-sbom.yml",
+        "security/baseline-policy.json",
+        "scripts/check-baseline-no-exec.sh",
+        "scripts/test-baseline-no-exec.sh"
       ],
-      "started_at": null,
-      "completed_at": null
+      "started_at": "2026-07-28T23:46:57Z",
+      "completed_at": "2026-07-28T23:52:25Z"
     },
     {
       "id": "G0-04",

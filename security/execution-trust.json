@@ -172,7 +172,7 @@
         "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": ["security-events"],
-        "execution_markers": ["package-install"],
+        "execution_markers": [],
         "mutable_references": false,
         "mutable_container": false,
         "oidc": false,
@@ -180,7 +180,7 @@
         "self_hosted_runner": false
       },
       "network": ["github-action-download", "node-package-registry", "vulnerability-database", "github-code-scanning"],
-      "migration": ["Make the baseline lockfile-only with no install hooks.", "Move native install-dependent audits and SARIF publishing into separate privileged tiers."]
+      "migration": ["Disable tool-internal shared cache.", "Move build-dependent reachability and SARIF publishing into separate privileged tiers."]
     },
     {
       "path": ".github/workflows/sec-dependency-review.yml",
@@ -235,7 +235,7 @@
         "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": [],
-        "execution_markers": ["package-install"],
+        "execution_markers": [],
         "mutable_references": false,
         "mutable_container": false,
         "oidc": false,
@@ -243,12 +243,12 @@
         "self_hosted_runner": false
       },
       "network": ["github-action-download", "node-package-registry", "license-database"],
-      "migration": ["Use manifest and lockfile evidence without dependency installation or shared cache."]
+      "migration": ["Disable tool-internal shared cache and keep build-dependent evidence separate."]
     },
     {
       "path": ".github/workflows/sec-sbom.yml",
       "scope": "consumer",
-      "current_tier": "legacy-mixed",
+      "current_tier": "ecosystem-baseline",
       "target_tier": "ecosystem-baseline",
       "observed": {
         "checkout": true,
@@ -256,15 +256,15 @@
         "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": [],
-        "execution_markers": ["package-install"],
+        "execution_markers": [],
         "mutable_references": false,
         "mutable_container": false,
         "oidc": false,
-        "cache": true,
+        "cache": false,
         "self_hosted_runner": false
       },
       "network": ["github-action-download", "node-package-registry"],
-      "migration": ["Generate the baseline SBOM from manifests and lockfiles without install hooks.", "Represent build-enhanced SBOM completeness as a separate privileged analysis."]
+      "migration": ["Keep build-enhanced SBOM completeness as a separate privileged analysis."]
     },
     {
       "path": ".github/workflows/sec-scorecard.yml",

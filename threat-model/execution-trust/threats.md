@@ -16,11 +16,12 @@ license, or SBOM workflow runs `npm ci` or `pnpm install` while inspecting it.
 2. Select or inherit `package-manager: npm` in a scanner job.
 3. `npm ci` runs the hook, which reads runner state and sends it over HTTPS.
 
-**Likelihood:** HIGH — lifecycle execution is present in three current workflows.
+**Likelihood:** LOW — G0-03 removes package-manager execution and constrains
+the three manifest-inspection workflows to reviewed scanner actions.
 
 **Impact:** HIGH — runner compromise and possible credential/evidence theft.
 
-**Note:** Fixable; tracked by G0-03.
+**Note:** Mitigated by G0-03 and its malicious lifecycle-hook fixture.
 
 ### T2: Autobuild Or Compiler Executes Hostile Project Behavior
 

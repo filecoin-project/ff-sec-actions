@@ -34,7 +34,6 @@ jobs:
     with:
       # Safe baseline: inspect manifests and lockfiles without running package
       # installation hooks from repository content.
-      package-manager: none
       skip-dirs: node_modules,contracts/lib,.sst
       # Opt-in scanners:
       # enable-scorecard: true          # also grant id-token: write

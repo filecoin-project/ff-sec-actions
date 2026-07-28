@@ -19,6 +19,8 @@ on:
       - scripts/check-execution-trust.sh
       - scripts/check-workflow-security.sh
       - scripts/test-workflow-security.sh
+      - scripts/check-baseline-no-exec.sh
+      - scripts/test-baseline-no-exec.sh
   push:
     branches: [main]
     paths:
@@ -38,6 +40,8 @@ on:
       - scripts/check-execution-trust.sh
       - scripts/check-workflow-security.sh
       - scripts/test-workflow-security.sh
+      - scripts/check-baseline-no-exec.sh
+      - scripts/test-baseline-no-exec.sh
   workflow_dispatch:
 
 permissions:
@@ -69,6 +73,12 @@ jobs:
 
       - name: Test workflow-security contract
         run: bash scripts/test-workflow-security.sh
+
+      - name: Validate non-executing baseline workflows
+        run: bash scripts/check-baseline-no-exec.sh
+
+      - name: Test malicious lifecycle-hook fixture
+        run: bash scripts/test-baseline-no-exec.sh
 
       - name: Validate workflow and example syntax
         # actionlint v1.7.12, pinned to the release commit.

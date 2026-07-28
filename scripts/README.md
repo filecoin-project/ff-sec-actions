@@ -30,3 +30,9 @@ checkout without `persist-credentials: false`. Its public CLI accepts optional
 workflow paths for focused checks; the no-argument form validates the complete
 repository. Run its negative fixture suite with
 `bash scripts/test-workflow-security.sh`.
+
+`check-baseline-no-exec.sh` protects the manifest-inspection seam for
+dependency, license, and SBOM evaluation. It rejects shell steps,
+package-manager inputs, and actions outside the reviewed allowlist in
+[`security/baseline-policy.json`](../security/baseline-policy.json). Run the
+malicious lifecycle-hook fixture with `bash scripts/test-baseline-no-exec.sh`.
