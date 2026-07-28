@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "workflows": {
+    ".github/workflows/ai-code-review.yml": {
+      "review": {
+        "permissions": {
+          "contents": "read",
+          "pull-requests": "write"
+        }
+      }
+    },
+    ".github/workflows/docs.yml": {
+      "documentation-contract": {
+        "permissions": {
+          "contents": "read"
+        }
+      }
+    },
+    ".github/workflows/manual-ai-code-review.yml": {
+      "review": {
+        "permissions": {
+          "contents": "read",
+          "pull-requests": "write"
+        }
+      }
+    },
+    ".github/workflows/sec-codeql.yml": {
+      "codeql": {
+        "permissions": {
+          "contents": "read",
+          "security-events": "write"
+        }
+      }
+    },
+    ".github/workflows/sec-dependencies.yml": {
+      "dependencies": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read",
+          "security-events": "write"
+        }
+      }
+    },
+    ".github/workflows/sec-dependency-review.yml": {
+      "dependency-review": {
+        "permissions": {
+          "contents": "read",
+          "pull-requests": "write"
+        }
+      }
+    },
+    ".github/workflows/sec-iac.yml": {
+      "iac": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read",
+          "security-events": "write"
+        }
+      }
+    },
+    ".github/workflows/sec-licenses.yml": {
+      "licenses": {
+        "permissions": {
+          "contents": "read"
+        }
+      }
+    },
+    ".github/workflows/sec-sbom.yml": {
+      "sbom": {
+        "permissions": {
+          "contents": "read"
+        }
+      }
+    },
+    ".github/workflows/sec-scorecard.yml": {
+      "scorecard": {
+        "permissions": {
+          "contents": "read",
+          "id-token": "write",
+          "security-events": "write"
+        }
+      }
+    },
+    ".github/workflows/sec-secrets.yml": {
+      "secrets": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read",
+          "security-events": "write"
+        }
+      }
+    },
+    ".github/workflows/sec-semgrep.yml": {
+      "semgrep": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read",
+          "security-events": "write"
+        }
+      }
+    },
+    ".github/workflows/sec-slither.yml": {
+      "slither": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read",
+          "security-events": "write"
+        }
+      }
+    },
+    ".github/workflows/security-pipeline.yml": {
+      "codeql": {
+        "permissions": {
+          "contents": "read",
+          "security-events": "write"
+        }
+      },
+      "dependencies": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read",
+          "security-events": "write"
+        }
+      },
+      "dependency-review": {
+        "permissions": {
+          "contents": "read",
+          "pull-requests": "write"
+        }
+      },
+      "iac": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read",
+          "security-events": "write"
+        }
+      },
+      "licenses": {
+        "permissions": {
+          "contents": "read"
+        }
+      },
+      "sbom": {
+        "permissions": {
+          "contents": "read"
+        }
+      },
+      "scorecard": {
+        "permissions": {
+          "contents": "read",
+          "id-token": "write",
+          "security-events": "write"
+        }
+      },
+      "secrets-scan": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read",
+          "security-events": "write"
+        }
+      },
+      "semgrep": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read",
+          "security-events": "write"
+        }
+      },
+      "slither": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read",
+          "security-events": "write"
+        }
+      }
+    },
+    "examples/consumer-ai-code-review.yml": {
+      "review": {
+        "permissions": {
+          "contents": "read",
+          "pull-requests": "write"
+        }
+      }
+    },
+    "examples/consumer-manual-ai-code-review.yml": {
+      "review": {
+        "permissions": {
+          "contents": "read",
+          "pull-requests": "write"
+        }
+      }
+    },
+    "examples/consumer-security-pipeline.yml": {
+      "security": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read",
+          "pull-requests": "write",
+          "security-events": "write"
+        }
+      }
+    }
+  }
+}

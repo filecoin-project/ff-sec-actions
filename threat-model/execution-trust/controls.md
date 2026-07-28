@@ -131,9 +131,9 @@ weaken this tier; they create a new Privileged Analysis design.
 | Threat | Disposition | Control or rationale |
 |---|---|---|
 | T1 | Follow-on | G0-03 implements SR1 no-install behavior; high priority, medium effort |
-| T2 | Follow-on | G0-02/G0-03 split build from publishing under SR1; high priority, medium effort |
-| T3 | Follow-on | G0-02 disables persisted credentials under SR1; high priority, low effort |
-| T4 | Follow-on | G0-02 adds explicit least privilege under SR1; high priority, low effort |
+| T2 | Follow-on | G0-03/G0-11 enforce build isolation and publication separation under SR1; high priority, medium effort |
+| T3 | Mitigated | G0-02 disables persisted credentials and tests negative checkout fixtures under SR1 |
+| T4 | Mitigated | G0-02 enforces an exact per-job authority policy and rejects missing/excessive permissions |
 | T5 | Follow-on | G0-09 implements SR2 release graph; critical priority, medium effort |
 | T6 | Follow-on | G0-09 adds SR2 container digests; high priority, low effort |
 | T7 | Follow-on | G0-10/PRIV-01 implement and test SR3; critical priority, medium effort |
@@ -143,13 +143,14 @@ weaken this tier; they create a new Privileged Analysis design.
 | T11 | Follow-on | SR4 private-source egress decision and PRIV-03; high priority, high effort |
 | T12 | Follow-on | PRIV-02/PRIV-03 implement SR4 validation; medium priority, high effort |
 | T13 | Follow-on | G0-05/G0-10 implement SR3/SR5 status; high priority, medium effort |
-| T14 | Follow-on | G0-02/profile work implements SR1/SR2 submodule policy; high priority, medium effort |
+| T14 | Follow-on | G0-10/profile work implements SR1/SR2 submodule policy; high priority, medium effort |
 | T15 | Follow-on | G0 contract and profile checks enforce SR6; critical priority, low effort |
 
 ## Accepted Risks Register
 
-No execution-trust threats are accepted at G0-01. Current `legacy-mixed`
-behavior is documented pre-v1 debt and cannot pass a release gate.
+No execution-trust threats are accepted. T3 and T4 are mitigated by G0-02;
+current `legacy-mixed` behavior remains pre-v1 debt and cannot pass a release
+gate.
 
 ## Follow-On Controls
 

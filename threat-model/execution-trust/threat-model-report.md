@@ -11,9 +11,9 @@ publication in `ff-sec-actions`.
 The target architecture is viable only if file inspection, Consumer Project
 code execution, external analysis, and evidence publication are separate trust
 tiers. The current pre-v1 repository does not yet meet that boundary: several
-workflows persist checkout credentials, execute install/build behavior beside
-publication authority, depend on mutable references, or can represent missing
-evaluation as success.
+workflows execute install/build behavior beside publication authority, depend
+on mutable references, or can represent missing evaluation as success. G0-02
+now enforces exact per-job authority and non-persisted checkout credentials.
 
 G0-01 establishes six named classifications and a CI-checked inventory for all
 18 workflow, example, and action surfaces. Four are consumer release tiers:
@@ -22,9 +22,9 @@ G0-01 establishes six named classifications and a CI-checked inventory for all
 inventory-only: `legacy-mixed` and `control-repository-ci`.
 
 This work identifies 15 threats: 3 critical, 11 high, and 1 medium. None are
-accepted or claimed mitigated by classification alone. The validation matrix
-currently has 1 passing inventory test, 3 known failures, and 12 untested
-security tests. Consequently, this repository remains pre-v1 and must not
+accepted; T3 and T4 are now mitigated. The validation matrix currently has 3
+passing tests, 2 known failures, and 12 untested security tests. Consequently,
+this repository remains pre-v1 and must not
 claim that its current umbrella is a safe ecosystem baseline.
 
 ## Q1: What Are We Building?
@@ -110,19 +110,18 @@ are preserved in [`threats.md`](threats.md).
 
 ## Q3: What Are We Doing About It?
 
-| Requirement | Required control | Threats | G0-01 disposition |
+| Requirement | Required control | Threats | Current disposition |
 |---|---|---|---|
-| SR1 — separate inspection, execution, publication, and external analysis | One named tier per evaluation; baseline read-only/no execution; hostile builds isolated; publishers never process untrusted content | T1-T4, T8, T14 | Inventory implemented; behavior remediation follows in G0-02, G0-03, and G0-06 |
+| SR1 — separate inspection, execution, publication, and external analysis | One named tier per evaluation; baseline read-only/no execution; hostile builds isolated; publishers never process untrusted content | T1-T4, T8, T14 | Inventory plus G0-02 authority/checkout controls implemented; execution remediation follows in G0-03 and G0-06 |
 | SR2 — immutable complete supply chain | Full-SHA action/workflow graph, container digests, constrained submodule/tool provenance, recursive release test | T5, T6, T14 | Follow-on G0-09 |
 | SR3 — fork and low-trust event isolation | Secretless `pull_request` baseline, no privileged fork checkout, hostile shared-state handling, explicit skipped/incomplete status | T7, T9, T13 | Follow-on G0-10 and PRIV-01 |
 | SR4 — bounded secrets and external transfer | Secretless baseline; named provider, data scope, retention and failure policy; no-checkout AI; private-source egress gate | T8, T11, T12 | Follow-on G0-06, PRIV-02, and PRIV-03 |
 | SR5 — completion/evidence separate from Merge Gate | Four-state completion, schema/provenance validation, one consumer-policy aggregator, publisher validation | T9, T10, T13 | Follow-on G0-04, G0-05, EVAL-01, and EVAL-03 |
 | SR6 — ephemeral runner isolation | GitHub-hosted runner contract, no durable credentials, separate review for alternative runner platforms | T15 | Contract defined; enforcement follows in G0 workflow checks |
 
-No threat is accepted. All 15 are deliberately marked **follow-on** because
-G0-01 defines and tests the classification boundary but does not repair the
-current implementations. `legacy-mixed` is non-releasable debt, not an
-exception mechanism.
+No threat is accepted. T3 and T4 are mitigated; the other 13 have explicit
+follow-on owners. `legacy-mixed` is non-releasable debt, not an exception
+mechanism.
 
 Residual risks remain even after the controls: parsers can have vulnerabilities,
 immutably pinned upstream releases can already be compromised, provider-approved
@@ -137,25 +136,28 @@ effectiveness remain necessary.
 
 | Area | Tests | Pass | Fail | Untested |
 |---|---:|---:|---:|---:|
-| SR1 tier separation | 4 | 1 | 1 | 2 |
+| SR1 tier separation | 5 | 3 | 0 | 2 |
 | SR2 supply-chain immutability | 3 | 0 | 2 | 1 |
 | SR3 fork/shared-state isolation | 3 | 0 | 0 | 3 |
 | SR4 secrets/external transfer | 3 | 0 | 0 | 3 |
 | SR5 evidence/completion | 2 | 0 | 0 | 2 |
 | SR6 runner isolation | 1 | 0 | 0 | 1 |
-| **Total** | **16** | **1** | **3** | **12** |
+| **Total** | **17** | **3** | **2** | **12** |
 
-The passing test is the executable classification contract:
+The passing contracts are:
 
 ```bash
 bash scripts/check-execution-trust.sh
+bash scripts/check-workflow-security.sh
+bash scripts/test-workflow-security.sh
 ```
 
 It proves that every workflow, example, and action metadata file is classified
 and that observed checkout, credential, permission, secret, execution, mutable
-reference, container, OIDC, cache, and runner behavior agrees with source. The three current
-failures are persisted checkout credentials, mutable references in the release
-graph, and a container tag without a digest. The 12 untested cases become
+reference, container, OIDC, cache, and runner behavior agrees with source. The
+workflow policy additionally proves exact job authority and safe checkout. The
+two current failures are mutable references in the release graph and a
+container tag without a digest. The 12 untested cases become
 adversarial fixtures in their mapped roadmap tasks.
 
 See [`validation.md`](validation.md) for every positive and negative test and
@@ -174,8 +176,7 @@ control design and threat-disposition matrix.
 
 ### Priority Remediation Order
 
-1. **G0-02/G0-03:** remove persisted credentials and implicit/excessive
-   authority; eliminate lifecycle execution from baseline inspection.
+1. **G0-03:** eliminate lifecycle execution from baseline inspection.
 2. **G0-04/G0-05/G0-06:** make findings, operational failure, and missing
    secrets honest; provide secretless fork-capable secret detection.
 3. **G0-07/G0-09:** evaluate consumer workflow security and make one pin cover
@@ -189,9 +190,9 @@ control design and threat-disposition matrix.
 
 | Disposition | Count |
 |---|---:|
-| Mitigated | 0 |
+| Mitigated | 2 |
 | Accepted | 0 |
-| Follow-on/deferred with owner task | 15 |
+| Follow-on/deferred with owner task | 13 |
 | Unaddressed | 0 |
 
 The posture is intentionally conservative: this report provides a complete

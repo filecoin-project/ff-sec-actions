@@ -38,7 +38,7 @@ build configuration inside a job that also has publication authority.
 
 **Impact:** HIGH — repository write-channel abuse or false security evidence.
 
-**Note:** Fixable by the privileged-build tier; tracked by G0-02/G0-03.
+**Note:** Fixable by the privileged-build tier; tracked by G0-03/G0-11.
 
 ### T3: Persisted Checkout Credential Is Reused By Hostile Code
 
@@ -52,11 +52,12 @@ execution discovers that credential and invokes GitHub APIs allowed by the job.
 2. A package hook or build step reads `.git/config` or invokes authenticated git.
 3. The attacker uses available token permissions before the job ends.
 
-**Likelihood:** HIGH — most scanner checkouts currently persist credentials.
+**Likelihood:** LOW — G0-02 now enforces non-persisted checkout credentials;
+the contract prevents regression.
 
 **Impact:** HIGH — blast radius equals the job's effective token permissions.
 
-**Note:** Fixable; tracked by G0-02.
+**Note:** Mitigated by G0-02 and its negative workflow-policy fixtures.
 
 ### T4: Broad Or Inherited Authority Reaches The Wrong Evaluation
 
@@ -70,11 +71,13 @@ omits explicit permissions or combines inspection/build with writes or OIDC.
 2. Call a nested workflow without a restrictive job permission declaration.
 3. Compromised tool code uses authority unrelated to its evaluation purpose.
 
-**Likelihood:** HIGH — the license workflow lacks explicit permissions and mixed jobs exist.
+**Likelihood:** LOW for implicit/broad inheritance — G0-02 now checks every
+job against an exact authority policy. Mixed execution and publication remains
+separately tracked by T2.
 
 **Impact:** HIGH — comment/SARIF manipulation or broader repository impact if consumer settings expand the cap.
 
-**Note:** Fixable; tracked by G0-02.
+**Note:** Mitigated by G0-02 for missing or excessive job authority.
 
 ### T8: Secret-Bearing Scanner Is Exploited By Malicious Input
 
@@ -110,7 +113,7 @@ outside the reviewed repository and Slither/Foundry consumes it.
 
 **Impact:** HIGH — hidden supply-chain content crosses into project execution.
 
-**Note:** Fixable; tracked by G0-02 and release/profile work.
+**Note:** Fixable; tracked by G0-10 and release/profile work.
 
 ## 2. Workflow And Tool Supply Chain
 

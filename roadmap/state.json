@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-28T20:57:58Z",
+  "updated_at": "2026-07-28T23:45:51Z",
   "current_task_id": null,
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
@@ -137,7 +137,7 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
+      "status": "done",
       "title": "Enforce least privilege and safe checkout",
       "objective": "Give each workflow only its documented permissions and prevent checkout credentials from persisting.",
       "blocked_by": [
@@ -155,10 +155,13 @@
         "A workflow-security test fails on implicit permissions, persisted credentials, or excessive authority."
       ],
       "artifacts": [
-        ".github/workflows/"
+        ".github/workflows/",
+        "security/workflow-policy.json",
+        "scripts/check-workflow-security.sh",
+        "scripts/test-workflow-security.sh"
       ],
-      "started_at": null,
-      "completed_at": null
+      "started_at": "2026-07-28T23:33:31Z",
+      "completed_at": "2026-07-28T23:45:51Z"
     },
     {
       "id": "G0-03",

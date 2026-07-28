@@ -44,9 +44,12 @@ required_pages=(
   "roadmap/README.md"
   "roadmap/state.json"
   "security/execution-trust.json"
+  "security/workflow-policy.json"
   "scripts/check-execution-trust.sh"
+  "scripts/check-workflow-security.sh"
   "scripts/roadmap.sh"
   "scripts/test-roadmap.sh"
+  "scripts/test-workflow-security.sh"
   "threat-model/execution-trust/threat-model-report.md"
 )
 
@@ -63,6 +66,8 @@ fi
 
 if [ -f ".github/workflows/docs.yml" ]; then
   require_text ".github/workflows/docs.yml" "bash scripts/check-docs.sh"
+  require_text ".github/workflows/docs.yml" "bash scripts/check-workflow-security.sh"
+  require_text ".github/workflows/docs.yml" "bash scripts/test-workflow-security.sh"
   require_text ".github/workflows/docs.yml" "github.com/rhysd/actionlint/cmd/actionlint@914e7df21a07ef503a81201c76d2b11c789d3fca"
   require_text ".github/workflows/docs.yml" "contents: read"
   require_text ".github/workflows/docs.yml" "persist-credentials: false"
@@ -135,6 +140,11 @@ fi
 if [ -f "security/execution-trust.json" ] && [ -f "scripts/check-execution-trust.sh" ]; then
   bash scripts/check-execution-trust.sh \
     || report_error "execution-trust classification is invalid or stale"
+fi
+
+if [ -f "security/workflow-policy.json" ] && [ -f "scripts/check-workflow-security.sh" ]; then
+  bash scripts/check-workflow-security.sh \
+    || report_error "workflow authority or checkout policy is invalid or stale"
 fi
 
 if [ "$failures" -gt 0 ]; then

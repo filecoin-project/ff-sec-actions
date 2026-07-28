@@ -17,6 +17,8 @@ on:
       - scripts/roadmap.sh
       - scripts/test-roadmap.sh
       - scripts/check-execution-trust.sh
+      - scripts/check-workflow-security.sh
+      - scripts/test-workflow-security.sh
   push:
     branches: [main]
     paths:
@@ -34,6 +36,8 @@ on:
       - scripts/roadmap.sh
       - scripts/test-roadmap.sh
       - scripts/check-execution-trust.sh
+      - scripts/check-workflow-security.sh
+      - scripts/test-workflow-security.sh
   workflow_dispatch:
 
 permissions:
@@ -43,6 +47,8 @@ jobs:
   documentation-contract:
     name: Documentation Contract
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout documentation and examples
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -57,6 +63,12 @@ jobs:
 
       - name: Validate execution-trust classification
         run: bash scripts/check-execution-trust.sh
+
+      - name: Validate workflow authority and checkout
+        run: bash scripts/check-workflow-security.sh
+
+      - name: Test workflow-security contract
+        run: bash scripts/test-workflow-security.sh
 
       - name: Validate workflow and example syntax
         # actionlint v1.7.12, pinned to the release commit.

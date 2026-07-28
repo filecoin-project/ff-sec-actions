@@ -10,6 +10,8 @@ This is the human-readable execution-trust contract. The machine-readable
 source is [`security/execution-trust.json`](../../security/execution-trust.json),
 and CI compares that inventory with the workflow and action source through
 [`scripts/check-execution-trust.sh`](../../scripts/check-execution-trust.sh).
+Exact per-job authority is separately recorded in
+[`security/workflow-policy.json`](../../security/workflow-policy.json).
 
 > **Pre-v1 warning:** a recorded current tier describes behavior; it does not
 > approve that behavior. Anything classified as `legacy-mixed` is not
@@ -91,17 +93,17 @@ repository configuration as well as this repository's source contract.
 |---|---|---|---|
 | `.github/workflows/ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the mutable action reference; preserve no-checkout/no-execution behavior. |
 | `.github/workflows/docs.yml` | `control-repository-ci` | `control-repository-ci` | Keep repository contracts in its validation job. |
-| `.github/workflows/manual-ai-code-review.yml` | `control-repository-ci` | `control-repository-ci` | Disable persisted credentials, pin checkout, and keep trusted manual scope. |
-| `.github/workflows/sec-codeql.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority and persisted credentials from build; publish separately. |
+| `.github/workflows/manual-ai-code-review.yml` | `control-repository-ci` | `control-repository-ci` | Pin checkout and keep trusted manual scope. |
+| `.github/workflows/sec-codeql.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority from build; publish separately. |
 | `.github/workflows/sec-dependencies.yml` | `legacy-mixed` | `ecosystem-baseline` | Make the baseline lockfile-only and cacheless; move install-dependent work and publishing out. |
-| `.github/workflows/sec-dependency-review.yml` | `legacy-mixed` | `ecosystem-baseline` | Disable persisted credentials and separate baseline evaluation from optional commenting. |
+| `.github/workflows/sec-dependency-review.yml` | `legacy-mixed` | `ecosystem-baseline` | Separate baseline evaluation from optional commenting. |
 | `.github/workflows/sec-iac.yml` | `legacy-mixed` | `ecosystem-baseline` | Inspect read-only without shared cache; move optional SARIF upload to a publisher. |
-| `.github/workflows/sec-licenses.yml` | `legacy-mixed` | `ecosystem-baseline` | Add explicit read permission and inspect manifests/lockfiles without installation or shared cache. |
+| `.github/workflows/sec-licenses.yml` | `legacy-mixed` | `ecosystem-baseline` | Inspect manifests and lockfiles without installation or shared cache. |
 | `.github/workflows/sec-sbom.yml` | `legacy-mixed` | `ecosystem-baseline` | Generate the baseline SBOM without install hooks or shared cache; keep build-enhanced output separate. |
 | `.github/workflows/sec-scorecard.yml` | `legacy-mixed` | `ecosystem-baseline` | Separate read-only evaluation from the named OIDC/security-event publisher. |
 | `.github/workflows/sec-secrets.yml` | `legacy-mixed` | `ecosystem-baseline` | Use a secretless detector and separate evidence publication. |
 | `.github/workflows/sec-semgrep.yml` | `legacy-mixed` | `ecosystem-baseline` | Pin the image by digest, inspect read-only, and publish separately. |
-| `.github/workflows/sec-slither.yml` | `legacy-mixed` | `privileged-build-analysis` | Build with no secrets/writes/OIDC/persisted credentials; constrain submodules and publish separately. |
+| `.github/workflows/sec-slither.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority from the build, constrain submodules, and publish separately. |
 | `.github/workflows/security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Replace the mixed umbrella with a strict baseline and separate opt-in privileged jobs. |
 | `examples/consumer-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |
 | `examples/consumer-manual-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |
@@ -113,10 +115,12 @@ live in the machine-readable inventory so automation can detect drift.
 
 ## Programmatic Use
 
-Run the contract locally:
+Run the contracts locally:
 
 ```bash
 bash scripts/check-execution-trust.sh
+bash scripts/check-workflow-security.sh
+bash scripts/test-workflow-security.sh
 ```
 
 The command fails when a workflow, example, or action is unclassified; a
@@ -130,6 +134,17 @@ Observed cache state covers explicit cache configuration and documented
 tool-internal `actions/cache` use visible in the surface source. It is not yet a
 transitive runtime attestation; G0-09 and G0-10 add release-graph and adversarial
 shared-state verification.
+
+The workflow-security command rejects a new or missing workflow/job, implicit
+permissions, authority that differs from the reviewed policy, or checkout
+without `persist-credentials: false`. Write authority is limited to these
+purposes:
+
+| Authority | Allowed purpose |
+|---|---|
+| `pull-requests: write` | Optional AI or dependency-review pull-request publication |
+| `security-events: write` | SARIF publication by the named scanner path; inspection/publication separation remains follow-on work |
+| `id-token: write` | OpenSSF Scorecard publication only, outside pull-request execution |
 
 When adding or changing a surface:
 

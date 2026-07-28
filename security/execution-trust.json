@@ -126,7 +126,7 @@
       "target_tier": "control-repository-ci",
       "observed": {
         "checkout": true,
-        "persists_checkout_credentials": true,
+        "persists_checkout_credentials": false,
         "explicit_permissions": true,
         "secret_context": true,
         "write_permissions": ["pull-requests"],
@@ -138,7 +138,7 @@
         "self_hosted_runner": false
       },
       "network": ["github-api", "github-action-download", "anthropic-api"],
-      "migration": ["Pin checkout and disable persisted credentials.", "Keep this workflow manual and restricted to trusted Control Repository refs."]
+      "migration": ["Pin the remaining mutable checkout reference.", "Keep this workflow manual and restricted to trusted Control Repository refs."]
     },
     {
       "path": ".github/workflows/sec-codeql.yml",
@@ -147,7 +147,7 @@
       "target_tier": "privileged-build-analysis",
       "observed": {
         "checkout": true,
-        "persists_checkout_credentials": true,
+        "persists_checkout_credentials": false,
         "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": ["security-events"],
@@ -159,7 +159,7 @@
         "self_hosted_runner": false
       },
       "network": ["github-action-download", "language-package-registries", "github-code-scanning"],
-      "migration": ["Remove write authority and persisted credentials from the build job.", "Publish its result from a separate privileged-publisher job."]
+      "migration": ["Remove write authority from the build job.", "Publish its result from a separate privileged-publisher job."]
     },
     {
       "path": ".github/workflows/sec-dependencies.yml",
@@ -168,7 +168,7 @@
       "target_tier": "ecosystem-baseline",
       "observed": {
         "checkout": true,
-        "persists_checkout_credentials": true,
+        "persists_checkout_credentials": false,
         "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": ["security-events"],
@@ -189,7 +189,7 @@
       "target_tier": "ecosystem-baseline",
       "observed": {
         "checkout": true,
-        "persists_checkout_credentials": true,
+        "persists_checkout_credentials": false,
         "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": ["pull-requests"],
@@ -201,7 +201,7 @@
         "self_hosted_runner": false
       },
       "network": ["github-api", "github-action-download"],
-      "migration": ["Disable persisted checkout credentials.", "Make PR commenting optional and keep dependency evaluation separate from publication."]
+      "migration": ["Make PR commenting optional and keep dependency evaluation separate from publication."]
     },
     {
       "path": ".github/workflows/sec-iac.yml",
@@ -210,7 +210,7 @@
       "target_tier": "ecosystem-baseline",
       "observed": {
         "checkout": true,
-        "persists_checkout_credentials": true,
+        "persists_checkout_credentials": false,
         "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": ["security-events"],
@@ -222,7 +222,7 @@
         "self_hosted_runner": false
       },
       "network": ["github-action-download", "vulnerability-and-policy-database", "github-code-scanning"],
-      "migration": ["Run inspection with contents:read only and no persisted credentials.", "Split optional SARIF upload into a privileged-publisher job."]
+      "migration": ["Run inspection with contents:read only and no shared cache.", "Split optional SARIF upload into a privileged-publisher job."]
     },
     {
       "path": ".github/workflows/sec-licenses.yml",
@@ -231,8 +231,8 @@
       "target_tier": "ecosystem-baseline",
       "observed": {
         "checkout": true,
-        "persists_checkout_credentials": true,
-        "explicit_permissions": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": [],
         "execution_markers": ["package-install"],
@@ -243,7 +243,7 @@
         "self_hosted_runner": false
       },
       "network": ["github-action-download", "node-package-registry", "license-database"],
-      "migration": ["Declare contents:read explicitly and disable persisted credentials.", "Use manifest and lockfile evidence without dependency installation."]
+      "migration": ["Use manifest and lockfile evidence without dependency installation or shared cache."]
     },
     {
       "path": ".github/workflows/sec-sbom.yml",
@@ -252,7 +252,7 @@
       "target_tier": "ecosystem-baseline",
       "observed": {
         "checkout": true,
-        "persists_checkout_credentials": true,
+        "persists_checkout_credentials": false,
         "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": [],
@@ -294,7 +294,7 @@
       "target_tier": "ecosystem-baseline",
       "observed": {
         "checkout": true,
-        "persists_checkout_credentials": true,
+        "persists_checkout_credentials": false,
         "explicit_permissions": true,
         "secret_context": true,
         "write_permissions": ["security-events"],
@@ -315,7 +315,7 @@
       "target_tier": "ecosystem-baseline",
       "observed": {
         "checkout": true,
-        "persists_checkout_credentials": true,
+        "persists_checkout_credentials": false,
         "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": ["security-events"],
@@ -327,7 +327,7 @@
         "self_hosted_runner": false
       },
       "network": ["container-registry", "github-action-download", "semgrep-rule-registry", "github-code-scanning"],
-      "migration": ["Pin the scanner image by digest, use contents:read only, and disable persisted credentials.", "Split optional SARIF publication from inspection."]
+      "migration": ["Pin the scanner image by digest and use contents:read only.", "Split optional SARIF publication from inspection."]
     },
     {
       "path": ".github/workflows/sec-slither.yml",
@@ -336,7 +336,7 @@
       "target_tier": "privileged-build-analysis",
       "observed": {
         "checkout": true,
-        "persists_checkout_credentials": true,
+        "persists_checkout_credentials": false,
         "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": ["security-events"],
@@ -348,7 +348,7 @@
         "self_hosted_runner": false
       },
       "network": ["github-action-download", "submodule-origins", "foundry-and-solc-downloads", "github-code-scanning"],
-      "migration": ["Run compilation and analysis with no secrets, writes, OIDC, or persisted credentials.", "Treat recursive submodules and analyzer output as untrusted; publish separately."]
+      "migration": ["Remove write authority from compilation and analysis.", "Treat recursive submodules and analyzer output as untrusted; publish separately."]
     },
     {
       "path": ".github/workflows/security-pipeline.yml",
@@ -358,13 +358,13 @@
       "observed": {
         "checkout": false,
         "persists_checkout_credentials": false,
-        "explicit_permissions": false,
+        "explicit_permissions": true,
         "secret_context": true,
-        "write_permissions": [],
+        "write_permissions": ["id-token", "pull-requests", "security-events"],
         "execution_markers": [],
         "mutable_references": true,
         "mutable_container": false,
-        "oidc": false,
+        "oidc": true,
         "cache": false,
         "self_hosted_runner": false
       },

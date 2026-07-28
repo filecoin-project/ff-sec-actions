@@ -20,3 +20,13 @@ implementation queue in [`roadmap/state.json`](../roadmap/state.json). Run
 `bash scripts/roadmap.sh help` for its command contract. Mutations require
 `ROADMAP_ALLOW_WRITE=true`; reads and validation are the default. The isolated
 contract suite is `bash scripts/test-roadmap.sh`.
+
+## Workflow Security
+
+`check-workflow-security.sh` compares every maintained workflow and consumer
+example with [`security/workflow-policy.json`](../security/workflow-policy.json).
+It rejects unlisted jobs, implicit or policy-incompatible permissions, and any
+checkout without `persist-credentials: false`. Its public CLI accepts optional
+workflow paths for focused checks; the no-argument form validates the complete
+repository. Run its negative fixture suite with
+`bash scripts/test-workflow-security.sh`.

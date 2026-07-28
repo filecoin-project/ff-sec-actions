@@ -115,18 +115,29 @@ on:
 jobs:
   semgrep:
     if: inputs.enable-semgrep
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@main
     with:
       community-configs: ${{ inputs.semgrep-community-configs }}
 
   codeql:
     if: inputs.enable-codeql
+    permissions:
+      contents: read
+      security-events: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-codeql.yml@main
     with:
       languages: ${{ inputs.codeql-languages }}
 
   dependencies:
     if: inputs.enable-dependencies
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@main
     with:
       package-manager: ${{ inputs.package-manager }}
@@ -135,18 +146,28 @@ jobs:
 
   secrets-scan:
     if: inputs.enable-secrets
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@main
     secrets:
       gitleaks-license: ${{ secrets.gitleaks-license }}
 
   iac:
     if: inputs.enable-iac
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@main
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
 
   licenses:
     if: inputs.enable-licenses
+    permissions:
+      contents: read
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-licenses.yml@main
     with:
       package-manager: ${{ inputs.package-manager }}
@@ -155,6 +176,9 @@ jobs:
 
   dependency-review:
     if: inputs.enable-dependency-review && github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependency-review.yml@main
     with:
       fail-on-severity: ${{ inputs.dependency-review-fail-on-severity }}
@@ -162,6 +186,8 @@ jobs:
 
   sbom:
     if: inputs.enable-sbom && github.event_name != 'pull_request'
+    permissions:
+      contents: read
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-sbom.yml@main
     with:
       package-manager: ${{ inputs.package-manager }}
@@ -169,10 +195,18 @@ jobs:
 
   scorecard:
     if: inputs.enable-scorecard && github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-scorecard.yml@main
 
   slither:
     if: inputs.enable-slither
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-slither.yml@main
     with:
       target: ${{ inputs.slither-target }}
