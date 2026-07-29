@@ -11,24 +11,26 @@ jobs:
   actions-security:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@35cf1a2133cbff03d9cc3039b532f0f4737af9ae
 
   dependencies:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@35cf1a2133cbff03d9cc3039b532f0f4737af9ae
 
-  licenses:
+  infrastructure:
     permissions:
+      actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-licenses.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@35cf1a2133cbff03d9cc3039b532f0f4737af9ae
 
   secrets:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@35cf1a2133cbff03d9cc3039b532f0f4737af9ae
 
-  sbom:
+  static-analysis:
     permissions:
+      actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-sbom.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@35cf1a2133cbff03d9cc3039b532f0f4737af9ae

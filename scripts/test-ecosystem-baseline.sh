@@ -35,11 +35,17 @@ done
 
 if [ "${BASELINE_RUN_DETECTION:-false}" = true ]; then
   command -v semgrep >/dev/null 2>&1 || fail "Semgrep is required for detection mode"
-  result="$(mktemp "${TMPDIR:-/tmp}/ff-sec-baseline-semgrep.XXXXXX.json")"
-  trap 'rm -f "$result"' EXIT
-  semgrep scan --metrics=off --disable-version-check --config "$rules" --json --output "$result" "$fixture"
+  detection_root="$(mktemp -d "${TMPDIR:-/tmp}/ff-sec-baseline-detection.XXXXXX")"
+  result="$detection_root/result.json"
+  trap 'rm -rf "$detection_root"' EXIT
+  mkdir -p "$detection_root/rules" "$detection_root/fixture"
+  cp "$rules" "$detection_root/rules/ecosystem-baseline.yml"
+  cp -R "$fixture/." "$detection_root/fixture/"
+  semgrep scan --metrics=off --disable-version-check \
+    --config "$detection_root/rules/ecosystem-baseline.yml" \
+    --json --output "$result" "$detection_root/fixture"
   for expected in "${expected_rules[@]}"; do
-    jq -e --arg id "$expected" 'any(.results[]; .check_id == $id)' "$result" >/dev/null \
+    jq -e --arg id "$expected" 'any(.results[]; .check_id | endswith($id))' "$result" >/dev/null \
       || fail "Semgrep did not detect planted fixture: $expected"
   done
 fi

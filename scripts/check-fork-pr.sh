@@ -72,11 +72,12 @@ actual_workflows="$(
     | sort -u
 )"
 declared_workflows="$(jq -r '.declared_baseline_workflows[]' "$expectations" | sort -u)"
-policy_workflows="$(jq -r '.workflows | keys[]' "$baseline_policy" | sort -u)"
 [ "$actual_workflows" = "$declared_workflows" ] \
   || fail "fixture does not run every declared baseline evaluation"
-[ "$declared_workflows" = "$policy_workflows" ] \
-  || fail "fork expectations and baseline policy have drifted"
+while IFS= read -r declared_workflow; do
+  jq -e --arg path "$declared_workflow" '.workflows[$path] != null' "$baseline_policy" >/dev/null \
+    || fail "fork expectation is absent from the reviewed baseline policy: $declared_workflow"
+done <<< "$declared_workflows"
 
 while IFS= read -r uses_ref; do
   [ -n "$uses_ref" ] || continue

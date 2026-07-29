@@ -15,9 +15,9 @@ calls every workflow declared in the non-executing baseline policy:
 
 - GitHub Actions definition analysis;
 - manifest and lockfile dependency analysis;
-- manifest and lockfile license analysis;
 - PR-range secret detection;
-- source-manifest SBOM generation.
+- infrastructure configuration analysis;
+- conservative multi-language static analysis.
 
 The caller and each called job cap authority at `contents: read`. No secrets are
 forwarded. A called workflow may declare a broader permission for non-fork

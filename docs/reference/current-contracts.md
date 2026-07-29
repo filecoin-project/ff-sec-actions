@@ -85,6 +85,13 @@ proves normalized artifact handoff, one Evidence Bundle, a readable summary,
 and the stable `Profile Conclusion` check for dependency evaluation. The legacy
 umbrella has not yet migrated all scanners to that aggregate contract.
 
+The [Ecosystem Baseline](../../.github/workflows/ecosystem-baseline.yml) is the
+consumer-testable normalized profile. It composes workflow security,
+dependencies, secrets, IaC, and repository-owned static rules, then emits one
+Evidence Bundle and `Profile Conclusion`. Its inputs are
+`dependency-blocking`, `iac-blocking`, `static-analysis-blocking`,
+`require-complete`, and `skip-dirs`.
+
 ### Scanner Toggles
 
 | Input | Default | Event behavior |

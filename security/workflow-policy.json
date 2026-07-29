@@ -216,6 +216,14 @@
         }
       }
     },
+    "examples/consumer-ecosystem-baseline.yml": {
+      "baseline": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read"
+        }
+      }
+    },
     "examples/consumer-manual-ai-code-review.yml": {
       "review": {
         "permissions": {

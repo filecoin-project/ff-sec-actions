@@ -477,6 +477,27 @@
       "migration": ["Replace the reviewed pilot SHA only with a reviewed immutable release SHA."]
     },
     {
+      "path": "examples/consumer-ecosystem-baseline.yml",
+      "scope": "example",
+      "current_tier": "ecosystem-baseline",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["delegated-to-ecosystem-baseline"],
+      "migration": ["Advance the reviewed profile commit only after release qualification and consumer pilot evidence."]
+    },
+    {
       "path": "examples/consumer-manual-ai-code-review.yml",
       "scope": "example",
       "current_tier": "privileged-external-analysis",

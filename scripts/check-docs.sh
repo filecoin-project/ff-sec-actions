@@ -45,6 +45,7 @@ required_pages=(
   "docs/README.md"
   "docs/consumers/quickstart.md"
   "docs/consumers/ecosystem-baseline.md"
+  "examples/consumer-ecosystem-baseline.yml"
   "docs/consumers/choose-a-profile.md"
   "docs/consumers/understand-results.md"
   "docs/consumers/permissions-and-secrets.md"

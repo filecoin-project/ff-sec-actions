@@ -4,9 +4,10 @@
 
 **Outcome:** a documented profile choice with known coverage gaps.
 
-Security Profiles are part of the target architecture and are not yet released.
-Until the `profile-taxonomy` decision is resolved, use this table only to plan a
-pilot.
+The secretless [Ecosystem Baseline](ecosystem-baseline.md) is the first
+consumer-testable pre-v1 profile and is the default pilot starting point for
+every project class below. Specialized profiles and Filecoin-specific invariant
+packs remain planned.
 
 | Project signals | Candidate profile | Current useful evaluations | Important gap |
 |---|---|---|---|
@@ -15,7 +16,7 @@ pilot.
 | Solidity contracts targeting FEVM | Solidity/FEVM | Workflow security, Slither, dependency, secret scanning | Slither is opt-in and build-dependent |
 | TypeScript/JavaScript service or tooling | Service application | Workflow security, Semgrep, CodeQL, dependency review, IaC | Current defaults are closest to this class |
 | Terraform, Kubernetes, deployment repositories | Infrastructure | Workflow security, Trivy IaC, secrets, Scorecard | Runtime and cloud-policy coverage is project-specific |
-| Several of the above in one repository | Composed monorepo | Run relevant evaluations by path | Profile composition is not yet implemented |
+| Several of the above in one repository | Ecosystem Baseline plus planned composed profiles | Baseline scans recursively across supported source, manifests, lockfiles, workflows, and IaC | Path-aware specialized profile composition is not yet implemented |
 
 ## Selection Rules
 

@@ -28,8 +28,7 @@ limitations in the individual Evaluation Results and aggregate bundle.
 
 ## Start Advisory
 
-Start from the [reusable workflow contract](../../.github/workflows/ecosystem-baseline.yml);
-the immutable consumer example is published from the resulting profile commit.
+Copy the [immutable consumer example](../../examples/consumer-ecosystem-baseline.yml).
 Keep `require-complete: true`; it prevents a missing or broken scanner from
 looking clean. Leave finding gates advisory for the first runs, triage noise,
 then enable the relevant `*-blocking` input.

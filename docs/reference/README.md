@@ -56,6 +56,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 
 ## Consumer Examples
 
+- [Ecosystem Baseline](../../examples/consumer-ecosystem-baseline.yml)
 - [AI review](../../examples/consumer-ai-code-review.yml)
 - [Manual AI review](../../examples/consumer-manual-ai-code-review.yml)
 - [Security pipeline](../../examples/consumer-security-pipeline.yml)
