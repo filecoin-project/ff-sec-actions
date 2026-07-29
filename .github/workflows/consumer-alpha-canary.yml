@@ -1,21 +1,16 @@
-# Secretless, non-executing Filecoin ecosystem baseline.
-# Copy to .github/workflows/security-baseline.yml in a Consumer Project.
-# Advance the full commit only after reviewing the release diff.
-name: Ecosystem Security Baseline
+name: Consumer Alpha Canary
 
 on:
-  pull_request:
   push:
-    branches: [main]
-  schedule:
-    - cron: '0 2 * * 0'
+    branches:
+      - optimization
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ecosystem-baseline-${{ github.ref }}
+  group: consumer-alpha-canary-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -26,9 +21,8 @@ jobs:
     uses: filecoin-project/ff-sec-actions/.github/workflows/ecosystem-baseline.yml@8d275c7072b078d24a9d5fc4debc1feb613025f2
     with:
       require-complete: true
-      # Start finding gates advisory; enable after reviewing initial results.
       actions-security-blocking: false
       dependency-blocking: false
       iac-blocking: false
       static-analysis-blocking: false
-      skip-dirs: node_modules,vendor,target,dist
+      skip-dirs: node_modules,vendor,target,dist,test/fixtures

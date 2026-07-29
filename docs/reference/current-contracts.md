@@ -139,9 +139,10 @@ the [Trivy Action inputs](https://github.com/aquasecurity/trivy-action#inputs).
 Slither forwards its documented `fail-on` threshold; see the
 [Slither Action fail behavior](https://github.com/crytic/slither-action#action-fail-behavior).
 
-Current umbrella limitations:
+Current full-suite umbrella limitations:
 
-- the parent workflow does not aggregate one Evaluation Result;
+- the legacy full-suite parent does not aggregate one Evidence Bundle; use the
+  Ecosystem Baseline when one authoritative `Profile Conclusion` is required;
 - dependency, license, and SBOM evidence is manifest/lockfile based and can be
   incomplete when packages appear only after installation or a build;
 - callers must currently grant the cap required by all enabled nested jobs.
@@ -150,7 +151,7 @@ Current umbrella limitations:
 
 | Workflow | Primary result | Current gate behavior |
 |---|---|---|
-| `sec-actions.yml` | Zizmor source annotations with exact locations and remediation links | Blocks on medium-or-higher auditor-persona findings and parser/tool failure |
+| `sec-actions.yml` | Checksum-pinned offline Zizmor SARIF with exact locations and remediation links | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-semgrep.yml` | Repository-owned custom-rule SARIF artifact | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-codeql.yml` | GitHub code-scanning analysis | CodeQL analysis controls failure |
 | `sec-dependencies.yml` | Manifest/lockfile Trivy SARIF plus v1 Evaluation Result | Generic adapter; configurable finding gate; timeout, malformed output, and tool failure remain distinct |
@@ -167,8 +168,11 @@ index](README.md).
 
 ## Variables And Permissions
 
-`ENABLE_GHAS='true'` currently enables conditional SARIF upload steps. Private
-repository product availability still applies.
+The Ecosystem Baseline never reads `ENABLE_GHAS` and never requests
+`security-events: write`. The privileged full-suite example converts
+`ENABLE_GHAS='true'` into the explicit `publish-sarif` input; private repository
+product availability still applies. Dependency SARIF publication runs in a
+separate job so the inspection job remains read-only.
 
 Possible permissions across the current workflows:
 

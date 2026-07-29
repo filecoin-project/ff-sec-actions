@@ -7,81 +7,102 @@ how to interpret.
 
 ## Before You Start
 
-This repository has no stable v1 release. The example pins a reviewed pre-v1
-commit whose nested workflows, actions, assets, tools, and containers form an
-[immutable release graph](../reference/release-integrity.md). Use this
-quickstart in a sandbox or approved pilot while the evaluation platform and
-later public-release gates are completed.
+This is a consumer-testable alpha, not a stable v1. The example selects one
+reviewed commit whose complete nested execution graph is immutable. Use it in a
+sandbox or approved pilot and keep the full commit pin intact.
 
-You need:
+The Ecosystem Baseline needs:
 
-- permission to add a workflow under `.github/workflows/`;
-- GitHub Actions enabled in the Consumer Project;
-- an `ANTHROPIC_API_KEY` only if you enable AI review;
-- GitHub Code Security availability only if you enable features that require
-  it in a private repository.
+- permission to add `.github/workflows/security-baseline.yml`;
+- GitHub Actions enabled with Linux hosted runners;
+- `contents: read` and `actions: read` for the baseline job;
+- outbound HTTPS access to GitHub releases and the pinned scanner registries;
+- organization policy allowing `filecoin-project/ff-sec-actions`, GitHub-owned
+  actions, `aquasecurity/trivy-action`, and their immutable references.
 
-## 1. Choose The Evaluation
+It needs no repository or organization secret, OIDC, GitHub Code Security
+license, package installation, build command, or write permission. An unrelated
+`ENABLE_GHAS` repository variable does not change the baseline.
 
-| Goal | Starting point | Authority |
-|---|---|---|
-| Run the secretless normalized baseline | [Ecosystem Baseline](ecosystem-baseline.md) | Read-only repository inspection plus run-local artifacts |
-| Run the current scanner suite | [Security pipeline example](../../examples/consumer-security-pipeline.yml) | Repository contents plus explicitly declared result permissions |
-| Review a PR with Filecoin context | [AI review example](../../examples/consumer-ai-code-review.yml) | PR diff read, optional PR comment write, Anthropic API key |
-| Run AI review on demand | [Manual AI example](../../examples/consumer-manual-ai-code-review.yml) | Same as AI review, initiated manually |
+## Install
 
-If you are unsure, consult [Choose a Security Profile](choose-a-profile.md).
-Security Profiles are still being designed; current examples expose individual
-tools rather than a stable profile contract.
+1. Open the [immutable consumer example](../../examples/consumer-ecosystem-baseline.yml).
+2. Copy it unchanged to `.github/workflows/security-baseline.yml` in the
+   Consumer Project.
+3. Commit it on a pilot branch and open a pull request.
+4. Confirm the workflow uses ordinary `pull_request`, not
+   `pull_request_target`.
 
-## 2. Inspect Before Copying
+The example starts all finding gates advisory while keeping
+`require-complete: true`. Tool failure, missing evidence, a skipped required
+evaluation, or malformed output still fails `Profile Conclusion`.
 
-Before adding an example:
+## Verify The First Run
 
-1. Read its `permissions` block.
-2. Confirm whether it checks out repository content.
-3. Confirm whether it installs or executes project dependencies.
-4. Confirm which secrets are required and what happens on fork PRs.
-5. Confirm whether scanners are advisory or merge-blocking.
-6. Keep the full commit pin and review the graph diff before upgrading it.
+The run should contain five evaluation jobs plus `Profile Conclusion`:
 
-See [Permissions and secrets](permissions-and-secrets.md) for the current trust
-matrix.
+- GitHub Actions definitions with Zizmor;
+- Git history or the pull-request range with Gitleaks;
+- dependency manifests and lockfiles with Trivy;
+- infrastructure configuration with Trivy;
+- the versioned ecosystem Semgrep rules.
 
-## 3. Start Advisory
+Open `Profile Conclusion`, then download `ecosystem-baseline-evidence`. The
+bundle must contain all five Evaluation Results with explicit completion,
+coverage, tool version, findings count, and evidence references.
 
-Do not make a new evaluation a required merge gate on its first run. Start in
-advisory mode, inspect tool failures separately from findings, tune legitimate
-suppressions, and then define a Merge Gate.
+Accept the installation only when:
 
-Scanner adapters and AI review emit the pre-v1 Completion Status, but the
-umbrella does not yet aggregate every job into one Evidence Bundle. Inspect
-every job and artifact rather than treating the parent result as a complete
-security verdict.
+- every required Evaluation Result is present and complete;
+- `Profile Conclusion` reflects the bundle rather than an individual scanner;
+- advisory findings are visible and have usable file locations;
+- no job received a secret or write-capable token;
+- a fork pull request can run under the same read-only model;
+- the project owner has recorded the installed commit and rollback commit.
 
-## 4. Interpret The First Run
+Do not make the check required until this first run is understood. After that,
+configure branch protection to require `Profile Conclusion`, not the individual
+scanner job names.
 
-Use [Understand Evaluation Results](understand-results.md) to distinguish:
+## Enable Finding Gates
 
-- a completed evaluation with no findings;
-- a completed evaluation with advisory findings;
-- a skipped evaluation;
-- a tool or permission failure;
-- incomplete AI coverage or refusal.
+Turn on only the gates the project is ready to enforce:
+
+- `actions-security-blocking` for workflow-definition findings;
+- `dependency-blocking` for dependency vulnerabilities;
+- `iac-blocking` for infrastructure findings;
+- `static-analysis-blocking` for ecosystem Semgrep findings.
+
+Gitleaks findings are already blocking. Completion remains required independently
+of every finding gate.
+
+## Upgrade
+
+Review the Control Repository diff and immutable release-graph result, then
+change only the 40-character commit after `ecosystem-baseline.yml@` in the
+consumer workflow. Run the same acceptance checks before making the new result
+required.
+
+## Roll Back
+
+Restore the previously recorded 40-character commit in the consumer workflow.
+Do not replace it with a branch or mutable tag. Re-run the workflow and confirm
+`Profile Conclusion` and `ecosystem-baseline-evidence` are produced by the
+restored graph.
 
 ## What Can Go Wrong?
 
-- **A referenced `v1` cannot be found:** no stable v1 has been published.
-- **A fork PR cannot access AI review:** fork workflows do not receive the
-  Anthropic secret.
-- **A scanner is green despite findings:** advisory is the default. Enable the
-  documented scanner-specific gate only after observing and triaging results;
-  tool failure remains blocking independently.
-- **SARIF is missing:** GitHub Code Security availability and
-  `security-events: write` affect upload behavior.
+- **Workflow not found:** confirm the full commit exists and organization Actions
+  policy allows public reusable workflows.
+- **Evaluation is incomplete:** inspect the individual Evaluation Result for a
+  tool download, registry, permission, or unsupported-runner failure.
+- **Findings are green:** advisory is the initial policy; completion and finding
+  gates are separate.
+- **No Security tab results:** the Ecosystem Baseline intentionally stores SARIF
+  as run artifacts without `security-events: write`. Use the privileged pipeline
+  with explicit `publish-sarif` authority if Security-tab publication is needed.
 
-Use [Troubleshooting](troubleshooting.md) for the first diagnostic checks. The
-task guides here are authoritative.
+Use [Troubleshooting](troubleshooting.md) for detailed diagnostic checks.
 
 ## Next
 

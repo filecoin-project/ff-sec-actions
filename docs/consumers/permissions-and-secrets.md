@@ -23,7 +23,7 @@ untrusted PR behavior understood.
 | AI code review | `ANTHROPIC_API_KEY` | PR comment write when enabled | No; reads metadata and diff through API |
 | Semgrep | None | SARIF upload when enabled | Analyzes checked-out files; does not intentionally build the project |
 | CodeQL | None | Security-event upload | Autobuild can execute project build behavior |
-| Dependency evidence | None | SARIF upload when enabled | No; inspects manifests and lockfiles, with build-dependent reachability explicitly excluded |
+| Dependency evidence | None | None in the baseline; optional separate SARIF publication job | No; inspects manifests and lockfiles, with build-dependent reachability explicitly excluded |
 | Gitleaks | None | Artifact behavior | Scans the PR range or repository history with a checksum-verified CLI |
 | Trivy IaC | None | SARIF upload when enabled | Analyzes configuration files |
 | License/SBOM | None | Artifact upload | No; source-manifest evidence may omit build-generated or runtime-loaded packages |
@@ -33,6 +33,11 @@ untrusted PR behavior understood.
 G0-02 and G0-03 enforce exact job permissions, safe checkout, and non-executing
 dependency, license, and SBOM inspection. The umbrella caller still grants an
 upper cap; each nested job reduces that cap to its reviewed policy.
+
+The Ecosystem Baseline grants only `actions: read` and `contents: read` and does
+not inherit `ENABLE_GHAS`. The privileged full-suite surface exposes
+`publish-sarif`; when enabled, publication occurs in a separate job with
+`security-events: write` rather than expanding scanner authority.
 
 ## Fork Pull Requests
 

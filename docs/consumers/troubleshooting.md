@@ -39,10 +39,12 @@ Operational failure and malformed SARIF fail independently of that setting.
 
 ## Results Are Missing From The Security Tab
 
+- The Ecosystem Baseline intentionally does not publish to the Security tab;
+  download its SARIF and `ecosystem-baseline-evidence` run artifacts instead.
 - Confirm the job received `security-events: write`.
 - Confirm GitHub Code Security is available for the repository.
-- Confirm the workflow's `ENABLE_GHAS` compatibility variable is set where the
-  current workflow expects it.
+- For the privileged full-suite example, confirm `ENABLE_GHAS='true'` is being
+  forwarded to the explicit `publish-sarif` input.
 - Check the workflow artifact even when SARIF upload is unavailable.
 
 ## Dependency, License, Or SBOM Work Fails

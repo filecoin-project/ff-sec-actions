@@ -99,6 +99,27 @@
       "migration": ["Keep the internal action on the immutable release graph.", "Keep Consumer Project checkout and execution forbidden."]
     },
     {
+      "path": ".github/workflows/consumer-alpha-canary.yml",
+      "scope": "control-repository",
+      "current_tier": "control-repository-ci",
+      "target_tier": "control-repository-ci",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["delegated-scanner-network", "github-action-download", "github-artifacts"],
+      "migration": ["Keep the canary pinned to the same immutable commit as the public consumer example."]
+    },
+    {
       "path": ".github/workflows/docs.yml",
       "scope": "control-repository",
       "current_tier": "control-repository-ci",
@@ -604,6 +625,27 @@
     },
     {
       "path": "actions/gitleaks-scan/action.yml",
+      "scope": "consumer",
+      "current_tier": "ecosystem-baseline",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": false,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-release-download"],
+      "migration": ["Keep the release archive version and checksums immutable and covered by release-graph validation."]
+    },
+    {
+      "path": "actions/zizmor-scan/action.yml",
       "scope": "consumer",
       "current_tier": "ecosystem-baseline",
       "target_tier": "ecosystem-baseline",

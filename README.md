@@ -22,6 +22,7 @@ completed its declared scope.
 Start with the [Consumer quickstart](docs/consumers/quickstart.md) to choose a
 workflow, understand its authority, and interpret the first result.
 
+- [Copy the read-only Ecosystem Baseline](examples/consumer-ecosystem-baseline.yml)
 - [Choose a security profile](docs/consumers/choose-a-profile.md)
 - [Understand results and merge gates](docs/consumers/understand-results.md)
 - [Configure permissions and secrets](docs/consumers/permissions-and-secrets.md)
@@ -51,8 +52,8 @@ dependency-ordered work queue and the commands used to claim and complete work.
 | GitHub Actions security, Semgrep, CodeQL, Trivy, Gitleaks, dependency review, SBOM, Scorecard, Slither | Reusable workflows | Pilot; scanner behavior varies |
 | Combined scanner suite | Umbrella reusable workflow | Pilot; transitively immutable at the example commit |
 | Filecoin review invariants | Versioned prompts | Available to AI review |
-| Ecosystem Security Profiles | Secretless Ecosystem Baseline | Consumer-testable pre-v1 model |
-| Normalized Evaluation Result | Scanner and AI action outputs | Stable `1.0.0` schema; aggregation is next |
+| Ecosystem Security Profiles | Secretless Ecosystem Baseline | Consumer-testable alpha with one immutable pin |
+| Normalized Evaluation Result and Evidence Bundle | Five baseline evaluations plus `Profile Conclusion` | Stable `1.0.0` schemas in the alpha baseline |
 
 See the [decision map](docs/ECOSYSTEM-SECURITY-DECISION-MAP.md) for release
 gates and active design work.

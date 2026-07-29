@@ -92,6 +92,7 @@ repository configuration as well as this repository's source contract.
 | Surface | Current tier | Target tier | Required migration |
 |---|---|---|---|
 | `.github/workflows/ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Keep the internal action pinned; preserve no-checkout/no-execution behavior. |
+| `.github/workflows/consumer-alpha-canary.yml` | `control-repository-ci` | `control-repository-ci` | Keep the canary aligned with the immutable public consumer example. |
 | `.github/workflows/docs.yml` | `control-repository-ci` | `control-repository-ci` | Keep repository contracts in its validation job. |
 | `.github/workflows/ecosystem-baseline.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep the profile secretless, non-executing, immutable, and explicit about limitations. |
 | `.github/workflows/evaluation-pipeline.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Expand the proven aggregation slice into the multi-evaluation Ecosystem Baseline. |
@@ -117,6 +118,7 @@ repository configuration as well as this repository's source contract.
 | `actions/aggregate-results/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep aggregation deterministic, local, and fail-closed for ambiguous evidence. |
 | `actions/evaluation-adapter/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep normalization independent from scanner-specific invocation and policy. |
 | `actions/gitleaks-scan/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep the release archive version and checksums immutable and validated. |
+| `actions/zizmor-scan/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep the release archive version and checksums immutable and validated. |
 | `actions/scanner-outcome/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Pin every consuming reference through the immutable release graph. |
 | `actions/semgrep-scan/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep rules repository-owned and scanner execution isolated from Consumer Project tooling. |
 

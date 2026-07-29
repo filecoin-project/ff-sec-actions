@@ -30,14 +30,16 @@ jobs:
       contents: read
       security-events: write
       pull-requests: write # dependency-review PR comments
-    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@8d275c7072b078d24a9d5fc4debc1feb613025f2
     with:
       # Safe baseline: inspect manifests and lockfiles without running package
       # installation hooks from repository content.
       skip-dirs: node_modules,contracts/lib,.sst
+      publish-sarif: ${{ vars.ENABLE_GHAS == 'true' }}
       # GitHub Actions security is enabled by default and blocks medium-or-higher
-      # zizmor auditor findings. Set enable-actions-security: false only with a
-      # documented compensating control.
+      # zizmor auditor findings. Keep findings advisory for the first run, then
+      # set actions-security-blocking: true after triage.
+      actions-security-blocking: false
       # Finding gates are independent from tool failure; tool failure always
       # fails. Uncomment only after observing the advisory result volume:
       # dependency-blocking: true

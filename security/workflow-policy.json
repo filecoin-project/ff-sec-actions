@@ -1,6 +1,14 @@
 {
   "schema_version": 1,
   "workflows": {
+    ".github/workflows/consumer-alpha-canary.yml": {
+      "baseline": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read"
+        }
+      }
+    },
     ".github/workflows/ecosystem-baseline.yml": {
       "actions-security": {"permissions": {"contents": "read"}},
       "dependencies": {"permissions": {"actions": "read", "contents": "read"}},

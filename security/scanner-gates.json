@@ -4,8 +4,10 @@
   "scanners": {
     "actions-security": {
       "workflow": ".github/workflows/sec-actions.yml",
-      "gate_mode": "always-blocking",
-      "note": "Medium-or-higher auditor-persona zizmor findings and parser/tool failures block with source annotations."
+      "gate_mode": "configurable",
+      "workflow_input": "blocking",
+      "umbrella_input": "actions-security-blocking",
+      "enforcement_marker": "blocking: ${{ inputs.blocking }}"
     },
     "codeql": {
       "workflow": ".github/workflows/sec-codeql.yml",

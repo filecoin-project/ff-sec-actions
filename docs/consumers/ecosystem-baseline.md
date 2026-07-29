@@ -9,7 +9,7 @@ produces one Evidence Bundle plus the stable `Profile Conclusion` check.
 
 | Evaluation | Scope | Default gate |
 |---|---|---|
-| Zizmor | GitHub workflow and action definitions | Blocking high-confidence workflow risks |
+| Zizmor | GitHub workflow and action definitions | Advisory findings; completion required |
 | Gitleaks | PR commit range or full history | Blocking secret findings |
 | Trivy dependencies | Recursive manifests and lockfiles | Advisory findings; completion required |
 | Trivy IaC | Recognized infrastructure configuration | Advisory findings; completion required |
@@ -33,11 +33,16 @@ Keep `require-complete: true`; it prevents a missing or broken scanner from
 looking clean. Leave finding gates advisory for the first runs, triage noise,
 then enable the relevant `*-blocking` input.
 
+The available gates are `actions-security-blocking`, `dependency-blocking`,
+`iac-blocking`, and `static-analysis-blocking`. Gitleaks remains blocking because
+a committed credential needs immediate review.
+
 The required branch check is `Profile Conclusion`, not the individual scanner
 job names. Download `ecosystem-baseline-evidence` when investigating a result.
 
 ## Next
 
+- [Install and verify the first run](quickstart.md)
 - [Understand results](understand-results.md)
 - [Permissions and secrets](permissions-and-secrets.md)
 - [Troubleshooting](troubleshooting.md)

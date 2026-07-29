@@ -2,6 +2,7 @@
   "schema_version": 1,
   "repository": "filecoin-project/ff-sec-actions",
   "entrypoints": [
+    ".github/workflows/consumer-alpha-canary.yml",
     ".github/workflows/security-pipeline.yml",
     ".github/workflows/evaluation-pipeline.yml",
     ".github/workflows/ecosystem-baseline.yml",

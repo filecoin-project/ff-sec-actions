@@ -27,7 +27,9 @@ on:
       - scripts/check-evaluation-result.sh
       - scripts/test-evaluation-result.sh
       - scripts/test-gitleaks-scan.sh
+      - scripts/test-zizmor-scan.sh
       - scripts/test-consumer-actions-security.sh
+      - scripts/test-consumer-alpha.sh
       - scripts/check-release-graph.sh
       - scripts/test-release-graph.sh
       - scripts/check-fork-pr.sh
@@ -63,7 +65,9 @@ on:
       - scripts/check-evaluation-result.sh
       - scripts/test-evaluation-result.sh
       - scripts/test-gitleaks-scan.sh
+      - scripts/test-zizmor-scan.sh
       - scripts/test-consumer-actions-security.sh
+      - scripts/test-consumer-alpha.sh
       - scripts/check-release-graph.sh
       - scripts/test-release-graph.sh
       - scripts/check-fork-pr.sh
@@ -134,6 +138,9 @@ jobs:
 
       - name: Test consumer GitHub Actions security evaluation
         run: bash scripts/test-consumer-actions-security.sh
+
+      - name: Test consumer alpha installation contract
+        run: bash scripts/test-consumer-alpha.sh
 
       - name: Validate immutable consumer release graph
         run: bash scripts/check-release-graph.sh

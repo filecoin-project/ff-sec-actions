@@ -64,7 +64,9 @@ jobs:
           bash scripts/test-fork-pr.sh
 
       - name: Validate Ecosystem Baseline composition and planted fixtures
-        run: bash scripts/test-ecosystem-baseline.sh
+        run: |
+          bash scripts/test-ecosystem-baseline.sh
+          bash scripts/test-consumer-alpha.sh
 
       - name: Validate shell, workflow, example, and fork-fixture syntax
         run: |

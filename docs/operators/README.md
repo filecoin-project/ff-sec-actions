@@ -28,6 +28,10 @@ For each Consumer Project, record:
 - exception owner and expiry;
 - rollback contact and procedure.
 
+Use the [consumer quickstart acceptance list](../consumers/quickstart.md#verify-the-first-run)
+for each installation. Record both the selected commit and the run URL that
+produced `ecosystem-baseline-evidence` before advancing from Sandbox to Observe.
+
 ## Rollout Stages
 
 1. **Sandbox:** prove installation and completion behavior.
