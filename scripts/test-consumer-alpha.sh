@@ -31,6 +31,22 @@ canary_ref="$(release_ref "$canary")"
 git -C "$repo_root" cat-file -e "$example_ref:.github/workflows/ecosystem-baseline.yml" \
   || fail "consumer release commit is unavailable in repository history"
 
+# GitHub validates every nested workflow's complete permission envelope before
+# evaluating job conditions. Prove the immutable baseline graph never asks the
+# read-only caller to elevate authority, including in disabled jobs.
+baseline_content="$(git -C "$repo_root" show "$example_ref:.github/workflows/ecosystem-baseline.yml")"
+while IFS='|' read -r nested_path nested_ref; do
+  [ -n "$nested_path" ] || continue
+  nested_content="$(git -C "$repo_root" show "$nested_ref:$nested_path")" \
+    || fail "baseline nested workflow is unavailable: $nested_path@$nested_ref"
+  if grep -Eq '^[[:space:]]+[a-z-]+:[[:space:]]+write([[:space:]#]|$)' <<< "$nested_content"; then
+    fail "read-only baseline calls a workflow with write authority: $nested_path@$nested_ref"
+  fi
+done < <(
+  sed -nE "s#^[[:space:]]*uses:[[:space:]]+${repository}/(\.github/workflows/[^@]+)@([0-9a-f]{40}).*#\1|\2#p" \
+    <<< "$baseline_content"
+)
+
 for workflow in "$example" "$canary"; do
   grep -Fq 'require-complete: true' "$workflow" \
     || fail "$workflow does not require complete evaluation"
