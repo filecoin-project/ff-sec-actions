@@ -3,6 +3,10 @@ name: Ecosystem Baseline (reusable)
 on:
   workflow_call:
     inputs:
+      actions-security-blocking:
+        type: boolean
+        required: false
+        default: false
       dependency-blocking:
         type: boolean
         required: false
@@ -29,13 +33,15 @@ jobs:
   actions-security:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@576b8c8763c920feab700a694eb25b86bc2ad70d
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@c8b42b9a40fd3b1052e34e85742fcc22cd2044db
+    with:
+      blocking: ${{ inputs.actions-security-blocking }}
 
   dependencies:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@576b8c8763c920feab700a694eb25b86bc2ad70d
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@c8b42b9a40fd3b1052e34e85742fcc22cd2044db
     with:
       blocking: ${{ inputs.dependency-blocking }}
       skip-dirs: ${{ inputs.skip-dirs }}
@@ -43,13 +49,13 @@ jobs:
   secrets:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@576b8c8763c920feab700a694eb25b86bc2ad70d
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@c8b42b9a40fd3b1052e34e85742fcc22cd2044db
 
   infrastructure:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@576b8c8763c920feab700a694eb25b86bc2ad70d
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@c8b42b9a40fd3b1052e34e85742fcc22cd2044db
     with:
       blocking: ${{ inputs.iac-blocking }}
       skip-dirs: ${{ inputs.skip-dirs }}
@@ -58,7 +64,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@576b8c8763c920feab700a694eb25b86bc2ad70d
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@c8b42b9a40fd3b1052e34e85742fcc22cd2044db
     with:
       blocking: ${{ inputs.static-analysis-blocking }}
 

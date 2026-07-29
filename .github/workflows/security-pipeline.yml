@@ -25,6 +25,11 @@ on:
         type: boolean
         required: false
         default: true
+      actions-security-blocking:
+        description: Fail when Zizmor produces workflow-definition findings.
+        type: boolean
+        required: false
+        default: false
       enable-codeql:
         description: Requires GHAS on the calling repo.
         type: boolean
@@ -148,7 +153,9 @@ jobs:
     if: inputs.enable-actions-security
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@576b8c8763c920feab700a694eb25b86bc2ad70d
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@c8b42b9a40fd3b1052e34e85742fcc22cd2044db
+    with:
+      blocking: ${{ inputs.actions-security-blocking }}
 
   semgrep:
     if: inputs.enable-semgrep

@@ -36,6 +36,10 @@ grep -Fq "blocking: \${{ inputs.blocking }}" "$actions_workflow" \
 if grep -Eq 'advanced-security:[[:space:]]+true|zizmorcore/zizmor-action@' "$actions_workflow"; then
   fail "workflow-definition evaluation still couples SARIF creation to privileged upload"
 fi
+grep -Fq "blocking: \${{ inputs.actions-security-blocking }}" "$workflow" \
+  || fail "the Ecosystem Baseline does not forward its workflow-definition gate"
+grep -Fq "blocking: \${{ inputs.actions-security-blocking }}" "$privileged_pipeline" \
+  || fail "the privileged pipeline does not forward its workflow-definition gate"
 
 grep -Eq '^[[:space:]]+publish-sarif:[[:space:]]*$' "$dependencies_workflow" \
   || fail "dependency evaluation does not expose explicit SARIF publication"
