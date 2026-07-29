@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/filecoin-project/ff-sec-actions/schemas/evidence-bundle.schema.json",
+  "title": "Filecoin Ecosystem Security Evidence Bundle",
+  "description": "Stable v1 aggregate of profile Evaluation Results and the authoritative profile conclusion.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "profile", "scope", "completion", "summary", "merge_gate", "results"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "required_evaluations"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "required_evaluations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "ref"],
+      "properties": {
+        "repository": {"type": ["string", "null"]},
+        "ref": {"type": ["string", "null"]}
+      }
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason", "missing_evaluations"],
+      "properties": {
+        "status": {"enum": ["complete", "incomplete", "error"]},
+        "reason": {"type": "string", "minLength": 1},
+        "missing_evaluations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evaluations_expected", "evaluations_received", "complete", "incomplete", "skipped", "error", "findings_observed", "findings_authoritative", "suppressions_observed", "suppressions_authoritative", "highest_severity"],
+      "properties": {
+        "evaluations_expected": {"type": "integer", "minimum": 0},
+        "evaluations_received": {"type": "integer", "minimum": 0},
+        "complete": {"type": "integer", "minimum": 0},
+        "incomplete": {"type": "integer", "minimum": 0},
+        "skipped": {"type": "integer", "minimum": 0},
+        "error": {"type": "integer", "minimum": 0},
+        "findings_observed": {"type": "integer", "minimum": 0},
+        "findings_authoritative": {"type": "boolean"},
+        "suppressions_observed": {"type": "integer", "minimum": 0},
+        "suppressions_authoritative": {"type": "boolean"},
+        "highest_severity": {"enum": ["critical", "high", "medium", "low", "info", "none", "unknown"]}
+      }
+    },
+    "merge_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["require_complete", "conclusion", "reasons"],
+      "properties": {
+        "require_complete": {"type": "boolean"},
+        "conclusion": {"enum": ["pass", "fail"]},
+        "reasons": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {"$ref": "evaluation-result.schema.json"}
+    }
+  }
+}

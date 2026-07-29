@@ -111,6 +111,7 @@ repository configuration as well as this repository's source contract.
 | `examples/consumer-manual-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |
 | `examples/consumer-security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Keep the graph pin immutable; publish a secretless baseline and separate privileged opt-ins. |
 | `actions/ai-code-review/action.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Add bounded context, privacy, completion, and result contracts while preserving no checkout/execution. |
+| `actions/aggregate-results/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep aggregation deterministic, local, and fail-closed for ambiguous evidence. |
 | `actions/evaluation-adapter/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep normalization independent from scanner-specific invocation and policy. |
 | `actions/gitleaks-scan/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep the release archive version and checksums immutable and validated. |
 | `actions/scanner-outcome/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Pin every consuming reference through the immutable release graph. |

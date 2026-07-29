@@ -9,6 +9,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 - [Execution trust tiers](execution-trust.md)
 - [Evaluation Result contract](evaluation-result.md)
 - [Evaluation adapter](evaluation-adapter.md)
+- [Evidence Bundle and profile conclusion](evidence-bundle.md)
 - [Release integrity](release-integrity.md)
 - [Fork pull-request safety](fork-pr-safety.md)
 
@@ -35,10 +36,12 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 - [AI result schema](../../actions/ai-code-review/scripts/schema.json)
 - [Scanner outcome adapter](../../actions/scanner-outcome/action.yml)
 - [Generic evaluation adapter](../../actions/evaluation-adapter/action.yml)
+- [Evidence Bundle aggregator](../../actions/aggregate-results/action.yml)
 
 ## Schemas
 
 - [Evaluation Result](../../schemas/evaluation-result.schema.json)
+- [Evidence Bundle](../../schemas/evidence-bundle.schema.json)
 
 ## Prompts
 

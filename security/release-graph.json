@@ -17,6 +17,13 @@
     ".github/workflows/sec-slither.yml"
   ],
   "expected_assets": {
+    "actions/aggregate-results": [
+      "actions/aggregate-results/action.yml",
+      "actions/aggregate-results/aggregate-results.sh",
+      "schemas/evaluation-result.schema.json",
+      "schemas/evidence-bundle.schema.json",
+      "scripts/check-evaluation-result.sh"
+    ],
     "actions/evaluation-adapter": [
       "actions/evaluation-adapter/action.yml",
       "actions/evaluation-adapter/evaluation-adapter.sh",

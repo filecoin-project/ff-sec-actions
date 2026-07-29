@@ -1,0 +1,60 @@
+name: Aggregate Evaluation Results
+description: Build one v1 Evidence Bundle, readable summary, and stable profile conclusion.
+
+inputs:
+  results-directory:
+    description: Directory containing v1 Evaluation Result JSON files.
+    required: true
+  profile-id:
+    description: Stable Security Profile identifier.
+    required: true
+  profile-version:
+    description: Exact Security Profile version.
+    required: true
+  required-evaluations:
+    description: JSON array of required evaluation ids.
+    required: true
+  require-complete:
+    description: Fail the profile conclusion for missing, skipped, or incomplete evaluation.
+    required: false
+    default: "true"
+  bundle-file:
+    description: Evidence Bundle destination.
+    required: false
+    default: evidence-bundle.json
+  summary-file:
+    description: Markdown summary destination.
+    required: false
+    default: evidence-summary.md
+
+outputs:
+  completion:
+    value: ${{ steps.aggregate.outputs.completion }}
+    description: complete, incomplete, or error.
+  conclusion:
+    value: ${{ steps.aggregate.outputs.conclusion }}
+    description: pass or fail.
+  evidence-bundle:
+    value: ${{ steps.aggregate.outputs.evidence_bundle }}
+    description: Path to the v1 Evidence Bundle.
+  summary:
+    value: ${{ steps.aggregate.outputs.summary }}
+    description: Path to the Markdown summary.
+
+runs:
+  using: composite
+  steps:
+    - id: aggregate
+      shell: bash
+      env:
+        RESULTS_DIRECTORY: ${{ inputs.results-directory }}
+        PROFILE_ID: ${{ inputs.profile-id }}
+        PROFILE_VERSION: ${{ inputs.profile-version }}
+        REQUIRED_EVALUATIONS: ${{ inputs.required-evaluations }}
+        REQUIRE_COMPLETE: ${{ inputs.require-complete }}
+        BUNDLE_FILE: ${{ inputs.bundle-file }}
+        SUMMARY_FILE: ${{ inputs.summary-file }}
+        EVALUATION_VALIDATOR: ${{ github.action_path }}/../../scripts/check-evaluation-result.sh
+        BUNDLE_REPOSITORY: ${{ github.repository }}
+        BUNDLE_REF: ${{ github.sha }}
+      run: bash "${GITHUB_ACTION_PATH}/aggregate-results.sh"

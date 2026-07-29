@@ -498,6 +498,27 @@
       "migration": ["Keep Consumer Project checkout and code execution forbidden.", "Add bounded context, privacy, completion, and result contracts under the AI assurance tasks."]
     },
     {
+      "path": "actions/aggregate-results/action.yml",
+      "scope": "consumer",
+      "current_tier": "ecosystem-baseline",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": false,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["none"],
+      "migration": ["Keep aggregation deterministic, local, and fail-closed for ambiguous evidence."]
+    },
+    {
       "path": "actions/evaluation-adapter/action.yml",
       "scope": "consumer",
       "current_tier": "ecosystem-baseline",

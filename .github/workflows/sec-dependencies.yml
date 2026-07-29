@@ -57,6 +57,7 @@ jobs:
         continue-on-error: true
 
       - name: Evaluate dependency scan outcome
+        id: evaluate
         if: always()
         uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@f41c68a67bd2bd3fcfd962086c16d5cc68b3cb47
         with:
@@ -69,6 +70,14 @@ jobs:
           coverage-included: '["dependency manifests and lockfiles"]'
           coverage-excluded: '["installed dependency state","build-generated manifests"]'
           coverage-limitations: '["reachability and packages visible only after installation or build are excluded"]'
+
+      - name: Upload normalized dependency Evaluation Result
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evaluation-result-trivy-dependencies
+          path: ${{ runner.temp }}/trivy-dependencies-evaluation-result.json
+          if-no-files-found: error
 
       - name: Upload Trivy dependency results
         if: always() && hashFiles('trivy-deps.sarif') != ''

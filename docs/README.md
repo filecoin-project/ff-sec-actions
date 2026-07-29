@@ -38,6 +38,7 @@ policy, exceptions, upgrades, and rollback across projects.
 - [Execution trust tiers](reference/execution-trust.md)
 - [Evaluation Result contract](reference/evaluation-result.md)
 - [Evaluation adapter](reference/evaluation-adapter.md)
+- [Evidence Bundle and profile conclusion](reference/evidence-bundle.md)
 - [Release integrity](reference/release-integrity.md)
 - [Fork pull-request safety](reference/fork-pr-safety.md)
 - [Documentation architecture](DOCUMENTATION-ARCHITECTURE.md)
