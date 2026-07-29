@@ -92,7 +92,7 @@ jobs:
 
   publish-sarif:
     name: Publish Dependency SARIF
-    if: inputs.publish-sarif
+    if: always() && inputs.publish-sarif
     needs: dependencies
     runs-on: ubuntu-latest
     permissions:

@@ -45,8 +45,8 @@ grep -Eq '^[[:space:]]+publish-sarif:[[:space:]]*$' "$dependencies_workflow" \
   || fail "dependency evaluation does not expose explicit SARIF publication"
 grep -Eq '^  publish-sarif:[[:space:]]*$' "$dependencies_workflow" \
   || fail "dependency SARIF publication is not isolated in its own job"
-grep -Fq "if: inputs.publish-sarif" "$dependencies_workflow" \
-  || fail "dependency SARIF publication is not controlled by its explicit input"
+grep -Fq "if: always() && inputs.publish-sarif" "$dependencies_workflow" \
+  || fail "dependency SARIF publication does not run after a finding gate fails"
 if grep -Fq "vars.ENABLE_GHAS" "$dependencies_workflow"; then
   fail "dependency evaluation still inherits consumer repository publication state implicitly"
 fi
