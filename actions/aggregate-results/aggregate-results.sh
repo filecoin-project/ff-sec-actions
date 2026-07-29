@@ -133,8 +133,16 @@ jq -n \
     "$received_count" "$expected_count" "$complete_count" "$incomplete_count" "$skipped_count" "$error_count"
   printf -- '- Findings observed: %s (authoritative: %s); highest severity: %s\n\n' \
     "$findings_observed" "$findings_authoritative" "$highest_severity"
-  printf '| Evaluation | Completion | Findings | Gate |\n|---|---|---:|---|\n'
-  jq -r '.[] | "| `\(.evaluation.id)` | \(.completion.status) | \(.findings.count // "unknown") | \(.merge_gate.conclusion) |"' <<< "$results"
+  printf '| Evaluation | Completion | Findings | Gate | Reason | Scope | Evidence |\n'
+  printf '|---|---|---:|---|---|---|---|\n'
+  jq -r '
+    def clean: tostring | gsub("[\\r\\n|`]"; " ") | gsub("[[:space:]]+"; " ");
+    .[]
+    | "| `\(.evaluation.id)` | \(.completion.status) | \(.findings.count // "unknown")"
+      + " | \(.merge_gate.conclusion) | \(.merge_gate.reason | clean)"
+      + " | `\(.scope.target | clean)`"
+      + " | `\(.evidence[0].artifact // "not-published" | clean)` / `\(.evidence[0].path // "none" | clean)` |"
+  ' <<< "$results"
 } > "$SUMMARY_FILE"
 
 [ -z "${GITHUB_STEP_SUMMARY:-}" ] || command cat "$SUMMARY_FILE" >> "$GITHUB_STEP_SUMMARY"

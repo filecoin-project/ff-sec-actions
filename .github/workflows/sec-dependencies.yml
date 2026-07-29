@@ -57,13 +57,17 @@ jobs:
       - name: Evaluate dependency scan outcome
         id: evaluate
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@f41c68a67bd2bd3fcfd962086c16d5cc68b3cb47
+        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@a6f4590b2f92d960abfa8edfd64a4787abc9821d
         with:
           evaluation-id: trivy-dependencies
           tool-name: trivy
           tool-version: 0.70.0
           tool-outcome: ${{ steps.scan.outcome }}
           raw-evidence: trivy-deps.sarif
+          evidence-artifact: trivy-deps-results
+          remediation-guidance: >-
+            Upgrade the affected direct or transitive dependency to a fixed version, verify the
+            resolved lockfile, and document any time-bounded exception with an owner and expiry.
           blocking: ${{ inputs.blocking }}
           coverage-included: '["dependency manifests and lockfiles"]'
           coverage-excluded: '["installed dependency state","build-generated manifests"]'

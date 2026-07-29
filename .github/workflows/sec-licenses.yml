@@ -51,12 +51,29 @@ jobs:
 
       - name: Evaluate license scan outcome
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@0548d1a4f26c20a6dd62d9793420a8c54b8596f6
+        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@a6f4590b2f92d960abfa8edfd64a4787abc9821d
         with:
-          scanner-name: trivy-licenses
-          scanner-outcome: ${{ steps.scan.outcome }}
-          result-file: trivy-licenses.sarif
+          evaluation-id: trivy-licenses
+          tool-name: trivy
+          tool-version: 0.70.0
+          tool-outcome: ${{ steps.scan.outcome }}
+          raw-evidence: trivy-licenses.sarif
+          evidence-artifact: trivy-license-results
+          remediation-guidance: >-
+            Replace the dependency with a policy-compatible alternative, obtain explicit approval,
+            or document a narrowly scoped exception with an owner and expiry.
           blocking: ${{ inputs.blocking }}
+          coverage-included: '["licenses visible in dependency manifests and lockfiles"]'
+          coverage-excluded: '["licenses visible only after installation or a build"]'
+          coverage-limitations: '["source-manifest evidence is not a build-complete license inventory"]'
+
+      - name: Upload normalized license Evaluation Result
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evaluation-result-trivy-licenses
+          path: ${{ runner.temp }}/trivy-licenses-evaluation-result.json
+          if-no-files-found: error
 
       - name: Upload license results
         if: always() && hashFiles('trivy-licenses.sarif') != ''

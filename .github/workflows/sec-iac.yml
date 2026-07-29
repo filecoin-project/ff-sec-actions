@@ -51,13 +51,17 @@ jobs:
 
       - name: Evaluate IaC scan outcome
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@650fdf6412ff2e3e19ac8f4f124a3257f81c19d9
+        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@a6f4590b2f92d960abfa8edfd64a4787abc9821d
         with:
           evaluation-id: trivy-iac
           tool-name: trivy
           tool-version: 0.70.0
           tool-outcome: ${{ steps.scan.outcome }}
           raw-evidence: trivy-iac.sarif
+          evidence-artifact: trivy-iac-results
+          remediation-guidance: >-
+            Apply the least-privilege configuration recommended by the Trivy rule, validate the
+            deployed configuration, and document any exception with an owner and expiry.
           blocking: ${{ inputs.blocking }}
           coverage-included: '["infrastructure configuration recognized by Trivy"]'
           coverage-excluded: '["runtime cloud state"]'

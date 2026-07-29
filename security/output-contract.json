@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "contract": {
+    "requirement": "Every released evaluation must tell a Consumer Engineer what ran, what it found, where it found it, how to remediate it, why the gate concluded, and where durable evidence lives.",
+    "normalized_surfaces": [
+      "evaluation-result",
+      "job-summary",
+      "source-annotations",
+      "remediation-guidance",
+      "raw-evidence-artifact"
+    ]
+  },
+  "workflows": {
+    ".github/workflows/sec-actions.yml": {
+      "mode": "normalized-evaluation",
+      "evaluation_id": "zizmor-actions",
+      "raw_artifact": "zizmor-actions-results",
+      "normalized_artifact": "evaluation-result-zizmor-actions",
+      "consumer_surface": "GitHub job summary, source annotations, normalized result, and Zizmor SARIF artifact",
+      "remediation_surface": "Zizmor rule guidance plus workflow-hardening instructions"
+    },
+    ".github/workflows/sec-codeql.yml": {
+      "mode": "provider-native",
+      "consumer_marker": "github/codeql-action/analyze@",
+      "consumer_surface": "GitHub Code Scanning alerts with source locations and query help",
+      "remediation_surface": "CodeQL query help and alert remediation guidance"
+    },
+    ".github/workflows/sec-dependencies.yml": {
+      "mode": "normalized-evaluation",
+      "evaluation_id": "trivy-dependencies",
+      "raw_artifact": "trivy-deps-results",
+      "normalized_artifact": "evaluation-result-trivy-dependencies",
+      "consumer_surface": "GitHub job summary, source annotations, normalized result, and Trivy SARIF artifact",
+      "remediation_surface": "Fixed-version and time-bounded exception guidance"
+    },
+    ".github/workflows/sec-dependency-review.yml": {
+      "mode": "provider-native",
+      "consumer_marker": "actions/dependency-review-action@",
+      "consumer_surface": "Dependency Review pull-request summary and annotations",
+      "remediation_surface": "Dependency Review advisory and license guidance"
+    },
+    ".github/workflows/sec-iac.yml": {
+      "mode": "normalized-evaluation",
+      "evaluation_id": "trivy-iac",
+      "raw_artifact": "trivy-iac-results",
+      "normalized_artifact": "evaluation-result-trivy-iac",
+      "consumer_surface": "GitHub job summary, source annotations, normalized result, and Trivy SARIF artifact",
+      "remediation_surface": "Least-privilege configuration and exception guidance"
+    },
+    ".github/workflows/sec-licenses.yml": {
+      "mode": "normalized-evaluation",
+      "evaluation_id": "trivy-licenses",
+      "raw_artifact": "trivy-license-results",
+      "normalized_artifact": "evaluation-result-trivy-licenses",
+      "consumer_surface": "GitHub job summary, source annotations, normalized result, and Trivy SARIF artifact",
+      "remediation_surface": "License replacement, approval, and exception guidance"
+    },
+    ".github/workflows/sec-sbom.yml": {
+      "mode": "provider-native",
+      "consumer_marker": "artifact-name:",
+      "consumer_surface": "Downloadable CycloneDX software bill of materials",
+      "remediation_surface": "Inventory evidence for dependency triage and upgrade planning"
+    },
+    ".github/workflows/sec-scorecard.yml": {
+      "mode": "provider-native",
+      "consumer_marker": "github/codeql-action/upload-sarif@",
+      "consumer_surface": "GitHub Code Scanning alerts and Scorecard SARIF artifact",
+      "remediation_surface": "OpenSSF Scorecard check documentation"
+    },
+    ".github/workflows/sec-secrets.yml": {
+      "mode": "normalized-evaluation",
+      "evaluation_id": "gitleaks",
+      "raw_artifact": "gitleaks-results",
+      "normalized_artifact": "evaluation-result-gitleaks",
+      "consumer_surface": "GitHub job summary, redacted source annotations, normalized result, and Gitleaks SARIF artifact",
+      "remediation_surface": "Credential rotation, history removal, access review, and false-positive guidance"
+    },
+    ".github/workflows/sec-semgrep.yml": {
+      "mode": "normalized-evaluation",
+      "evaluation_id": "semgrep-baseline",
+      "raw_artifact": "semgrep-baseline-results",
+      "normalized_artifact": "evaluation-result-semgrep-baseline",
+      "consumer_surface": "GitHub job summary, source annotations, normalized result, and Semgrep SARIF artifact",
+      "remediation_surface": "Rule guidance, safe replacement, regression-test, and suppression guidance"
+    },
+    ".github/workflows/sec-slither.yml": {
+      "mode": "provider-native",
+      "consumer_marker": "github/codeql-action/upload-sarif@",
+      "consumer_surface": "GitHub Code Scanning alerts and Slither SARIF artifact",
+      "remediation_surface": "Slither detector documentation and source locations"
+    }
+  },
+  "actions": {
+    "actions/aggregate-results/action.yml": {
+      "required_outputs": ["completion", "conclusion", "evidence-bundle", "summary"],
+      "consumer_surface": "Evidence Bundle and readable Profile Conclusion summary",
+      "remediation_surface": "Per-evaluation gate reason and evidence mapping"
+    },
+    "actions/ai-code-review/action.yml": {
+      "required_outputs": ["findings-count", "highest-severity", "findings-json", "completion-status", "evaluation-result"],
+      "consumer_surface": "Pull-request comment, job summary, findings JSON, and Evaluation Result",
+      "remediation_surface": "Finding-specific AI remediation guidance"
+    },
+    "actions/evaluation-adapter/action.yml": {
+      "required_outputs": ["completion", "findings-count", "merge-conclusion", "evaluation-result", "evidence-artifact", "summary"],
+      "consumer_surface": "Normalized result, job summary, annotations, and durable artifact identity",
+      "remediation_surface": "Rule help plus evaluation-specific remediation guidance"
+    },
+    "actions/gitleaks-scan/action.yml": {
+      "required_outputs": ["scanner-outcome", "scan-scope", "result-file"],
+      "consumer_surface": "Redacted SARIF path and explicit scan scope",
+      "remediation_surface": "Consumed through the Evaluation Adapter"
+    },
+    "actions/scanner-outcome/action.yml": {
+      "required_outputs": ["completion", "result", "conclusion", "findings-count", "evaluation-result"],
+      "consumer_surface": "Compatibility Evaluation Result interface",
+      "remediation_surface": "Compatibility path; new evaluations must use the Evaluation Adapter"
+    },
+    "actions/semgrep-scan/action.yml": {
+      "required_outputs": ["scanner-outcome", "result-file"],
+      "consumer_surface": "SARIF path and scanner operational outcome",
+      "remediation_surface": "Consumed through the Evaluation Adapter"
+    },
+    "actions/zizmor-scan/action.yml": {
+      "required_outputs": ["scanner-outcome", "result-file"],
+      "consumer_surface": "SARIF path and scanner operational outcome",
+      "remediation_surface": "Consumed through the Evaluation Adapter"
+    }
+  }
+}

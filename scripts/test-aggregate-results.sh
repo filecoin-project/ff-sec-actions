@@ -53,7 +53,14 @@ make_clean_pair "$test_root/findings/results"
 jq '.findings = {count: 2, highest_severity: "high"} | .merge_gate = {mode: "blocking", conclusion: "fail", reason: "fixture findings"}' \
   "$test_root/findings/results/two.json" > "$test_root/findings/results/two.tmp"
 mv "$test_root/findings/results/two.tmp" "$test_root/findings/results/two.json"
+jq '.evidence = [{type: "sarif", path: "fixture.sarif", sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", artifact: "fixture-results"}]' \
+  "$test_root/findings/results/two.json" > "$test_root/findings/results/two.tmp"
+mv "$test_root/findings/results/two.tmp" "$test_root/findings/results/two.json"
 run_case findings 1 complete fail
+for expected in 'fixture findings' "\`fixture-results\`" "\`fixture.sarif\`"; do
+  grep -Fq "$expected" "$test_root/findings/summary.md" \
+    || { printf 'aggregate-results test failure: summary is missing evidence mapping %s\n' "$expected" >&2; exit 1; }
+done
 
 make_clean_pair "$test_root/skipped/results"
 jq '.completion = {status: "skipped", reason: "fixture skip"} | .coverage.status = "not-applicable" | .findings = {count: null, highest_severity: "unknown"} | .merge_gate = {mode: "advisory", conclusion: "not-evaluated", reason: "fixture skip"}' \

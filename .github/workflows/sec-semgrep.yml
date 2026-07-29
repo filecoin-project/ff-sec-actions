@@ -33,13 +33,17 @@ jobs:
 
       - name: Evaluate Ecosystem Baseline static analysis
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@650fdf6412ff2e3e19ac8f4f124a3257f81c19d9
+        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@a6f4590b2f92d960abfa8edfd64a4787abc9821d
         with:
           evaluation-id: semgrep-baseline
           tool-name: semgrep
           tool-version: 1.93.0
           tool-outcome: ${{ steps.scan.outputs.scanner-outcome || 'failure' }}
           raw-evidence: semgrep-baseline.sarif
+          evidence-artifact: semgrep-baseline-results
+          remediation-guidance: >-
+            Follow the rule guidance, replace the unsafe construct with the recommended safe
+            pattern, add a regression test, and suppress only a documented false positive.
           blocking: ${{ inputs.blocking }}
           coverage-included: '["supported Go, Rust, JavaScript, TypeScript, Solidity, and Dockerfile source"]'
           coverage-excluded: '["unsupported languages and generated source"]'
@@ -54,7 +58,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload custom-rule results
-        if: always() && hashFiles('semgrep-custom.sarif') != ''
+        if: always() && hashFiles('semgrep-baseline.sarif') != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: semgrep-baseline-results

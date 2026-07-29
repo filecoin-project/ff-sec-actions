@@ -36,13 +36,17 @@ jobs:
 
       - name: Normalize GitHub Actions security result
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@650fdf6412ff2e3e19ac8f4f124a3257f81c19d9
+        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@a6f4590b2f92d960abfa8edfd64a4787abc9821d
         with:
           evaluation-id: zizmor-actions
           tool-name: zizmor
           tool-version: 1.28.0
           tool-outcome: ${{ steps.scan.outputs.scanner-outcome }}
           raw-evidence: ${{ steps.scan.outputs.result-file }}
+          evidence-artifact: zizmor-actions-results
+          remediation-guidance: >-
+            Pin third-party actions to reviewed full commit SHAs, minimize token permissions,
+            avoid pull_request_target with untrusted checkout, and follow the linked Zizmor rule guidance.
           blocking: ${{ inputs.blocking }}
           coverage-included: '["GitHub Actions workflows and action metadata"]'
           coverage-excluded: '["online repository audits"]'
@@ -55,3 +59,11 @@ jobs:
           name: evaluation-result-zizmor-actions
           path: ${{ runner.temp }}/zizmor-actions-evaluation-result.json
           if-no-files-found: error
+
+      - name: Upload Zizmor results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: zizmor-actions-results
+          path: ${{ steps.scan.outputs.result-file }}
+          if-no-files-found: warn
