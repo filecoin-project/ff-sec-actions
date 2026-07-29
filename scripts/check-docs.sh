@@ -77,6 +77,8 @@ required_pages=(
   "scripts/test-fork-pr.sh"
   "scripts/test-scanner-outcome.sh"
   "scripts/test-workflow-security.sh"
+  "test/fixtures/evaluation-result/valid/complete.json"
+  "test/fixtures/evaluation-result/invalid/unknown-field.json"
   "threat-model/execution-trust/threat-model-report.md"
 )
 

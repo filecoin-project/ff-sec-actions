@@ -24,6 +24,9 @@ emit() {
   local findings_count="$4"
   local reason="$5"
   local coverage_status="$6"
+  local gate_mode=advisory
+  local gate_conclusion="$conclusion"
+  local gate_reason="$reason"
   local highest_severity="unknown"
   local evidence_sha=null
   local tool_version=null
@@ -33,6 +36,15 @@ emit() {
   if [ "$findings_count" = "0" ]; then
     highest_severity="none"
   fi
+  if [ "$BLOCKING" = true ]; then
+    gate_mode=blocking
+  fi
+  case "$gate_conclusion" in
+    pass|fail) ;;
+    skip) gate_conclusion=not-evaluated ;;
+    error) gate_conclusion=fail ;;
+    *) gate_conclusion=not-evaluated ;;
+  esac
   if [ -s "$RESULT_FILE" ]; then
     evidence_sha="$(shasum -a 256 "$RESULT_FILE" | awk '{print $1}')"
   fi
@@ -58,19 +70,23 @@ emit() {
     --arg coverage_status "$coverage_status" \
     --arg result "$result" \
     --arg conclusion "$conclusion" \
+    --arg gate_mode "$gate_mode" \
+    --arg gate_conclusion "$gate_conclusion" \
+    --arg gate_reason "$gate_reason" \
     --arg highest_severity "$highest_severity" \
     --argjson findings_count "$findings_count" \
     --arg evidence_path "$RESULT_FILE" \
     --argjson evidence_sha "$(if [ "$evidence_sha" = null ]; then printf null; else jq -Rn --arg value "$evidence_sha" '$value'; fi)" \
     '{
-      schema_version: "0.1.0",
+      schema_version: "1.0.0",
       evaluation: {id: $scanner, kind: "scanner"},
       tool: {name: $scanner, version: $scanner_version},
       scope: {repository: $repository, ref: $ref, target: "repository"},
       completion: {status: $completion, reason: $reason},
-      coverage: {status: $coverage_status, included: [], excluded: []},
+      coverage: {status: $coverage_status, included: [], excluded: [], limitations: []},
       findings: {count: $findings_count, highest_severity: $highest_severity},
-      suppressions: {count: null},
+      suppressions: {count: null, sources: []},
+      merge_gate: {mode: $gate_mode, conclusion: $gate_conclusion, reason: $gate_reason},
       timing: {started_at: null, completed_at: (now | todateiso8601), duration_ms: null},
       evidence: [
         if $evidence_sha == null

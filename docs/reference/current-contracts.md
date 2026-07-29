@@ -50,7 +50,7 @@ Outputs:
 | `highest-severity` | Highest finding severity or `none` |
 | `findings-json` | Runner-local path to the structured result |
 | `completion-status` | `complete`, `incomplete`, `skipped`, or `error` |
-| `evaluation-result` | Runner-local path to the pre-v1 Evaluation Result JSON |
+| `evaluation-result` | Runner-local path to the v1 Evaluation Result JSON |
 
 Current limitations:
 

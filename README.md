@@ -52,7 +52,7 @@ dependency-ordered work queue and the commands used to claim and complete work.
 | Combined scanner suite | Umbrella reusable workflow | Pilot; transitively immutable at the example commit |
 | Filecoin review invariants | Versioned prompts | Available to AI review |
 | Ecosystem Security Profiles | Planned profile layer | Not yet released |
-| Normalized Evaluation Result | Scanner and AI action outputs | Pre-v1 `0.1.0` contract |
+| Normalized Evaluation Result | Scanner and AI action outputs | Stable `1.0.0` schema; aggregation is next |
 
 See the [decision map](docs/ECOSYSTEM-SECURITY-DECISION-MAP.md) for release
 gates and active design work.

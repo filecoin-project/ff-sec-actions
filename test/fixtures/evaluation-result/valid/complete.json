@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "evaluation": {"id": "fixture-scan", "kind": "scanner"},
+  "tool": {"name": "fixture", "version": "1.2.3"},
+  "scope": {"repository": "filecoin-project/fixture", "ref": "abc123", "target": "repository"},
+  "completion": {"status": "complete", "reason": "scanner produced validated evidence"},
+  "coverage": {"status": "complete", "included": ["tracked files"], "excluded": [], "limitations": []},
+  "findings": {"count": 0, "highest_severity": "none"},
+  "suppressions": {"count": 0, "sources": []},
+  "merge_gate": {"mode": "blocking", "conclusion": "pass", "reason": "no blocking findings"},
+  "timing": {"started_at": "2026-07-29T00:00:00Z", "completed_at": "2026-07-29T00:00:01Z", "duration_ms": 1000},
+  "evidence": [{"type": "none", "path": null, "sha256": null}]
+}

@@ -33,6 +33,7 @@ on:
       - scripts/check-fork-pr.sh
       - scripts/test-fork-pr.sh
       - test/fixtures/fork-pr/**
+      - test/fixtures/evaluation-result/**
       - test/fixtures/actions-security/**
   push:
     branches: [main]
@@ -67,6 +68,7 @@ on:
       - scripts/check-fork-pr.sh
       - scripts/test-fork-pr.sh
       - test/fixtures/fork-pr/**
+      - test/fixtures/evaluation-result/**
       - test/fixtures/actions-security/**
   workflow_dispatch:
 

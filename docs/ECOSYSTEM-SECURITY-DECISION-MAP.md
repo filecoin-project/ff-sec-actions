@@ -173,7 +173,7 @@ violates its execution and authority contract.
 ## evaluation-contract: Separate Evidence, Completion, And Policy
 
 Blocked by: product-contract
-Status: open
+Status: resolved
 Type: Grilling
 
 ### Question
@@ -183,11 +183,14 @@ coverage, tool errors, findings, suppressions, and Merge Gates interact?
 
 ### Answer
 
-Pending. Recommended minimum: tool identity and immutable version, profile
-version, scope, completion status, coverage limitations, normalized findings,
-suppression provenance, timing, and evidence locations. Operational failure
-must never be represented as zero findings. Consumers choose gate policy
-separately from scanner execution.
+Every adapter emits the strict `1.0.0` Evaluation Result with separate fields
+for tool/scope identity, completion, coverage and limitations, findings,
+suppressions, evidence integrity, timing, and merge policy. `complete + zero
+findings` is distinct from `incomplete`, `skipped`, and `error`; unknown fields
+are rejected. A Merge Gate conclusion is policy over an observation and never
+rewrites completion or finding evidence. Profile-level completeness remains the
+aggregator's responsibility. See the
+[Evaluation Result contract](reference/evaluation-result.md).
 
 ## profile-taxonomy: Define Supported Project Classes
 

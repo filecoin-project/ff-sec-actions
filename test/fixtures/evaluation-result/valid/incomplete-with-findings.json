@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "evaluation": {"id": "fixture-review", "kind": "ai-review"},
+  "tool": {"name": "fixture-model", "version": "1"},
+  "scope": {"repository": "filecoin-project/fixture", "ref": "def456", "target": "pull-request:42"},
+  "completion": {"status": "incomplete", "reason": "configured context limit reached"},
+  "coverage": {"status": "partial", "included": ["first diff partition"], "excluded": ["remaining diff"], "limitations": ["observed findings are not a complete review"]},
+  "findings": {"count": 1, "highest_severity": "high"},
+  "suppressions": {"count": null, "sources": []},
+  "merge_gate": {"mode": "blocking", "conclusion": "fail", "reason": "observed finding met the threshold"},
+  "timing": {"started_at": null, "completed_at": "2026-07-29T00:00:01Z", "duration_ms": null},
+  "evidence": [{"type": "json", "path": "findings.json", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}]
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "evaluation": {"id": "invalid", "kind": "scanner"},
+  "tool": {"name": "fixture", "version": null, "download": "mutable"},
+  "scope": {"repository": null, "ref": null, "target": "repository"},
+  "completion": {"status": "skipped", "reason": "fixture"},
+  "coverage": {"status": "not-applicable", "included": [], "excluded": [], "limitations": []},
+  "findings": {"count": null, "highest_severity": "unknown"},
+  "suppressions": {"count": null, "sources": []},
+  "merge_gate": {"mode": "advisory", "conclusion": "not-evaluated", "reason": "fixture"},
+  "timing": {"started_at": null, "completed_at": null, "duration_ms": null},
+  "evidence": [{"type": "none", "path": null, "sha256": null}]
+}

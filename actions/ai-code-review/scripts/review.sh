@@ -34,6 +34,28 @@ emit_evaluation() {
   local evidence_sha=null
   local repository=null
   local ref=null
+  local gate_mode=advisory
+  local gate_conclusion=not-evaluated
+  local gate_reason="$reason"
+  local severity_rank=0
+  local threshold_rank=0
+
+  if [ "$FAIL_ON_SEVERITY" != none ]; then
+    gate_mode=blocking
+  fi
+  if [ "$completion" = error ]; then
+    gate_conclusion=fail
+  elif [ "$completion" = complete ]; then
+    gate_conclusion=pass
+  fi
+  if [ "$gate_mode" = blocking ] && [ "$findings_count" != null ]; then
+    severity_rank="$(case "$highest_severity" in critical) printf 5 ;; high) printf 4 ;; medium) printf 3 ;; low) printf 2 ;; info) printf 1 ;; *) printf 0 ;; esac)"
+    threshold_rank="$(case "$FAIL_ON_SEVERITY" in critical) printf 5 ;; high) printf 4 ;; medium) printf 3 ;; low) printf 2 ;; info) printf 1 ;; *) printf 0 ;; esac)"
+    if [ "$severity_rank" -ge "$threshold_rank" ]; then
+      gate_conclusion=fail
+      gate_reason="findings met the configured severity threshold"
+    fi
+  fi
 
   if [ -n "$evidence_path" ] && [ -s "$evidence_path" ]; then
     evidence_sha="$(shasum -a 256 "$evidence_path" | awk '{print $1}')"
@@ -58,9 +80,12 @@ emit_evaluation() {
     --arg highest_severity "$highest_severity" \
     --arg evidence_type "$evidence_type" \
     --arg evidence_path "$evidence_path" \
+    --arg gate_mode "$gate_mode" \
+    --arg gate_conclusion "$gate_conclusion" \
+    --arg gate_reason "$gate_reason" \
     --argjson evidence_sha "$(if [ "$evidence_sha" = null ]; then printf null; else jq -Rn --arg value "$evidence_sha" '$value'; fi)" \
     '{
-      schema_version: "0.1.0",
+      schema_version: "1.0.0",
       evaluation: {id: "ai-code-review", kind: "ai-review"},
       tool: {name: "anthropic-claude", version: $model},
       scope: {repository: $repository, ref: $ref, target: $target},
@@ -68,10 +93,12 @@ emit_evaluation() {
       coverage: {
         status: $coverage_status,
         included: ["reviewable pull-request diff"],
-        excluded: (if $coverage_status == "partial" then ["diff content beyond configured or model limit"] else [] end)
+        excluded: (if $coverage_status == "partial" then ["diff content beyond configured or model limit"] else [] end),
+        limitations: ["diff-only review does not establish repository-wide behavior"]
       },
       findings: {count: $findings_count, highest_severity: $highest_severity},
-      suppressions: {count: null},
+      suppressions: {count: null, sources: []},
+      merge_gate: {mode: $gate_mode, conclusion: $gate_conclusion, reason: $gate_reason},
       timing: {started_at: null, completed_at: (now | todateiso8601), duration_ms: null},
       evidence: [
         if $evidence_sha == null

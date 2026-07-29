@@ -13,21 +13,36 @@ fail() {
   exit 1
 }
 
+for fixture in "$repo_root"/test/fixtures/evaluation-result/valid/*.json; do
+  bash "$checker" "$fixture" >/dev/null \
+    || fail "valid static fixture was rejected: $fixture"
+done
+
+for fixture in "$repo_root"/test/fixtures/evaluation-result/invalid/*.json; do
+  if bash "$checker" "$fixture" >/dev/null 2>&1; then
+    fail "invalid static fixture was accepted: $fixture"
+  fi
+done
+
 make_contract_fixture() {
   local kind="$1"
   local status="$2"
   local count=null
   local highest=unknown
   local coverage=unknown
+  local gate_conclusion=not-evaluated
 
   if [ "$status" = complete ]; then
     count=0
     highest=none
     coverage=complete
+    gate_conclusion=pass
   elif [ "$status" = skipped ]; then
     coverage=not-applicable
   elif [ "$status" = incomplete ]; then
     coverage=partial
+  elif [ "$status" = error ]; then
+    gate_conclusion=fail
   fi
 
   jq -n \
@@ -36,15 +51,17 @@ make_contract_fixture() {
     --argjson count "$count" \
     --arg highest "$highest" \
     --arg coverage "$coverage" \
+    --arg gate_conclusion "$gate_conclusion" \
     '{
-      schema_version: "0.1.0",
+      schema_version: "1.0.0",
       evaluation: {id: ($kind + "-fixture"), kind: $kind},
       tool: {name: "fixture", version: "1"},
       scope: {repository: "filecoin-project/fixture", ref: "abc123", target: "repository"},
       completion: {status: $status, reason: "contract fixture"},
-      coverage: {status: $coverage, included: [], excluded: []},
+      coverage: {status: $coverage, included: [], excluded: [], limitations: []},
       findings: {count: $count, highest_severity: $highest},
-      suppressions: {count: null},
+      suppressions: {count: null, sources: []},
+      merge_gate: {mode: "advisory", conclusion: $gate_conclusion, reason: "fixture policy"},
       timing: {started_at: null, completed_at: null, duration_ms: null},
       evidence: [{type: "none", path: null, sha256: null}]
     }' > "$test_directory/${kind}-${status}.json"
@@ -62,6 +79,18 @@ jq '.completion.status = "complete" | .findings.count = null' \
   "$test_directory/scanner-error.json" > "$test_directory/invalid-complete.json"
 if bash "$checker" "$test_directory/invalid-complete.json" >/dev/null 2>&1; then
   fail "complete evaluations accepted an unknown finding count"
+fi
+
+jq '.unexpected = true' \
+  "$test_directory/scanner-complete.json" > "$test_directory/invalid-unknown-field.json"
+if bash "$checker" "$test_directory/invalid-unknown-field.json" >/dev/null 2>&1; then
+  fail "unknown top-level fields were accepted"
+fi
+
+jq '.evidence[0] = {type: "none", path: "result.json", sha256: null}' \
+  "$test_directory/scanner-complete.json" > "$test_directory/invalid-none-evidence.json"
+if bash "$checker" "$test_directory/invalid-none-evidence.json" >/dev/null 2>&1; then
+  fail "none evidence with a path was accepted"
 fi
 
 mkdir -p "$test_directory/bin" "$test_directory/runner"

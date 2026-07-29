@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/filecoin-project/ff-sec-actions/schemas/evaluation-result.schema.json",
   "title": "Filecoin Ecosystem Security Evaluation Result",
-  "description": "Pre-v1 contract separating evaluation completion from observed findings.",
+  "description": "Stable v1 contract separating evaluation completion, observed findings, and merge-gate policy.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -14,11 +14,12 @@
     "coverage",
     "findings",
     "suppressions",
+    "merge_gate",
     "timing",
     "evidence"
   ],
   "properties": {
-    "schema_version": { "const": "0.1.0" },
+    "schema_version": { "const": "1.0.0" },
     "evaluation": {
       "type": "object",
       "additionalProperties": false,
@@ -59,11 +60,12 @@
     "coverage": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status", "included", "excluded"],
+      "required": ["status", "included", "excluded", "limitations"],
       "properties": {
         "status": { "enum": ["complete", "partial", "not-applicable", "unknown"] },
         "included": { "type": "array", "items": { "type": "string" } },
-        "excluded": { "type": "array", "items": { "type": "string" } }
+        "excluded": { "type": "array", "items": { "type": "string" } },
+        "limitations": { "type": "array", "items": { "type": "string", "minLength": 1 } }
       }
     },
     "findings": {
@@ -80,9 +82,20 @@
     "suppressions": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["count"],
+      "required": ["count", "sources"],
       "properties": {
-        "count": { "type": ["integer", "null"], "minimum": 0 }
+        "count": { "type": ["integer", "null"], "minimum": 0 },
+        "sources": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "merge_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "conclusion", "reason"],
+      "properties": {
+        "mode": { "enum": ["advisory", "blocking"] },
+        "conclusion": { "enum": ["pass", "fail", "not-evaluated"] },
+        "reason": { "type": "string", "minLength": 1 }
       }
     },
     "timing": {
@@ -100,12 +113,29 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["type", "path"],
+        "required": ["type", "path", "sha256"],
         "properties": {
           "type": { "enum": ["sarif", "json", "log", "none"] },
           "path": { "type": ["string", "null"] },
           "sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
-        }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "type": { "const": "none" } } },
+            "then": {
+              "properties": {
+                "path": { "type": "null" },
+                "sha256": { "type": "null" }
+              }
+            },
+            "else": {
+              "properties": {
+                "path": { "type": "string", "minLength": 1 },
+                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              }
+            }
+          }
+        ]
       }
     }
   },
@@ -123,6 +153,66 @@
         "properties": {
           "findings": {
             "properties": { "count": { "type": "integer" } }
+          },
+          "merge_gate": {
+            "properties": { "conclusion": { "enum": ["pass", "fail"] } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "completion": {
+            "properties": { "status": { "const": "error" } },
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "merge_gate": {
+            "properties": { "conclusion": { "const": "fail" } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "completion": {
+            "properties": { "status": { "const": "skipped" } },
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "findings": {
+            "properties": {
+              "count": { "type": "null" },
+              "highest_severity": { "const": "unknown" }
+            }
+          },
+          "merge_gate": {
+            "properties": { "conclusion": { "const": "not-evaluated" } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "findings": {
+            "properties": { "count": { "const": 0 } },
+            "required": ["count"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "findings": {
+            "properties": { "highest_severity": { "const": "none" } }
           }
         }
       }
