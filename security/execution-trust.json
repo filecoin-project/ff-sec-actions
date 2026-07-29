@@ -446,14 +446,14 @@
         "secret_context": false,
         "write_permissions": ["pull-requests", "security-events"],
         "execution_markers": [],
-        "mutable_references": true,
+        "mutable_references": false,
         "mutable_container": false,
         "oidc": false,
         "cache": false,
         "self_hosted_runner": false
       },
       "network": ["delegated-to-security-pipeline"],
-      "migration": ["Replace with the immutable secretless Ecosystem Baseline example.", "Show privileged publishers and build analyses as separate opt-in jobs."]
+      "migration": ["Keep the example on a reviewed immutable graph commit.", "Replace with the secretless Ecosystem Baseline and show privileged publishers and build analyses as separate opt-in jobs."]
     },
     {
       "path": "actions/ai-code-review/action.yml",

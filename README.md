@@ -10,9 +10,9 @@ secure, and a green workflow only has meaning when every enabled evaluation
 completed its declared scope.
 
 > **Project status: pre-v1.** The repository is being hardened for ecosystem
-> use. There is not yet a stable release, and the umbrella workflow still has
-> transitive references to `main`. Use the current examples only in pilot or
-> sandbox repositories until the G0 release-integrity work is complete.
+> use. There is not yet a stable release. The scanner example now pins a
+> transitively immutable execution graph, but use it only in pilot or sandbox
+> repositories until the remaining G0 release gates are complete.
 
 ## Where Do You Want To Go?
 
@@ -48,7 +48,7 @@ dependency-ordered work queue and the commands used to claim and complete work.
 |---|---|---|
 | Filecoin-aware AI PR review | Composite action and reusable workflow | Pilot; requires an Anthropic key |
 | GitHub Actions security, Semgrep, CodeQL, Trivy, Gitleaks, dependency review, SBOM, Scorecard, Slither | Reusable workflows | Pilot; scanner behavior varies |
-| Combined scanner suite | Umbrella reusable workflow | Pilot; not yet transitively immutable |
+| Combined scanner suite | Umbrella reusable workflow | Pilot; transitively immutable at the example commit |
 | Filecoin review invariants | Versioned prompts | Available to AI review |
 | Ecosystem Security Profiles | Planned profile layer | Not yet released |
 | Normalized Evaluation Result | Scanner and AI action outputs | Pre-v1 `0.1.0` contract |
@@ -77,8 +77,8 @@ roadmap/                 canonical machine-readable implementation state
   project-controlled behavior. Review
   [permissions and secrets](docs/consumers/permissions-and-secrets.md) before
   enabling them on untrusted PRs.
-- Third-party GitHub actions should be pinned to immutable commits. A consumer
-  pin must eventually cover the complete nested execution graph.
+- Third-party GitHub actions and containers are immutable in the published
+  graph. A consumer upgrades or rolls back by changing one reviewed commit.
 - Fork PRs do not receive repository or organization secrets.
 
 Do not put suspected vulnerability details or secrets in a public issue. A

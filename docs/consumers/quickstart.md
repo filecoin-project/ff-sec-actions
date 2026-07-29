@@ -7,10 +7,11 @@ how to interpret.
 
 ## Before You Start
 
-This repository has no stable v1 release. The combined security pipeline still
-loads nested workflows from `main`, so pinning only the outer workflow does not
-make the full execution graph immutable. Use this quickstart in a sandbox or
-approved pilot until the G0 release gate is complete.
+This repository has no stable v1 release. The example pins a reviewed pre-v1
+commit whose nested workflows, actions, assets, tools, and containers form an
+[immutable release graph](../reference/release-integrity.md). Use this
+quickstart in a sandbox or approved pilot while the remaining G0 release gates
+are completed.
 
 You need:
 
@@ -41,8 +42,7 @@ Before adding an example:
 3. Confirm whether it installs or executes project dependencies.
 4. Confirm which secrets are required and what happens on fork PRs.
 5. Confirm whether scanners are advisory or merge-blocking.
-6. Replace mutable refs only when the referenced workflow is transitively
-   immutable; the current umbrella does not yet meet that condition.
+6. Keep the full commit pin and review the graph diff before upgrading it.
 
 See [Permissions and secrets](permissions-and-secrets.md) for the current trust
 matrix.

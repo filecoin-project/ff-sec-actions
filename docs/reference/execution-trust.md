@@ -108,7 +108,7 @@ repository configuration as well as this repository's source contract.
 | `.github/workflows/security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Keep nested pins immutable; replace the mixed umbrella with a strict baseline and separate opt-in privileged jobs. |
 | `examples/consumer-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |
 | `examples/consumer-manual-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |
-| `examples/consumer-security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Publish a secretless baseline example and show privileged tiers as separate opt-ins. |
+| `examples/consumer-security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Keep the graph pin immutable; publish a secretless baseline and separate privileged opt-ins. |
 | `actions/ai-code-review/action.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Add bounded context, privacy, completion, and result contracts while preserving no checkout/execution. |
 | `actions/gitleaks-scan/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep the release archive version and checksums immutable and validated. |
 | `actions/scanner-outcome/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Pin every consuming reference through the immutable release graph. |

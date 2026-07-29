@@ -18,9 +18,9 @@ their contracts differ from the target v1 platform.
 | Composite action | You need a step inside a custom job | Runner, permissions, setup, and surrounding steps |
 | Standalone script | You are developing locally or outside GitHub Actions | Runtime tools, environment, credentials, and output paths |
 
-The AI examples currently use the composite action at a reviewed pilot commit.
-The reusable AI workflow resolves that action immutably. The scanner example
-will point to the reviewed umbrella commit produced by this ticket.
+The AI examples use the composite action at a reviewed pilot commit. The
+reusable AI workflow resolves that action immutably. The scanner example uses
+a reviewed umbrella commit that selects the complete immutable graph.
 
 ## AI Code Review Composite Action
 

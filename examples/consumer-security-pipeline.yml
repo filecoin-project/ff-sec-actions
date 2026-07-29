@@ -6,8 +6,8 @@
 # Optional repo/org variable: ENABLE_GHAS='true' uploads SARIF to the Security tab.
 # No repository or organization secret is required for the baseline scanners.
 #
-# Pilot only: the umbrella and its nested workflows still use @main. Do not
-# treat this as a reproducible release until the G0 release work is complete.
+# Pre-v1 pilot: this reviewed commit selects the complete immutable execution
+# graph. Advance it only after reviewing the release diff and graph check.
 name: Security
 
 on:
@@ -30,7 +30,7 @@ jobs:
       contents: read
       security-events: write
       pull-requests: write # dependency-review PR comments
-    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
     with:
       # Safe baseline: inspect manifests and lockfiles without running package
       # installation hooks from repository content.
@@ -55,6 +55,6 @@ jobs:
       # slither-fail-on: high
   # À la carte alternative — call individual scanners as separate jobs:
   # semgrep:
-  #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@main
+  #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
   # secrets-scan:
-  #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@main
+  #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
