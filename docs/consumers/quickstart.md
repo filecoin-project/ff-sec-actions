@@ -10,8 +10,8 @@ how to interpret.
 This repository has no stable v1 release. The example pins a reviewed pre-v1
 commit whose nested workflows, actions, assets, tools, and containers form an
 [immutable release graph](../reference/release-integrity.md). Use this
-quickstart in a sandbox or approved pilot while the remaining G0 release gates
-are completed.
+quickstart in a sandbox or approved pilot while the evaluation platform and
+later public-release gates are completed.
 
 You need:
 

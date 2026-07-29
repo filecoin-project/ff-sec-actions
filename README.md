@@ -12,7 +12,8 @@ completed its declared scope.
 > **Project status: pre-v1.** The repository is being hardened for ecosystem
 > use. There is not yet a stable release. The scanner example now pins a
 > transitively immutable execution graph, but use it only in pilot or sandbox
-> repositories until the remaining G0 release gates are complete.
+> repositories while the post-G0 evaluation, governance, and release gates are
+> completed.
 
 ## Where Do You Want To Go?
 

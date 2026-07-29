@@ -38,8 +38,8 @@ claimed.
 | Tranche | Scope | Status |
 |---|---|---|
 | T1 — Navigable foundation | README audience router, documentation home, first consumer/maintainer/operator journeys, reference index, executable pilot examples, local-link contract, and CI enforcement | Implemented on the current branch |
-| T2 — G0 trust foundation | Explicit workflow permissions, no unnecessary install hooks, honest scanner gates, completion status, safe fork behavior, and immutable transitive refs | Next |
-| T3 — Evaluation platform | Evaluation Result schema, scanner adapter contract, evidence aggregation, and first end-to-end Security Profile | Blocked by open decisions |
+| T2 — G0 trust foundation | Explicit workflow permissions, no unnecessary install hooks, honest scanner gates, completion status, safe fork behavior, and immutable transitive refs | Implemented; enforced by the G0 contract workflow |
+| T3 — Evaluation platform | Evaluation Result schema, scanner adapter contract, evidence aggregation, and first end-to-end Security Profile | Next |
 | T4 — Privileged analysis | Bounded AI context/threat-model/review pipeline, validation, privacy, cost, and fork handling | Blocked by T3 and open decisions |
 | T5 — Release and governance | Verification corpus, CODEOWNERS, vulnerability process, compatibility policy, release automation, revocation, and generated reference | Blocked by earlier tranches |
 | T6 — Ecosystem rollout | Representative pilots, migration tooling, adoption inventory, support, effectiveness measures, and recurring review | Blocked by public-v1 readiness |

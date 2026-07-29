@@ -9,8 +9,9 @@ rollback.
 ## Current Status
 
 `ff-sec-actions` is pre-v1. It is suitable for sandbox evaluation and selected
-pilots, not mandatory ecosystem-wide enforcement. The G0 trust and release
-integrity work must complete before a broad rollout.
+pilots, not mandatory ecosystem-wide enforcement. The G0 trust foundation is
+enforced; the evaluation-platform, profile, governance, and release gates must
+still complete before a broad rollout.
 
 ## Pilot Checklist
 

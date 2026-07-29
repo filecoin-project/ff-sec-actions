@@ -23,6 +23,13 @@
         }
       }
     },
+    ".github/workflows/g0-contract.yml": {
+      "g0-contract": {
+        "permissions": {
+          "contents": "read"
+        }
+      }
+    },
     ".github/workflows/manual-ai-code-review.yml": {
       "review": {
         "permissions": {

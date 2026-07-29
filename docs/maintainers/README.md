@@ -16,6 +16,9 @@ and documentation contracts.
    Evaluation Result, Security Profile, or release graph.
 6. Run `bash scripts/check-docs.sh` for documentation changes.
 
+The [G0 trustworthy-foundation gate](g0-gate.md) is the required pre-v1 trust
+suite and maps each claim to a positive contract and rejecting fixture.
+
 ## Repository Responsibilities
 
 | Area | Owns |
@@ -47,6 +50,8 @@ Run the checks that currently exist:
 
 ```sh
 bash scripts/check-docs.sh
+bash scripts/check-release-graph.sh
+bash scripts/check-fork-pr.sh
 actionlint .github/workflows/*.yml examples/*.yml
 shellcheck actions/**/scripts/*.sh scripts/*.sh
 jq empty actions/**/scripts/*.json
@@ -59,5 +64,5 @@ defines the complete target.
 ## Release Status
 
 There is no stable v1. Do not introduce documentation that implies `@v1`
-exists, and do not claim that pinning the current umbrella transitively pins
-nested workflows. Release integrity is a prerequisite for public adoption.
+exists. The reviewed pilot pin is transitively immutable, but it remains a
+pilot until later evaluation, governance, and release gates are complete.

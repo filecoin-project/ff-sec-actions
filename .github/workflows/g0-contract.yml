@@ -1,0 +1,67 @@
+name: G0 Trustworthy Foundation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g0-contract:
+    name: G0 Trustworthy Foundation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout complete release history
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate documentation contract
+        run: bash scripts/check-docs.sh
+
+      - name: Validate roadmap contract
+        run: bash scripts/test-roadmap.sh
+
+      - name: Validate permissions and execution trust
+        run: |
+          bash scripts/check-execution-trust.sh
+          bash scripts/check-workflow-security.sh
+          bash scripts/test-workflow-security.sh
+
+      - name: Prove baseline does not execute Consumer Project code
+        run: |
+          bash scripts/check-baseline-no-exec.sh
+          bash scripts/test-baseline-no-exec.sh
+
+      - name: Prove gate and completion semantics
+        run: |
+          bash scripts/check-scanner-gates.sh
+          bash scripts/test-scanner-outcome.sh
+          bash scripts/test-evaluation-result.sh
+
+      - name: Prove secretless and workflow-definition detection
+        run: |
+          bash scripts/test-gitleaks-scan.sh
+          bash scripts/test-consumer-actions-security.sh
+
+      - name: Prove immutable release graph
+        run: |
+          bash scripts/check-release-graph.sh
+          bash scripts/test-release-graph.sh
+
+      - name: Prove fork pull-request boundaries
+        run: |
+          bash scripts/check-fork-pr.sh
+          bash scripts/test-fork-pr.sh
+
+      - name: Validate shell, workflow, example, and fork-fixture syntax
+        run: |
+          shellcheck scripts/*.sh actions/*/*.sh actions/*/scripts/*.sh
+          go run github.com/rhysd/actionlint/cmd/actionlint@914e7df21a07ef503a81201c76d2b11c789d3fca \
+            .github/workflows/*.yml examples/*.yml test/fixtures/fork-pr/workflow.yml

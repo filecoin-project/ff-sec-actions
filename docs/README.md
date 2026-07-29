@@ -22,6 +22,7 @@ Use the [Platform Maintainer guide](maintainers/README.md) when changing or
 releasing the Control Repository.
 
 - [Shared domain language](../CONTEXT.md)
+- [G0 trustworthy-foundation gate](maintainers/g0-gate.md)
 - [Standalone script conventions](../scripts/README.md)
 - [AI review development harness](../scripts/dev/README.md)
 

@@ -32,6 +32,7 @@ required_pages=(
   "actions/gitleaks-scan/action.yml"
   "actions/gitleaks-scan/gitleaks-scan.sh"
   ".github/workflows/docs.yml"
+  ".github/workflows/g0-contract.yml"
   ".github/workflows/sec-actions.yml"
   "docs/README.md"
   "docs/consumers/quickstart.md"
@@ -40,6 +41,7 @@ required_pages=(
   "docs/consumers/permissions-and-secrets.md"
   "docs/consumers/troubleshooting.md"
   "docs/maintainers/README.md"
+  "docs/maintainers/g0-gate.md"
   "docs/operators/README.md"
   "docs/reference/README.md"
   "docs/reference/current-contracts.md"
@@ -107,6 +109,22 @@ if [ -f ".github/workflows/docs.yml" ]; then
   require_text ".github/workflows/docs.yml" "github.com/rhysd/actionlint/cmd/actionlint@914e7df21a07ef503a81201c76d2b11c789d3fca"
   require_text ".github/workflows/docs.yml" "contents: read"
   require_text ".github/workflows/docs.yml" "persist-credentials: false"
+fi
+
+if [ -f ".github/workflows/g0-contract.yml" ]; then
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/check-workflow-security.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-workflow-security.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/check-baseline-no-exec.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-baseline-no-exec.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/check-scanner-gates.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-scanner-outcome.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-evaluation-result.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-gitleaks-scan.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-consumer-actions-security.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/check-release-graph.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-release-graph.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/check-fork-pr.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-fork-pr.sh"
 fi
 
 if grep -REq '^[[:space:]-]*uses:.*@v1([[:space:]]|$)' examples; then

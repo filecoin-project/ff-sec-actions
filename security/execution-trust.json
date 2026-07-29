@@ -120,6 +120,27 @@
       "migration": ["Add execution-trust and workflow-security contracts to this job."]
     },
     {
+      "path": ".github/workflows/g0-contract.yml",
+      "scope": "control-repository",
+      "current_tier": "control-repository-ci",
+      "target_tier": "control-repository-ci",
+      "observed": {
+        "checkout": true,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": ["control-script"],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-action-download", "go-module-proxy", "github-release-download", "python-package-index"],
+      "migration": ["Keep every G0 control and its rejecting fixture in the required foundation gate."]
+    },
+    {
       "path": ".github/workflows/manual-ai-code-review.yml",
       "scope": "control-repository",
       "current_tier": "control-repository-ci",

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-29T00:58:59Z",
+  "updated_at": "2026-07-29T01:03:11Z",
   "current_task_id": null,
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
@@ -415,7 +415,7 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "verification",
-      "status": "pending",
+      "status": "done",
       "title": "Enforce the G0 trustworthy-foundation gate",
       "objective": "Turn every G0 trust claim into a required regression test and block release when one fails.",
       "blocked_by": [
@@ -436,8 +436,8 @@
       "artifacts": [
         ".github/workflows/g0-contract.yml"
       ],
-      "started_at": null,
-      "completed_at": null
+      "started_at": "2026-07-29T01:00:07Z",
+      "completed_at": "2026-07-29T01:03:11Z"
     },
     {
       "id": "EVAL-01",
