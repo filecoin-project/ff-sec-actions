@@ -29,4 +29,23 @@ fi
 grep -Fq "remediation-guidance" <<< "$output" \
   || fail "the rejection did not explain the missing remediation surface"
 
+cp "$repo_root/.github/workflows/sec-secrets.yml" \
+  "$fixture_root/.github/workflows/sec-secrets.yml"
+printf '%s\n' \
+  'name: Undeclared evaluation' \
+  'on:' \
+  '  workflow_call:' \
+  > "$fixture_root/.github/workflows/undeclared-evaluation.yaml"
+if OUTPUT_CONTRACT_ROOT="$fixture_root" bash "$checker" >/dev/null 2>&1; then
+  fail "an undeclared reusable .yaml workflow was accepted"
+fi
+
+rm -f "$fixture_root/.github/workflows/undeclared-evaluation.yaml"
+mkdir -p "$fixture_root/actions/undeclared"
+cp "$repo_root/actions/semgrep-scan/action.yml" \
+  "$fixture_root/actions/undeclared/action.yaml"
+if OUTPUT_CONTRACT_ROOT="$fixture_root" bash "$checker" >/dev/null 2>&1; then
+  fail "an undeclared action.yaml action was accepted"
+fi
+
 printf 'consumable output contract tests passed.\n'

@@ -53,7 +53,7 @@ make_clean_pair "$test_root/findings/results"
 jq '.findings = {count: 2, highest_severity: "high"} | .merge_gate = {mode: "blocking", conclusion: "fail", reason: "fixture findings"}' \
   "$test_root/findings/results/two.json" > "$test_root/findings/results/two.tmp"
 mv "$test_root/findings/results/two.tmp" "$test_root/findings/results/two.json"
-jq '.evidence = [{type: "sarif", path: "fixture.sarif", sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", artifact: "fixture-results"}]' \
+jq '.schema_version = "1.1.0" | .evidence = [{type: "sarif", path: "fixture.sarif", sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", artifact: "fixture-results"}]' \
   "$test_root/findings/results/two.json" > "$test_root/findings/results/two.tmp"
 mv "$test_root/findings/results/two.tmp" "$test_root/findings/results/two.json"
 run_case findings 1 complete fail

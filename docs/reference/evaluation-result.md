@@ -45,6 +45,12 @@ content-addressed evidence. Evidence other than `none` requires a path and
 SHA-256 digest. Unknown fields are rejected so misspellings and incompatible
 producer changes cannot silently pass validation.
 
+Version `1.1.0` adds the required nullable `evidence[].artifact` field. A
+non-null value is the durable GitHub artifact name containing the evidence;
+`null` means no durable artifact was published. The validator accepts both
+versions but rejects the 1.1 field on a 1.0 result and rejects a 1.1 result that
+omits it.
+
 ## Current Emitters
 
 - [`scanner-outcome`](../../actions/scanner-outcome/action.yml) validates SARIF,
@@ -62,8 +68,8 @@ retains its `completion` output for compatibility.
 
 - A patch version clarifies documentation or validation without changing the
   accepted JSON shape.
-- A minor version may add an explicitly optional field. Producers do not emit
-  it to a consumer that has selected an older contract.
+- A minor version may add a field with explicit compatibility behavior.
+  Producers do not emit it to a consumer that has selected an older contract.
 - A major version may change required fields or semantics and requires a
   separately selected adapter/profile version.
 - Validators reject unknown fields. Consumers must select a supported schema

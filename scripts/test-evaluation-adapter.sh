@@ -98,6 +98,10 @@ run_case() {
     grep -Fq '::error file=src/fixture%2Cfile.js,line=42,title=fixture%3Ahigh::fixture finding' "$command_log" \
       || { printf 'evaluation-adapter test failure: annotation properties are not command escaped\n' >&2; exit 1; }
   fi
+  if [ -z "$evidence" ]; then
+    grep -Fq "Evidence artifact: \`not-published\`" "$summary" \
+      || { printf 'evaluation-adapter test failure: missing evidence advertised a nonexistent artifact\n' >&2; exit 1; }
+  fi
 }
 
 run_case success success "$test_root/clean.sarif" false 0 complete pass 0

@@ -116,36 +116,46 @@
   },
   "actions": {
     "actions/aggregate-results/action.yml": {
+      "mode": "profile-aggregate",
       "required_outputs": ["completion", "conclusion", "evidence-bundle", "summary"],
       "consumer_surface": "Evidence Bundle and readable Profile Conclusion summary",
       "remediation_surface": "Per-evaluation gate reason and evidence mapping"
     },
     "actions/ai-code-review/action.yml": {
+      "mode": "consumer-evaluation",
       "required_outputs": ["findings-count", "highest-severity", "findings-json", "completion-status", "evaluation-result"],
       "consumer_surface": "Pull-request comment, job summary, findings JSON, and Evaluation Result",
       "remediation_surface": "Finding-specific AI remediation guidance"
     },
     "actions/evaluation-adapter/action.yml": {
+      "mode": "consumer-evaluation",
       "required_outputs": ["completion", "findings-count", "merge-conclusion", "evaluation-result", "evidence-artifact", "summary"],
       "consumer_surface": "Normalized result, job summary, annotations, and durable artifact identity",
       "remediation_surface": "Rule help plus evaluation-specific remediation guidance"
     },
     "actions/gitleaks-scan/action.yml": {
+      "mode": "scanner-invocation",
+      "consumer_workflow": ".github/workflows/sec-secrets.yml",
       "required_outputs": ["scanner-outcome", "scan-scope", "result-file"],
       "consumer_surface": "Redacted SARIF path and explicit scan scope",
       "remediation_surface": "Consumed through the Evaluation Adapter"
     },
     "actions/scanner-outcome/action.yml": {
+      "mode": "legacy-compatibility",
       "required_outputs": ["completion", "result", "conclusion", "findings-count", "evaluation-result"],
       "consumer_surface": "Compatibility Evaluation Result interface",
       "remediation_surface": "Compatibility path; new evaluations must use the Evaluation Adapter"
     },
     "actions/semgrep-scan/action.yml": {
+      "mode": "scanner-invocation",
+      "consumer_workflow": ".github/workflows/sec-semgrep.yml",
       "required_outputs": ["scanner-outcome", "result-file"],
       "consumer_surface": "SARIF path and scanner operational outcome",
       "remediation_surface": "Consumed through the Evaluation Adapter"
     },
     "actions/zizmor-scan/action.yml": {
+      "mode": "scanner-invocation",
+      "consumer_workflow": ".github/workflows/sec-actions.yml",
       "required_outputs": ["scanner-outcome", "result-file"],
       "consumer_surface": "SARIF path and scanner operational outcome",
       "remediation_surface": "Consumed through the Evaluation Adapter"

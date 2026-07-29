@@ -10,11 +10,12 @@ fi
 for result_file in "$@"; do
   jq -e '
     def exact($allowed): ((keys_unsorted - $allowed) | length) == 0;
+    .schema_version as $result_version |
     (type == "object" and exact([
       "schema_version", "evaluation", "tool", "scope", "completion", "coverage",
       "findings", "suppressions", "merge_gate", "timing", "evidence"
     ]))
-    and .schema_version == "1.0.0"
+    and (.schema_version | IN("1.0.0", "1.1.0"))
     and (.evaluation | type == "object" and exact(["id", "kind"]))
     and (.evaluation.id | type == "string" and length > 0)
     and (.evaluation.kind | IN("scanner", "ai-review"))
@@ -49,11 +50,16 @@ for result_file in "$@"; do
     and (.timing.duration_ms == null or (.timing.duration_ms | type == "number" and floor == . and . >= 0))
     and (.evidence | type == "array" and length > 0)
     and all(.evidence[];
-      (type == "object" and exact(["type", "path", "sha256", "artifact"]))
+      (type == "object"
+        and (if $result_version == "1.0.0"
+          then exact(["type", "path", "sha256"])
+          else exact(["type", "path", "sha256", "artifact"]) and has("artifact") end))
       and (.type | IN("sarif", "json", "log", "none"))
       and (.path == null or (.path | type == "string"))
       and (.sha256 == null or (.sha256 | type == "string" and test("^[a-f0-9]{64}$")))
-      and (.artifact == null or (.artifact | type == "string" and length > 0))
+      and (if $result_version == "1.1.0"
+        then (.artifact == null or (.artifact | type == "string" and length > 0))
+        else true end)
       and (if .type == "none"
         then .path == null and .sha256 == null
         else (.path | type == "string" and length > 0)

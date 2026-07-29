@@ -93,6 +93,18 @@ if bash "$checker" "$test_directory/invalid-none-evidence.json" >/dev/null 2>&1;
   fail "none evidence with a path was accepted"
 fi
 
+jq '.evidence[0].artifact = null' \
+  "$test_directory/scanner-complete.json" > "$test_directory/invalid-v1-artifact.json"
+if bash "$checker" "$test_directory/invalid-v1-artifact.json" >/dev/null 2>&1; then
+  fail "Evaluation Result 1.0 accepted the 1.1 artifact field"
+fi
+
+jq '.schema_version = "1.1.0"' \
+  "$test_directory/scanner-complete.json" > "$test_directory/invalid-v1-1-missing-artifact.json"
+if bash "$checker" "$test_directory/invalid-v1-1-missing-artifact.json" >/dev/null 2>&1; then
+  fail "Evaluation Result 1.1 accepted evidence without artifact identity"
+fi
+
 mkdir -p "$test_directory/bin" "$test_directory/runner"
 printf 'base prompt\n' > "$test_directory/base.md"
 printf 'domain prompt\n' > "$test_directory/domain.md"

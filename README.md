@@ -53,7 +53,7 @@ dependency-ordered work queue and the commands used to claim and complete work.
 | Combined scanner suite | Umbrella reusable workflow | Pilot; transitively immutable at the example commit |
 | Filecoin review invariants | Versioned prompts | Available to AI review |
 | Ecosystem Security Profiles | Secretless Ecosystem Baseline | Consumer-testable alpha with one immutable pin |
-| Normalized Evaluation Result and Evidence Bundle | Five baseline evaluations plus `Profile Conclusion` | Stable `1.0.0` schemas in the alpha baseline |
+| Normalized Evaluation Result and Evidence Bundle | Five baseline evaluations plus `Profile Conclusion` | Evaluation Result `1.1.0`; Evidence Bundle `1.0.0` in the alpha baseline |
 
 See the [decision map](docs/ECOSYSTEM-SECURITY-DECISION-MAP.md) for release
 gates and active design work.

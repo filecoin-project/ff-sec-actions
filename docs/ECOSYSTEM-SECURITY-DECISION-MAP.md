@@ -183,7 +183,8 @@ coverage, tool errors, findings, suppressions, and Merge Gates interact?
 
 ### Answer
 
-Every adapter emits the strict `1.0.0` Evaluation Result with separate fields
+Current normalized adapters emit the strict `1.1.0` Evaluation Result with
+durable artifact identity and separate fields
 for tool/scope identity, completion, coverage and limitations, findings,
 suppressions, evidence integrity, timing, and merge policy. `complete + zero
 findings` is distinct from `incomplete`, `skipped`, and `error`; unknown fields

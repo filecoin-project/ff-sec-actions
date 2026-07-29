@@ -21,14 +21,19 @@ jq -e '
     and (.consumer_surface | type == "string" and length > 0)
     and (.remediation_surface | type == "string" and length > 0)))
   and (.actions | type == "object" and length > 0 and all(.[];
-    (.required_outputs | type == "array" and length > 0)
+    (.mode | IN("consumer-evaluation", "scanner-invocation", "profile-aggregate", "legacy-compatibility"))
+    and (.required_outputs | type == "array" and length > 0)
     and (.consumer_surface | type == "string" and length > 0)
-    and (.remediation_surface | type == "string" and length > 0)))
+    and (.remediation_surface | type == "string" and length > 0)
+    and (if .mode == "scanner-invocation"
+      then (.consumer_workflow | type == "string" and length > 0)
+      else true end)))
 ' "$manifest" >/dev/null || fail "manifest does not match schema version 1"
 
 actual_workflows="$(while IFS= read -r path; do
   grep -q 'workflow_call:' "$path" && printf '%s\n' "${path#"$repo_root/"}"
-done < <(find "$repo_root/.github/workflows" -maxdepth 1 -type f -name '*.yml' | sort))"
+done < <(find "$repo_root/.github/workflows" -maxdepth 1 -type f \
+  \( -name '*.yml' -o -name '*.yaml' \) | sort))"
 declared_workflows="$(jq -r '.workflows | keys[]' "$manifest" | sort)"
 [ "$actual_workflows" = "$declared_workflows" ] \
   || fail "every reusable workflow must declare a consumable output interface"
@@ -60,7 +65,8 @@ while IFS= read -r workflow; do
   fi
 done <<< "$declared_workflows"
 
-actual_actions="$(find "$repo_root/actions" -mindepth 2 -maxdepth 2 -type f -name action.yml \
+actual_actions="$(find "$repo_root/actions" -mindepth 2 -maxdepth 2 -type f \
+  \( -name action.yml -o -name action.yaml \) \
   | sed "s#^$repo_root/##" | sort)"
 declared_actions="$(jq -r '.actions | keys[]' "$manifest" | sort)"
 [ "$actual_actions" = "$declared_actions" ] \
@@ -83,6 +89,29 @@ while IFS= read -r action; do
     grep -Fxq "$required_output" <<< "$outputs" \
       || fail "$action does not expose required output: $required_output"
   done < <(jq -r --arg action "$action" '.actions[$action].required_outputs[]' "$manifest")
+
+  mode="$(jq -r --arg action "$action" '.actions[$action].mode' "$manifest")"
+  if [ "$mode" = scanner-invocation ]; then
+    grep -Fxq scanner-outcome <<< "$outputs" \
+      || fail "$action scanner invocation does not expose scanner-outcome"
+    grep -Fxq result-file <<< "$outputs" \
+      || fail "$action scanner invocation does not expose result-file"
+    consumer_workflow="$(jq -r --arg action "$action" '.actions[$action].consumer_workflow' "$manifest")"
+    jq -e --arg workflow "$consumer_workflow" \
+      '.workflows[$workflow].mode == "normalized-evaluation"' "$manifest" >/dev/null \
+      || fail "$action does not name an owning normalized workflow"
+    action_directory="${action%/action.y*ml}"
+    grep -Fq "filecoin-project/ff-sec-actions/$action_directory@" "$repo_root/$consumer_workflow" \
+      || fail "$action is not composed by its owning normalized workflow"
+  elif [ "$mode" = consumer-evaluation ]; then
+    grep -Fxq evaluation-result <<< "$outputs" \
+      || fail "$action consumer evaluation does not expose evaluation-result"
+  elif [ "$mode" = profile-aggregate ]; then
+    grep -Fxq summary <<< "$outputs" \
+      || fail "$action profile aggregate does not expose summary"
+  elif [ "$mode" = legacy-compatibility ] && [ "$action" != actions/scanner-outcome/action.yml ]; then
+    fail "$action introduces a new legacy compatibility surface"
+  fi
 done <<< "$declared_actions"
 
 printf 'consumable output contract checks passed.\n'

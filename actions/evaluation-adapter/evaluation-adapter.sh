@@ -49,6 +49,12 @@ sha256_file() {
   fi
 }
 
+evidence_artifact_for_result() {
+  if [ -n "$RAW_EVIDENCE" ] && [ -s "$RAW_EVIDENCE" ]; then
+    printf '%s' "$EVIDENCE_ARTIFACT"
+  fi
+}
+
 render_findings() {
   [ -n "$RAW_EVIDENCE" ] && [ -s "$RAW_EVIDENCE" ] || return 0
   jq -r --argjson limit "$MAX_SUMMARY_FINDINGS" '
@@ -116,7 +122,10 @@ render_summary() {
   local highest_severity="$4"
   local gate_conclusion="$5"
   local rendered_count=0
-  local artifact_display="${EVIDENCE_ARTIFACT:-not-published}"
+  local artifact_display
+
+  artifact_display="$(evidence_artifact_for_result)"
+  artifact_display="${artifact_display:-not-published}"
 
   [ "$findings_count" = null ] || rendered_count="$findings_count"
   mkdir -p "$(dirname "$SUMMARY_FILE")"
@@ -195,7 +204,7 @@ emit_result() {
     --argjson evidence_sha "$evidence_sha" \
     --argjson evidence_artifact "$evidence_artifact" \
     '{
-      schema_version: "1.0.0",
+      schema_version: "1.1.0",
       evaluation: {id: $evaluation_id, kind: "scanner"},
       tool: {name: $tool_name, version: $tool_version},
       scope: {repository: $repository, ref: $ref, target: $scope_target},
@@ -221,7 +230,7 @@ emit_result() {
       printf 'findings_count=%s\n' "$findings_count"
       printf 'merge_conclusion=%s\n' "$gate_conclusion"
       printf 'evaluation_result=%s\n' "$EVALUATION_RESULT_FILE"
-      printf 'evidence_artifact=%s\n' "$EVIDENCE_ARTIFACT"
+      printf 'evidence_artifact=%s\n' "$(evidence_artifact_for_result)"
       printf 'summary=%s\n' "$SUMMARY_FILE"
     } >> "$GITHUB_OUTPUT"
   fi

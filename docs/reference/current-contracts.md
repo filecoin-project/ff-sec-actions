@@ -74,7 +74,8 @@ The reusable workflow currently exposes:
 
 It does not mirror the composite action's `github-token`, `pr-number`, `repo`,
 `prompt-file`, or `findings-json` surface. Its internal action reference is
-pinned to a full repository commit.
+pinned to a full repository commit. The artifact uses the Consumer Project
+repository's configured GitHub Actions retention.
 
 ## Security Pipeline Umbrella
 

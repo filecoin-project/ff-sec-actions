@@ -31,8 +31,10 @@ name the durable artifact and its operational use.
 
 The Evaluation Adapter renders at most 20 findings by default to prevent noisy
 or attacker-controlled output from overwhelming the run. Each rendered finding
-contains severity, rule, repository path, line, redacted message, and available
-rule help. The complete result remains in the named raw-evidence artifact.
+contains severity, rule, repository path, line, scanner-provided message, and
+available rule help. Secret-producing scanners must redact messages before the
+adapter receives them; the shared Gitleaks invocation uses full redaction. The
+complete result remains in the named raw-evidence artifact.
 
 Blocking findings exit `1` only after the Evaluation Result, job summary, and
 annotations are emitted. Operational or completion errors exit `2` with a
@@ -53,6 +55,16 @@ pushes, schedules, and manual runs; normal fork restrictions still apply.
 Output names and Evaluation Result fields are pre-v1. Removing or renaming a
 declared output, artifact, evaluation id, or summary field requires migration
 guidance and a reviewed immutable pin advance.
+
+Artifacts use the Consumer Project repository's configured GitHub Actions
+retention unless a caller explicitly sets `retention-days`. Operators must set
+repository retention long enough for their triage and audit requirements.
+
+Low-level scanner invocation actions are developer building blocks rather than
+standalone Consumer Project evaluations. Their consumable interface is an
+explicit operational outcome plus a raw-evidence path, and the output contract
+requires an owning normalized workflow to compose them with the Evaluation
+Adapter before ecosystem release.
 
 ## Adding A New Evaluation
 
