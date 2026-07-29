@@ -1,0 +1,35 @@
+name: Permission-free Zizmor scan
+description: Run checksum-verified Zizmor offline and emit SARIF without GitHub Code Security authority.
+
+inputs:
+  input-path:
+    description: Repository path containing workflow and action definitions to inspect.
+    required: false
+    default: .
+  config-path:
+    description: Explicit Zizmor configuration path; empty disables configuration discovery.
+    required: false
+    default: ""
+  result-file:
+    description: SARIF destination.
+    required: false
+    default: zizmor-results.sarif
+
+outputs:
+  scanner-outcome:
+    description: success when Zizmor ran, including when it found issues; failure for operational errors.
+    value: ${{ steps.scan.outputs.scanner_outcome }}
+  result-file:
+    description: SARIF result path.
+    value: ${{ steps.scan.outputs.result_file }}
+
+runs:
+  using: composite
+  steps:
+    - id: scan
+      shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.input-path }}
+        CONFIG_PATH: ${{ inputs.config-path }}
+        RESULT_FILE: ${{ inputs.result-file }}
+      run: bash "${GITHUB_ACTION_PATH}/zizmor-scan.sh"
