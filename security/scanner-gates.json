@@ -70,8 +70,10 @@
     },
     "secrets": {
       "workflow": ".github/workflows/sec-secrets.yml",
-      "gate_mode": "always-blocking",
-      "note": "Gitleaks findings and operational failures fail; tune high-confidence rules in configuration."
+      "gate_mode": "configurable",
+      "workflow_input": "blocking",
+      "umbrella_input": "secrets-blocking",
+      "enforcement_marker": "blocking: ${{ inputs.blocking }}"
     },
     "semgrep-custom": {
       "workflow": ".github/workflows/sec-semgrep.yml",

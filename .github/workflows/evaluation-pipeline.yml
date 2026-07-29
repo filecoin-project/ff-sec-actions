@@ -18,7 +18,7 @@ jobs:
   dependencies:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@0644706f2dee239fe569d32219c1bba8c1069a0c
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
     with:
       blocking: ${{ inputs.dependency-blocking }}
 
@@ -41,7 +41,7 @@ jobs:
       - name: Aggregate profile evidence and enforce conclusion
         id: aggregate
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/aggregate-results@650fdf6412ff2e3e19ac8f4f124a3257f81c19d9
+        uses: filecoin-project/ff-sec-actions/actions/aggregate-results@f651cbf6ee81a1056d84efbccb32722468be2f13
         with:
           results-directory: evaluation-results
           profile-id: evaluation-vertical-slice

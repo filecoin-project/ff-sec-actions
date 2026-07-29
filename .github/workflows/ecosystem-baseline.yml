@@ -11,6 +11,11 @@ on:
         type: boolean
         required: false
         default: false
+      secrets-blocking:
+        description: Fail when Gitleaks reports findings in the selected scan scope.
+        type: boolean
+        required: false
+        default: false
       iac-blocking:
         type: boolean
         required: false
@@ -33,7 +38,7 @@ jobs:
   actions-security:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@5b2da0e0fda3e9268b69a35451ca016f1b4d24ba
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
     with:
       blocking: ${{ inputs.actions-security-blocking }}
 
@@ -41,7 +46,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@0644706f2dee239fe569d32219c1bba8c1069a0c
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
     with:
       blocking: ${{ inputs.dependency-blocking }}
       skip-dirs: ${{ inputs.skip-dirs }}
@@ -49,13 +54,15 @@ jobs:
   secrets:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@5b2da0e0fda3e9268b69a35451ca016f1b4d24ba
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
+    with:
+      blocking: ${{ inputs.secrets-blocking }}
 
   infrastructure:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@5b2da0e0fda3e9268b69a35451ca016f1b4d24ba
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
     with:
       blocking: ${{ inputs.iac-blocking }}
       skip-dirs: ${{ inputs.skip-dirs }}
@@ -64,7 +71,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@5b2da0e0fda3e9268b69a35451ca016f1b4d24ba
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
     with:
       blocking: ${{ inputs.static-analysis-blocking }}
 
@@ -86,7 +93,7 @@ jobs:
 
       - name: Aggregate Ecosystem Baseline evidence and enforce conclusion
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/aggregate-results@650fdf6412ff2e3e19ac8f4f124a3257f81c19d9
+        uses: filecoin-project/ff-sec-actions/actions/aggregate-results@f651cbf6ee81a1056d84efbccb32722468be2f13
         with:
           results-directory: evaluation-results
           profile-id: ecosystem-baseline

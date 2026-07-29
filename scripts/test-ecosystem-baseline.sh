@@ -45,6 +45,10 @@ grep -Fq "blocking: \${{ inputs.actions-security-blocking }}" "$workflow" \
   || fail "the Ecosystem Baseline does not forward its workflow-definition gate"
 grep -Fq "blocking: \${{ inputs.actions-security-blocking }}" "$privileged_pipeline" \
   || fail "the privileged pipeline does not forward its workflow-definition gate"
+grep -Fq "blocking: \${{ inputs.secrets-blocking }}" "$workflow" \
+  || fail "the Ecosystem Baseline does not forward its secret finding gate"
+grep -Fq "blocking: \${{ inputs.secrets-blocking }}" "$privileged_pipeline" \
+  || fail "the privileged pipeline does not forward its secret finding gate"
 
 if grep -Eq 'security-events:[[:space:]]+write|publish-sarif:' "$dependencies_workflow"; then
   fail "dependency evaluation still mixes read-only inspection with SARIF publication"
