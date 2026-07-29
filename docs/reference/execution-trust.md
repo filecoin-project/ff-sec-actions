@@ -105,7 +105,7 @@ repository configuration as well as this repository's source contract.
 | `.github/workflows/sec-secrets.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep nested actions and the verified scanner archive on the immutable graph. |
 | `.github/workflows/sec-semgrep.yml` | `legacy-mixed` | `ecosystem-baseline` | Keep the image digest-pinned, inspect read-only, and publish separately. |
 | `.github/workflows/sec-slither.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority from the build, constrain submodules, and publish separately. |
-| `.github/workflows/security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Replace the mixed umbrella with a strict baseline and separate opt-in privileged jobs. |
+| `.github/workflows/security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Keep nested pins immutable; replace the mixed umbrella with a strict baseline and separate opt-in privileged jobs. |
 | `examples/consumer-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |
 | `examples/consumer-manual-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |
 | `examples/consumer-security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Publish a secretless baseline example and show privileged tiers as separate opt-ins. |

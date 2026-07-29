@@ -36,6 +36,7 @@ policy, exceptions, upgrades, and rollback across projects.
 - [Current pre-v1 workflow contracts](reference/current-contracts.md)
 - [Execution trust tiers](reference/execution-trust.md)
 - [Evaluation Result contract](reference/evaluation-result.md)
+- [Release integrity](reference/release-integrity.md)
 - [Documentation architecture](DOCUMENTATION-ARCHITECTURE.md)
 - [Ecosystem security decision map](ECOSYSTEM-SECURITY-DECISION-MAP.md)
 - [Distribution model decision](decisions/distribution-model.md)

@@ -8,6 +8,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 - [Current pre-v1 contracts](current-contracts.md)
 - [Execution trust tiers](execution-trust.md)
 - [Evaluation Result contract](evaluation-result.md)
+- [Release integrity](release-integrity.md)
 
 ## Reusable Workflows
 
@@ -51,7 +52,6 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 
 ## Stability
 
-These source files document current behavior on `main`; they are not a stable
-release contract. See the
-[decision map](../ECOSYSTEM-SECURITY-DECISION-MAP.md#release-integrity-make-a-pin-cover-the-whole-execution-graph)
-for the immutable-release work.
+These source files document current pre-v1 behavior. Consumer entrypoints and
+their complete execution graph are immutable when selected by a reviewed full
+commit; see the [release-integrity contract](release-integrity.md).

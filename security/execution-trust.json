@@ -383,14 +383,14 @@
         "secret_context": false,
         "write_permissions": ["id-token", "pull-requests", "security-events"],
         "execution_markers": [],
-        "mutable_references": true,
+        "mutable_references": false,
         "mutable_container": false,
         "oidc": true,
         "cache": false,
         "self_hosted_runner": false
       },
       "network": ["delegated-to-called-workflows"],
-      "migration": ["Replace the mixed umbrella with a strict baseline plus separately opted-in privileged jobs.", "Generate immutable nested references from one reviewed release commit."]
+      "migration": ["Replace the mixed umbrella with a strict baseline plus separately opted-in privileged jobs.", "Keep nested workflows on the checked immutable release graph."]
     },
     {
       "path": "examples/consumer-ai-code-review.yml",

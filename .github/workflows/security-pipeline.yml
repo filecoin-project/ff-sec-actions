@@ -2,8 +2,8 @@
 # One `uses:` line in a consumer repo runs every enabled scanner as parallel jobs;
 # each scanner is also individually callable (sec-*.yml) for repos that want à la carte.
 #
-# NOTE: nested `uses:` refs below must be kept in sync with release tags —
-# grep for '@main' before tagging v1.
+# Nested workflows resolve from one reviewed immutable graph commit. Consumers
+# select this umbrella with one full release commit SHA.
 #
 # Conventions carried from fil-one:
 # - Repo/org variable ENABLE_GHAS='true' turns on SARIF upload to the Security tab
@@ -144,7 +144,7 @@ jobs:
     if: inputs.enable-actions-security
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
 
   semgrep:
     if: inputs.enable-semgrep
@@ -152,7 +152,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
     with:
       blocking: ${{ inputs.semgrep-blocking }}
 
@@ -161,7 +161,7 @@ jobs:
     permissions:
       contents: read
       security-events: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-codeql.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-codeql.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
     with:
       languages: ${{ inputs.codeql-languages }}
 
@@ -171,7 +171,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
       blocking: ${{ inputs.dependency-blocking }}
@@ -181,7 +181,7 @@ jobs:
     if: inputs.enable-secrets
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
 
   iac:
     if: inputs.enable-iac
@@ -189,7 +189,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
       blocking: ${{ inputs.iac-blocking }}
@@ -199,7 +199,7 @@ jobs:
     if: inputs.enable-licenses
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-licenses.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-licenses.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
       blocking: ${{ inputs.license-blocking }}
@@ -210,7 +210,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependency-review.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependency-review.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
     with:
       fail-on-severity: ${{ inputs.dependency-review-fail-on-severity }}
       deny-licenses: ${{ inputs.deny-licenses }}
@@ -219,7 +219,7 @@ jobs:
     if: inputs.enable-sbom && github.event_name != 'pull_request'
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-sbom.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-sbom.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
 
   scorecard:
     if: inputs.enable-scorecard && github.event_name != 'pull_request'
@@ -227,7 +227,7 @@ jobs:
       contents: read
       security-events: write
       id-token: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-scorecard.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-scorecard.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
 
   slither:
     if: inputs.enable-slither
@@ -235,7 +235,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-slither.yml@main
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-slither.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
     with:
       target: ${{ inputs.slither-target }}
       slither-args: ${{ inputs.slither-args }}

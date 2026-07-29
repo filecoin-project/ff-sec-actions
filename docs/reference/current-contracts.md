@@ -19,8 +19,8 @@ their contracts differ from the target v1 platform.
 | Standalone script | You are developing locally or outside GitHub Actions | Runtime tools, environment, credentials, and output paths |
 
 The AI examples currently use the composite action at a reviewed pilot commit.
-The reusable AI workflow now resolves that action immutably. The scanner
-example uses the umbrella on `main` and is explicitly pilot-only.
+The reusable AI workflow resolves that action immutably. The scanner example
+will point to the reviewed umbrella commit produced by this ticket.
 
 ## AI Code Review Composite Action
 
@@ -128,7 +128,6 @@ Slither forwards its documented `fail-on` threshold; see the
 
 Current umbrella limitations:
 
-- nested workflows load from mutable `main`;
 - the parent workflow does not aggregate one Evaluation Result;
 - dependency, license, and SBOM evidence is manifest/lockfile based and can be
   incomplete when packages appear only after installation or a build;

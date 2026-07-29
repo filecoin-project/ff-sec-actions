@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "repository": "filecoin-project/ff-sec-actions",
+  "entrypoints": [
+    ".github/workflows/security-pipeline.yml",
+    ".github/workflows/ai-code-review.yml",
+    ".github/workflows/sec-actions.yml",
+    ".github/workflows/sec-codeql.yml",
+    ".github/workflows/sec-dependencies.yml",
+    ".github/workflows/sec-dependency-review.yml",
+    ".github/workflows/sec-iac.yml",
+    ".github/workflows/sec-licenses.yml",
+    ".github/workflows/sec-sbom.yml",
+    ".github/workflows/sec-scorecard.yml",
+    ".github/workflows/sec-secrets.yml",
+    ".github/workflows/sec-semgrep.yml",
+    ".github/workflows/sec-slither.yml"
+  ],
+  "expected_assets": {
+    "actions/ai-code-review": [
+      "actions/ai-code-review/action.yml",
+      "actions/ai-code-review/scripts/review.sh",
+      "actions/ai-code-review/scripts/schema.json",
+      "prompts/base-reviewer.md",
+      "prompts/default.md",
+      "prompts/filecoin.md"
+    ],
+    "actions/gitleaks-scan": [
+      "actions/gitleaks-scan/action.yml",
+      "actions/gitleaks-scan/gitleaks-scan.sh"
+    ],
+    "actions/scanner-outcome": [
+      "actions/scanner-outcome/action.yml",
+      "actions/scanner-outcome/scanner-outcome.sh",
+      "schemas/evaluation-result.schema.json"
+    ]
+  },
+  "required_markers": {
+    ".github/workflows/sec-actions.yml": [
+      "zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d",
+      "version: 1.28.0"
+    ],
+    ".github/workflows/sec-dependencies.yml": ["version: v0.70.0"],
+    ".github/workflows/sec-iac.yml": ["version: v0.70.0"],
+    ".github/workflows/sec-licenses.yml": ["version: v0.70.0"],
+    ".github/workflows/sec-sbom.yml": ["syft-version: v1.44.0"],
+    ".github/workflows/sec-semgrep.yml": [
+      "semgrep/semgrep:1.93.0@sha256:f35c7891e2030110a84a721fdd556ce8f3da6e7e69d7fab1d3660ae1bb334474"
+    ],
+    ".github/workflows/sec-slither.yml": [
+      "version: v1.7.1",
+      "slither-version: 0.11.5"
+    ],
+    "actions/gitleaks-scan/gitleaks-scan.sh": [
+      "GITLEAKS_VERSION=\"8.30.1\"",
+      "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb",
+      "e4a487ee7ccd7d3a7f7ec08657610aa3606637dab924210b3aee62570fb4b080",
+      "dfe101a4db2255fc85120ac7f3d25e4342c3c20cf749f2c20a18081af1952709",
+      "b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5"
+    ]
+  }
+}

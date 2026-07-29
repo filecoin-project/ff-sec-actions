@@ -119,7 +119,7 @@ native Actions.
 ## release-integrity: Make A Pin Cover The Whole Execution Graph
 
 Blocked by: distribution-model
-Status: open
+Status: resolved
 Type: Prototype
 
 ### Question
@@ -129,11 +129,16 @@ composite action, container, prompt, rule, and third-party action is immutable?
 
 ### Answer
 
-Pending. Prototype two options: flatten the umbrella into a single released
-workflow, or generate release workflows whose internal references contain the
-same immutable commit SHA. Compare auditability, maintenance cost, and rollback
-behavior. Moving major tags may be offered for convenience but cannot be the
-reproducibility boundary.
+Use a layered immutable graph. A consumer pins one umbrella commit; that commit
+pins a leaf-workflow commit, and each leaf pins repository actions/assets,
+third-party actions, containers, and tool versions. The layered shape avoids
+the impossible requirement for a Git commit to contain its own SHA while
+preserving one-reference upgrade and rollback. The recursive
+[`check-release-graph.sh`](../scripts/check-release-graph.sh) release gate
+validates every supported entrypoint and rejects mutable or incomplete graph
+edges. Moving tags may be offered as discovery aliases, but are never the
+reproducibility boundary. See the
+[release-integrity contract](reference/release-integrity.md).
 
 ## execution-trust: Isolate Untrusted Repository Content
 
