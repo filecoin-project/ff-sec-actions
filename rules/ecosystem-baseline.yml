@@ -1,0 +1,39 @@
+rules:
+  - id: filecoin.javascript.shell-command-construction
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: Avoid constructing a shell command from a non-literal value; use an argv-based API and validate inputs.
+    patterns:
+      - pattern-either:
+          - pattern: require("child_process").exec($CMD, ...)
+          - pattern: child_process.exec($CMD, ...)
+      - pattern-not: require("child_process").exec("...", ...)
+      - pattern-not: child_process.exec("...", ...)
+
+  - id: filecoin.go.insecure-tls-verification
+    languages: [go]
+    severity: ERROR
+    message: TLS certificate verification is disabled.
+    pattern: 'tls.Config{..., InsecureSkipVerify: true, ...}'
+
+  - id: filecoin.rust.shell-command-construction
+    languages: [rust]
+    severity: WARNING
+    message: A dynamic value is passed to a shell interpreter; use Command arguments directly.
+    pattern: 'Command::new("sh").arg("-c").arg($CMD)'
+
+  - id: filecoin.solidity.tx-origin-authorization
+    languages: [solidity]
+    severity: ERROR
+    message: tx.origin must not be used for authorization; authenticate msg.sender.
+    pattern-either:
+      - pattern: require(tx.origin == $WHO, ...)
+      - pattern: if (tx.origin == $WHO) { ... }
+
+  - id: filecoin.docker.remote-script-execution
+    languages: [dockerfile]
+    severity: ERROR
+    message: Do not pipe an unauthenticated remote response directly into a shell.
+    pattern-either:
+      - pattern: RUN curl ... | sh
+      - pattern: RUN wget ... | sh

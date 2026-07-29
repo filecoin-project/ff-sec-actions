@@ -2,8 +2,8 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-29T01:26:14Z",
-  "current_task_id": null,
+  "updated_at": "2026-07-29T01:28:10Z",
+  "current_task_id": "BASE-01",
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
   "status_semantics": {
@@ -532,7 +532,7 @@
       "phase": "ecosystem-baseline",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
+      "status": "in_progress",
       "title": "Release the secretless Ecosystem Baseline",
       "objective": "Combine workflow security, secret detection, recursive lockfile vulnerabilities, IaC, and conservative static analysis without executing project code.",
       "blocked_by": [
@@ -553,7 +553,7 @@
         ".github/workflows/ecosystem-baseline.yml",
         "examples/consumer-ecosystem-baseline.yml"
       ],
-      "started_at": null,
+      "started_at": "2026-07-29T01:28:10Z",
       "completed_at": null
     },
     {

@@ -46,6 +46,11 @@
       "actions/scanner-outcome/action.yml",
       "actions/scanner-outcome/scanner-outcome.sh",
       "schemas/evaluation-result.schema.json"
+    ],
+    "actions/semgrep-scan": [
+      "actions/semgrep-scan/action.yml",
+      "actions/semgrep-scan/semgrep-scan.sh",
+      "rules/ecosystem-baseline.yml"
     ]
   },
   "required_markers": {

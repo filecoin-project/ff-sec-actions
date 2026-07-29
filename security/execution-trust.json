@@ -601,6 +601,27 @@
       },
       "network": ["none"],
       "migration": ["Pin every consuming workflow reference through the immutable release graph."]
+    },
+    {
+      "path": "actions/semgrep-scan/action.yml",
+      "scope": "consumer",
+      "current_tier": "ecosystem-baseline",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": false,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["none"],
+      "migration": ["Keep rules repository-owned and scanner execution isolated from Consumer Project tooling."]
     }
   ]
 }

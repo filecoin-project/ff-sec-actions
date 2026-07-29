@@ -1,0 +1,35 @@
+name: Ecosystem baseline Semgrep scan
+description: Run digest-pinned Semgrep with repository-owned conservative rules without executing project code.
+
+inputs:
+  target:
+    description: Source tree to inspect.
+    required: false
+    default: .
+  config:
+    description: Rules file; empty selects the versioned Ecosystem Baseline rules.
+    required: false
+    default: ""
+  result-file:
+    description: SARIF destination.
+    required: false
+    default: semgrep-baseline.sarif
+
+outputs:
+  scanner-outcome:
+    description: success when Semgrep produced SARIF; failure for operational errors.
+    value: ${{ steps.scan.outputs.scanner_outcome }}
+  result-file:
+    description: SARIF path.
+    value: ${{ steps.scan.outputs.result_file }}
+
+runs:
+  using: composite
+  steps:
+    - id: scan
+      shell: bash
+      env:
+        SCAN_TARGET: ${{ inputs.target }}
+        SEMGREP_CONFIG: ${{ inputs.config }}
+        RESULT_FILE: ${{ inputs.result-file }}
+      run: bash "${GITHUB_ACTION_PATH}/semgrep-scan.sh"

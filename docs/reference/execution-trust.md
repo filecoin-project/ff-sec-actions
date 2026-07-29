@@ -116,6 +116,7 @@ repository configuration as well as this repository's source contract.
 | `actions/evaluation-adapter/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep normalization independent from scanner-specific invocation and policy. |
 | `actions/gitleaks-scan/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep the release archive version and checksums immutable and validated. |
 | `actions/scanner-outcome/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Pin every consuming reference through the immutable release graph. |
+| `actions/semgrep-scan/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep rules repository-owned and scanner execution isolated from Consumer Project tooling. |
 
 The detailed observed flags, network destinations, and migration statements
 live in the machine-readable inventory so automation can detect drift.
