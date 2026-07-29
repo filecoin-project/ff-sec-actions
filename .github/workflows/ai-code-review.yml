@@ -69,7 +69,7 @@ jobs:
       # never executes PR code.
       - name: AI code review
         id: ai-review
-        uses: filecoin-project/ff-sec-actions/actions/ai-code-review@0548d1ad3feef0a984d652abc86d4a59f1982c72
+        uses: filecoin-project/ff-sec-actions/actions/ai-code-review@0548d1a4f26c20a6dd62d9793420a8c54b8596f6
         with:
           anthropic-api-key: ${{ secrets.anthropic-api-key }}
           model: ${{ inputs.model }}

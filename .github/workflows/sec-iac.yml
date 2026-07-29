@@ -52,7 +52,7 @@ jobs:
 
       - name: Evaluate IaC scan outcome
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@0548d1ad3feef0a984d652abc86d4a59f1982c72
+        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@0548d1a4f26c20a6dd62d9793420a8c54b8596f6
         with:
           scanner-name: trivy-iac
           scanner-outcome: ${{ steps.scan.outcome }}
