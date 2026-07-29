@@ -23,7 +23,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/ecosystem-baseline.yml@badeb2367cda4ca96507ddcc0ce9e473ba1ab253
+    uses: filecoin-project/ff-sec-actions/.github/workflows/ecosystem-baseline.yml@12c3ea8d24a42b6cf9f335e58e0b21c92db88171
     with:
       require-complete: true
       # Start finding gates advisory; enable after reviewing initial results.
