@@ -41,6 +41,13 @@ Raw evidence is SHA-256-addressed in the normalized result. Generic SARIF
 levels are summarized as high (`error`), medium (`warning`), info (`note`), or
 unknown; adapters do not invent scanner-specific severity policy.
 
+Before returning its policy or operational exit, the adapter writes a readable
+job summary and capped source annotations. The summary maps the stable
+evaluation id to scope, coverage, finding locations, rule help, remediation,
+gate reason, raw-evidence artifact, and evidence file. Its public outputs also
+include the summary path and durable evidence-artifact name. Hashing works with
+`sha256sum` or `shasum`, including the Alpine Semgrep runtime.
+
 ## Verify
 
 ```bash
@@ -54,3 +61,4 @@ crash, malformed output, and skip.
 
 - [Evaluation Result contract](evaluation-result.md)
 - [Current workflow contracts](current-contracts.md)
+- [Consumable output contract](consumable-output.md)

@@ -10,6 +10,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 - [Evaluation Result contract](evaluation-result.md)
 - [Evaluation adapter](evaluation-adapter.md)
 - [Evidence Bundle and profile conclusion](evidence-bundle.md)
+- [Consumable output contract](consumable-output.md)
 - [Ecosystem Baseline static rules](ecosystem-baseline-rules.md)
 - [Permission-free Zizmor adapter](zizmor-scan.md)
 - [Release integrity](release-integrity.md)

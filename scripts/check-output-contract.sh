@@ -17,7 +17,7 @@ jq -e '
   and (.contract.requirement | type == "string" and length > 0)
   and (.contract.normalized_surfaces | type == "array" and length > 0)
   and (.workflows | type == "object" and length > 0 and all(.[];
-    (.mode | IN("normalized-evaluation", "provider-native"))
+    (.mode | IN("normalized-evaluation", "provider-native", "profile-aggregate", "evaluation-collection"))
     and (.consumer_surface | type == "string" and length > 0)
     and (.remediation_surface | type == "string" and length > 0)))
   and (.actions | type == "object" and length > 0 and all(.[];
@@ -26,11 +26,12 @@ jq -e '
     and (.remediation_surface | type == "string" and length > 0)))
 ' "$manifest" >/dev/null || fail "manifest does not match schema version 1"
 
-actual_workflows="$(find "$repo_root/.github/workflows" -maxdepth 1 -type f -name 'sec-*.yml' \
-  | sed "s#^$repo_root/##" | sort)"
+actual_workflows="$(while IFS= read -r path; do
+  grep -q 'workflow_call:' "$path" && printf '%s\n' "${path#"$repo_root/"}"
+done < <(find "$repo_root/.github/workflows" -maxdepth 1 -type f -name '*.yml' | sort))"
 declared_workflows="$(jq -r '.workflows | keys[]' "$manifest" | sort)"
 [ "$actual_workflows" = "$declared_workflows" ] \
-  || fail "every sec-* evaluation workflow must declare a consumable output interface"
+  || fail "every reusable workflow must declare a consumable output interface"
 
 while IFS= read -r workflow; do
   [ -n "$workflow" ] || continue

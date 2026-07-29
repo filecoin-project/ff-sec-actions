@@ -18,11 +18,12 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/ecosystem-baseline.yml@49a06a7a54e5b4bfe607d3f32e242f72a7fc152b
+    uses: filecoin-project/ff-sec-actions/.github/workflows/ecosystem-baseline.yml@badeb2367cda4ca96507ddcc0ce9e473ba1ab253
     with:
       require-complete: true
       actions-security-blocking: false
       dependency-blocking: false
+      secrets-blocking: false
       iac-blocking: false
       static-analysis-blocking: false
       skip-dirs: node_modules,vendor,target,dist,test/fixtures

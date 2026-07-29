@@ -42,6 +42,8 @@ jobs:
       - name: Prove gate and completion semantics
         run: |
           bash scripts/check-scanner-gates.sh
+          bash scripts/check-output-contract.sh
+          bash scripts/test-output-contract.sh
           bash scripts/test-scanner-outcome.sh
           bash scripts/test-evaluation-result.sh
           bash scripts/test-evaluation-adapter.sh

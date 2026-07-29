@@ -16,16 +16,16 @@ cat > "$test_root/findings.sarif" <<'JSON'
   "version": "2.1.0",
   "runs": [{
     "tool": {"driver": {"name": "fixture", "rules": [{
-      "id": "fixture.high",
+      "id": "fixture:high",
       "shortDescription": {"text": "Unsafe fixture behavior"},
-      "helpUri": "https://example.invalid/rules/fixture.high"
+      "helpUri": "https://example.invalid/rules/fixture-high"
     }]}},
     "results": [{
-      "ruleId": "fixture.high",
+      "ruleId": "fixture:high",
       "level": "error",
       "message": {"text": "fixture finding"},
       "locations": [{"physicalLocation": {
-        "artifactLocation": {"uri": "src/fixture.js"},
+        "artifactLocation": {"uri": "src/fixture,file.js"},
         "region": {"startLine": 42}
       }}]
     }]
@@ -46,6 +46,7 @@ run_case() {
   local result="$test_root/${name}.json"
   local summary="$test_root/${name}.md"
   local step_summary="$test_root/${name}.step-summary.md"
+  local command_log="$test_root/${name}.commands.log"
   local actual_exit=0
 
   EVALUATION_ID=fixture-scan \
@@ -63,7 +64,7 @@ run_case() {
   SUMMARY_FILE="$summary" \
   GITHUB_STEP_SUMMARY="$step_summary" \
   EVALUATION_RESULT_FILE="$result" \
-    bash "$adapter" >/dev/null 2>&1 || actual_exit="$?"
+    bash "$adapter" >"$command_log" 2>&1 || actual_exit="$?"
 
   [ "$actual_exit" -eq "$expected_exit" ] \
     || { printf 'evaluation-adapter test failure: %s exited %s, expected %s\n' "$name" "$actual_exit" "$expected_exit" >&2; exit 1; }
@@ -86,7 +87,7 @@ run_case() {
       'Gate: **fail**' \
       "Scope: \`repository\`" \
       "Evidence artifact: \`fixture-sarif\`" \
-      "\`src/fixture.js:42\`" \
+      "\`src/fixture,file.js:42\`" \
       'fixture finding' \
       'Replace the unsafe fixture behavior'; do
       grep -Fq "$expected" "$summary" \
@@ -94,6 +95,8 @@ run_case() {
       grep -Fq "$expected" "$step_summary" \
         || { printf 'evaluation-adapter test failure: job summary is missing %s\n' "$expected" >&2; exit 1; }
     done
+    grep -Fq '::error file=src/fixture%2Cfile.js,line=42,title=fixture%3Ahigh::fixture finding' "$command_log" \
+      || { printf 'evaluation-adapter test failure: annotation properties are not command escaped\n' >&2; exit 1; }
   fi
 }
 

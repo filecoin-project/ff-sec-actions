@@ -32,6 +32,11 @@ For the Ecosystem Baseline, start with `Profile Conclusion` and the
 `ecosystem-baseline-evidence` artifact. Inspect an individual Evaluation Result
 and its raw evidence when the bundle reports findings or incomplete coverage.
 
+Each normalized evaluation job also has a summary containing the finding rule,
+file and line, redacted message, remediation guidance, evaluated scope, gate
+reason, and exact raw-evidence artifact name. Capped source annotations link the
+run to affected files; the artifact contains the complete finding set.
+
 The legacy full security pipeline has not migrated every scanner to the
 aggregate contract. In that pipeline, inspect each scanner's result, raw
 artifact, and job conclusion independently; do not infer suite-wide completion

@@ -155,6 +155,19 @@ Every workflow, action, profile, and result-schema page must state:
 - compatibility and deprecation notes;
 - owning team or CODEOWNERS path.
 
+## Consumable Output Requirement
+
+Every released evaluation must satisfy the
+[Consumable Output Contract](reference/consumable-output.md). A finding is not
+useful unless the workflow tells the Consumer Engineer what was found, where it
+was found, why it matters, how to remediate it, which policy produced the gate
+decision, and where durable evidence can be retrieved.
+
+New reusable workflows and composite actions must be declared in
+`security/output-contract.json`. The output-contract checks reject undeclared
+surfaces and normalized evaluations that omit summaries, annotations,
+remediation guidance, normalized results, or raw-evidence artifacts.
+
 ## Source Of Truth
 
 Avoid maintaining defaults and contracts independently in YAML and Markdown.
@@ -180,6 +193,8 @@ disagree. CI must verify:
 - every `uses:` target exists and meets the release-pinning policy;
 - documented action/workflow inputs, defaults, outputs, permissions, and
   secrets match metadata;
+- every evaluation exposes actionable findings and remediation through the
+  consumable output contract;
 - every released Security Profile has a guide and working example;
 - examples run against sandbox Consumer Projects for supported event classes;
 - deprecated inputs and profiles point to migration guidance;

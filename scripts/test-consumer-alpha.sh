@@ -52,6 +52,8 @@ for workflow in "$example" "$canary"; do
     || fail "$workflow does not require complete evaluation"
   grep -Fq 'actions-security-blocking: false' "$workflow" \
     || fail "$workflow does not start workflow findings advisory"
+  grep -Fq 'secrets-blocking: false' "$workflow" \
+    || fail "$workflow does not start historical secret findings advisory"
   if grep -Eq 'pull_request_target:|security-events:[[:space:]]+write|id-token:[[:space:]]+write|secrets:[[:space:]]+(inherit|$)' "$workflow"; then
     fail "$workflow crosses the read-only, secretless pilot boundary"
   fi

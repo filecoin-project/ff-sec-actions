@@ -22,6 +22,7 @@ It runs on every pull request and every push to `main`; it has only
 | Classified execution trust | `check-execution-trust.sh` | implementation/manifest disagreement fails the check |
 | Baseline does not execute Consumer Project code | `check-baseline-no-exec.sh` | `test-baseline-no-exec.sh` plants a lifecycle hook and an unsafe install step |
 | Findings, tool failure, and policy are separate | `check-scanner-gates.sh` | `test-scanner-outcome.sh` covers findings, malformed SARIF, failure, and cancellation |
+| Findings are actionable and evidence is discoverable | `check-output-contract.sh` | `test-output-contract.sh` removes remediation guidance from a normalized evaluation |
 | Completion is never inferred from green status | Evaluation Result schema check | `test-evaluation-result.sh` covers complete, incomplete, skipped, and error outputs |
 | Secret scanning is secretless and scoped | checksum-pinned Gitleaks adapter | `test-gitleaks-scan.sh` plants credentials and tests PR-range/full-history behavior |
 | Consumer workflow definitions are evaluated | pinned Zizmor workflow | `test-consumer-actions-security.sh` plants unsafe triggers, refs, permissions, interpolation, checkout, OIDC, and invalid YAML |

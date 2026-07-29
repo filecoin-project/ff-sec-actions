@@ -43,3 +43,10 @@ exposed, enforced, and forwarded through the umbrella according to
 `actions/scanner-outcome` module validates SARIF and separates advisory or
 blocking findings from operational failure. Exercise its public interface with
 `bash scripts/test-scanner-outcome.sh`.
+
+`check-output-contract.sh` requires every reusable workflow and composite
+action to declare a consumer and remediation surface in
+[`security/output-contract.json`](../security/output-contract.json). Normalized
+evaluations must expose a readable summary, source annotations, actionable
+remediation, a stable Evaluation Result artifact, and a named raw-evidence
+artifact. Its negative suite is `bash scripts/test-output-contract.sh`.

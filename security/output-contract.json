@@ -11,6 +11,24 @@
     ]
   },
   "workflows": {
+    ".github/workflows/ai-code-review.yml": {
+      "mode": "provider-native",
+      "consumer_marker": "name: evaluation-result-ai-code-review",
+      "consumer_surface": "Pull-request comment, job summary, structured outputs, and durable evaluation-result-ai-code-review artifact",
+      "remediation_surface": "Finding-specific explanation and recommended remediation"
+    },
+    ".github/workflows/ecosystem-baseline.yml": {
+      "mode": "profile-aggregate",
+      "consumer_marker": "filecoin-project/ff-sec-actions/actions/aggregate-results@",
+      "consumer_surface": "Profile Conclusion job summary and ecosystem-baseline-evidence bundle",
+      "remediation_surface": "Per-evaluation gate reason, scope, and evidence mapping"
+    },
+    ".github/workflows/evaluation-pipeline.yml": {
+      "mode": "profile-aggregate",
+      "consumer_marker": "filecoin-project/ff-sec-actions/actions/aggregate-results@",
+      "consumer_surface": "Profile Conclusion job summary and evidence-bundle artifact",
+      "remediation_surface": "Per-evaluation gate reason, scope, and evidence mapping"
+    },
     ".github/workflows/sec-actions.yml": {
       "mode": "normalized-evaluation",
       "evaluation_id": "zizmor-actions",
@@ -88,6 +106,12 @@
       "consumer_marker": "github/codeql-action/upload-sarif@",
       "consumer_surface": "GitHub Code Scanning alerts and Slither SARIF artifact",
       "remediation_surface": "Slither detector documentation and source locations"
+    },
+    ".github/workflows/security-pipeline.yml": {
+      "mode": "evaluation-collection",
+      "consumer_marker": "filecoin-project/ff-sec-actions/.github/workflows/sec-",
+      "consumer_surface": "Individual evaluation summaries, annotations, provider alerts, and artifacts",
+      "remediation_surface": "Each composed evaluation owns its finding-specific remediation surface"
     }
   },
   "actions": {

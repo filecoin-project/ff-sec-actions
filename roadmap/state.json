@@ -544,10 +544,12 @@
       ],
       "acceptance_criteria": [
         "The baseline is useful for supported Go, Rust, JavaScript, Solidity, infrastructure, and monorepo repositories without secrets.",
-        "Unsupported or unavailable coverage is visible in the Evidence Bundle."
+        "Unsupported or unavailable coverage is visible in the Evidence Bundle.",
+        "Every evaluation maps findings to source locations, remediation guidance, gate reasons, and durable evidence through the Consumable Output Contract."
       ],
       "verification": [
         "Cross-language fixtures pass the baseline and detect planted high-confidence defects.",
+        "bash scripts/check-output-contract.sh && bash scripts/test-output-contract.sh",
         "bash scripts/test-consumer-alpha.sh",
         "The hosted Consumer Alpha Canary completes from the published optimization branch and produces ecosystem-baseline-evidence."
       ],

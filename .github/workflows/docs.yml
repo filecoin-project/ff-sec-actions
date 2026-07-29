@@ -23,6 +23,8 @@ on:
       - scripts/check-baseline-no-exec.sh
       - scripts/test-baseline-no-exec.sh
       - scripts/check-scanner-gates.sh
+      - scripts/check-output-contract.sh
+      - scripts/test-output-contract.sh
       - scripts/test-scanner-outcome.sh
       - scripts/check-evaluation-result.sh
       - scripts/test-evaluation-result.sh
@@ -61,6 +63,8 @@ on:
       - scripts/check-baseline-no-exec.sh
       - scripts/test-baseline-no-exec.sh
       - scripts/check-scanner-gates.sh
+      - scripts/check-output-contract.sh
+      - scripts/test-output-contract.sh
       - scripts/test-scanner-outcome.sh
       - scripts/check-evaluation-result.sh
       - scripts/test-evaluation-result.sh
@@ -117,6 +121,11 @@ jobs:
 
       - name: Validate scanner gate forwarding
         run: bash scripts/check-scanner-gates.sh
+
+      - name: Validate consumable evaluation outputs
+        run: |
+          bash scripts/check-output-contract.sh
+          bash scripts/test-output-contract.sh
 
       - name: Test scanner outcome semantics
         run: bash scripts/test-scanner-outcome.sh

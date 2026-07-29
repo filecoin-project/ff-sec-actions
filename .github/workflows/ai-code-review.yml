@@ -52,6 +52,9 @@ on:
         value: ${{ jobs.review.outputs.completion-status }}
       evaluation-result:
         value: ${{ jobs.review.outputs.evaluation-result }}
+      evidence-artifact-url:
+        description: URL of the durable artifact containing the Evaluation Result and structured findings.
+        value: ${{ jobs.review.outputs.evidence-artifact-url }}
 
 jobs:
   review:
@@ -64,6 +67,7 @@ jobs:
       highest-severity: ${{ steps.ai-review.outputs.highest-severity }}
       completion-status: ${{ steps.ai-review.outputs.completion-status }}
       evaluation-result: ${{ steps.ai-review.outputs.evaluation-result }}
+      evidence-artifact-url: ${{ steps.publish.outputs.artifact-url }}
     steps:
       # No checkout: the action works from the PR diff via the GitHub API and
       # never executes PR code.
@@ -80,3 +84,14 @@ jobs:
           exclude-pattern: ${{ inputs.exclude-pattern }}
           fail-on-severity: ${{ inputs.fail-on-severity }}
           post-comment: ${{ inputs.post-comment }}
+
+      - name: Publish AI review evidence
+        id: publish
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evaluation-result-ai-code-review
+          path: |
+            ${{ steps.ai-review.outputs.evaluation-result }}
+            ${{ steps.ai-review.outputs.findings-json }}
+          if-no-files-found: warn

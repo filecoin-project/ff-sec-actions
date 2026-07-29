@@ -25,6 +25,11 @@ findings and suppressions, and the final merge conclusion.
 7. emits `evidence-bundle.json` and a Markdown job summary before returning the
    profile conclusion.
 
+The summary maps every evaluation to its Completion Status, findings count,
+Merge Gate conclusion and reason, evaluated scope, durable artifact name, and
+evidence path. Consumers should not have to infer that mapping from job names
+or adapter exit codes.
+
 The aggregate exits `1` for a valid bundle whose profile Merge Gate fails and
 `2` for invalid/ambiguous inputs or aggregation failure. A required GitHub job
 therefore distinguishes policy failure from operational failure while retaining
@@ -50,3 +55,4 @@ suppression totals, missing coverage, and duplicate ids.
 
 - [Evaluation Result](evaluation-result.md)
 - [Evaluation adapter](evaluation-adapter.md)
+- [Consumable output contract](consumable-output.md)

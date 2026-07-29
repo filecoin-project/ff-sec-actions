@@ -40,6 +40,7 @@ policy, exceptions, upgrades, and rollback across projects.
 - [Evaluation Result contract](reference/evaluation-result.md)
 - [Evaluation adapter](reference/evaluation-adapter.md)
 - [Evidence Bundle and profile conclusion](reference/evidence-bundle.md)
+- [Consumable output contract](reference/consumable-output.md)
 - [Ecosystem Baseline static rules](reference/ecosystem-baseline-rules.md)
 - [Permission-free Zizmor adapter](reference/zizmor-scan.md)
 - [Release integrity](reference/release-integrity.md)

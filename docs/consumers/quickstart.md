@@ -33,10 +33,10 @@ license, package installation, build command, or write permission. An unrelated
 4. Confirm the workflow uses ordinary `pull_request`, not
    `pull_request_target`.
 
-The example starts its configurable workflow, dependency, IaC, and static
-analysis gates advisory while keeping `require-complete: true`. Gitleaks
-findings remain blocking. Tool failure, missing evidence, a skipped required
-evaluation, or malformed output still fails `Profile Conclusion`.
+The example starts its configurable workflow, dependency, secret, IaC, and
+static-analysis gates advisory while keeping `require-complete: true`. Tool
+failure, missing evidence, a skipped required evaluation, or malformed output
+still fails `Profile Conclusion`.
 
 ## Verify The First Run
 
@@ -71,11 +71,13 @@ Turn on only the gates the project is ready to enforce:
 
 - `actions-security-blocking` for workflow-definition findings;
 - `dependency-blocking` for dependency vulnerabilities;
+- `secrets-blocking` for Gitleaks findings after historical results are triaged;
 - `iac-blocking` for infrastructure findings;
 - `static-analysis-blocking` for ecosystem Semgrep findings.
 
-Gitleaks findings are already blocking. Completion remains required independently
-of every finding gate.
+Completion remains required independently of every finding gate. Before enabling
+the secret gate, revoke or rotate real credentials and suppress only verified
+false positives.
 
 ## Upgrade
 

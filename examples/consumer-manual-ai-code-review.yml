@@ -50,3 +50,13 @@ jobs:
         run: |
           echo "findings-count:   ${{ steps.ai.outputs.findings-count }}"
           echo "highest-severity: ${{ steps.ai.outputs.highest-severity }}"
+
+      - name: Publish machine-readable review evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evaluation-result-ai-code-review
+          path: |
+            ${{ steps.ai.outputs.evaluation-result }}
+            ${{ steps.ai.outputs.findings-json }}
+          if-no-files-found: warn

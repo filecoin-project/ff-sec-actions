@@ -82,17 +82,23 @@ emit_annotations() {
   [ "$BLOCKING" = false ] || annotation=error
   [ -n "$RAW_EVIDENCE" ] && [ -s "$RAW_EVIDENCE" ] || return 0
   jq -r --argjson limit "$MAX_SUMMARY_FINDINGS" '
-    def command:
+    def command_data:
       tostring
       | gsub("%"; "%25")
       | gsub("\\r"; "%0D")
       | gsub("\\n"; "%0A");
+    def command_property:
+      command_data
+      | gsub(":"; "%3A")
+      | gsub(","; "%2C");
     [.runs[] | (.results // [])[]][0:$limit][]
     | [
-        (.locations[0].physicalLocation.artifactLocation.uri // "" | command),
-        (.locations[0].physicalLocation.region.startLine // 1 | tostring),
-        (.ruleId // "security finding" | command),
-        (.message.text // .message.markdown // "Security finding" | command)
+        (.locations[0].physicalLocation.artifactLocation.uri // "" | command_property),
+        ((.locations[0].physicalLocation.region.startLine // 1)
+          | if type == "number" and . >= 1 then floor else 1 end
+          | tostring),
+        (.ruleId // "security finding" | command_property),
+        (.message.text // .message.markdown // "Security finding" | command_data)
       ] | @tsv
   ' "$RAW_EVIDENCE" | while IFS=$'\t' read -r path line rule message; do
     if [ -n "$path" ]; then

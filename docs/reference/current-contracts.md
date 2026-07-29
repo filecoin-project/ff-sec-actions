@@ -69,7 +69,8 @@ The reusable workflow currently exposes:
   `exclude-pattern`, `fail-on-severity`, and `post-comment`;
 - optional secret: `anthropic-api-key` (missing emits `skipped`);
 - outputs: `findings-count`, `highest-severity`, `completion-status`, and
-  `evaluation-result`.
+  `evaluation-result`, plus `evidence-artifact-url` for the durable
+  `evaluation-result-ai-code-review` artifact.
 
 It does not mirror the composite action's `github-token`, `pr-number`, `repo`,
 `prompt-file`, or `findings-json` surface. Its internal action reference is
@@ -89,7 +90,7 @@ The [Ecosystem Baseline](../../.github/workflows/ecosystem-baseline.yml) is the
 consumer-testable normalized profile. It composes workflow security,
 dependencies, secrets, IaC, and repository-owned static rules, then emits one
 Evidence Bundle and `Profile Conclusion`. Its inputs are
-`actions-security-blocking`, `dependency-blocking`, `iac-blocking`,
+`actions-security-blocking`, `dependency-blocking`, `secrets-blocking`, `iac-blocking`,
 `static-analysis-blocking`, `require-complete`, and `skip-dirs`.
 
 ### Scanner Toggles
@@ -119,6 +120,7 @@ Evidence Bundle and `Profile Conclusion`. Its inputs are
 | `dependency-review-fail-on-severity` | `high` | Dependency-review threshold |
 | `dependency-blocking` | `false` | Fail on dependency findings; tool failure always fails |
 | `dependency-severity` | `CRITICAL,HIGH,MEDIUM` | Dependency findings included in the gate |
+| `secrets-blocking` | Baseline: `false`; privileged umbrella: `true` | Fail on Gitleaks findings in the selected scope |
 | `publish-sarif` | `false` | Privileged umbrella only: publish dependency SARIF in a separate write-authorized job |
 | `iac-blocking` | `false` | Fail on IaC findings; tool failure always fails |
 | `iac-severity` | `CRITICAL,HIGH,MEDIUM` | IaC findings included in the gate |
@@ -134,9 +136,8 @@ The default scanner suite requires no repository or organization secret.
 Gitleaks uses the checksum-pinned open-source CLI: pull requests inspect the PR
 commit range, while push, schedule, and manual events inspect full history.
 
-The dependency Trivy slice uses the generic v1 Evaluation Adapter; remaining
-Trivy slices retain the compatibility outcome adapter while they migrate. Both
-independently validate results and operational status. See
+The dependency, IaC, and license Trivy slices use the generic v1 Evaluation
+Adapter. Each independently validates results and operational status. See
 the [Trivy Action inputs](https://github.com/aquasecurity/trivy-action#inputs).
 Slither forwards its documented `fail-on` threshold; see the
 [Slither Action fail behavior](https://github.com/crytic/slither-action#action-fail-behavior).
@@ -157,7 +158,7 @@ Current full-suite umbrella limitations:
 | `sec-semgrep.yml` | Repository-owned custom-rule SARIF artifact | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-codeql.yml` | GitHub code-scanning analysis | CodeQL analysis controls failure |
 | `sec-dependencies.yml` | Manifest/lockfile Trivy SARIF plus v1 Evaluation Result | Generic adapter; configurable finding gate; timeout, malformed output, and tool failure remain distinct |
-| `sec-secrets.yml` | Secretless Gitleaks SARIF; PR range or full history | Blocking; findings and operational failure remain distinct |
+| `sec-secrets.yml` | Secretless Gitleaks SARIF; PR range or full history | Configurable finding gate; findings and operational failure remain distinct |
 | `sec-iac.yml` | Trivy SARIF | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-licenses.yml` | Trivy SARIF artifact | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-dependency-review.yml` | PR summary | Blocks at configured severity/license policy |

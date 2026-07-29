@@ -10,7 +10,7 @@ produces one Evidence Bundle plus the stable `Profile Conclusion` check.
 | Evaluation | Scope | Default gate |
 |---|---|---|
 | Zizmor | GitHub workflow and action definitions | Advisory findings; completion required |
-| Gitleaks | PR commit range or full history | Blocking secret findings |
+| Gitleaks | PR commit range or full history | Configurable; advisory in the consumer alpha |
 | Trivy dependencies | Recursive manifests and lockfiles | Advisory findings; completion required |
 | Trivy IaC | Recognized infrastructure configuration | Advisory findings; completion required |
 | Semgrep | Versioned conservative Go, Rust, JavaScript/TypeScript, Solidity, and Dockerfile rules | Advisory findings; completion required |
@@ -34,8 +34,9 @@ looking clean. Leave finding gates advisory for the first runs, triage noise,
 then enable the relevant `*-blocking` input.
 
 The available gates are `actions-security-blocking`, `dependency-blocking`,
-`iac-blocking`, and `static-analysis-blocking`. Gitleaks remains blocking because
-a committed credential needs immediate review.
+`secrets-blocking`, `iac-blocking`, and `static-analysis-blocking`. Treat
+Gitleaks findings as incident evidence even during advisory rollout: rotate
+real credentials before addressing source or history.
 
 The required branch check is `Profile Conclusion`, not the individual scanner
 job names. Download `ecosystem-baseline-evidence` when investigating a result.
