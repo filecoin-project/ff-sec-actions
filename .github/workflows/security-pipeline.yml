@@ -21,6 +21,11 @@ on:
         type: boolean
         required: false
         default: true
+      enable-actions-security:
+        description: Analyze GitHub Actions definitions with offline zizmor audits.
+        type: boolean
+        required: false
+        default: true
       enable-codeql:
         description: Requires GHAS on the calling repo.
         type: boolean
@@ -144,6 +149,12 @@ on:
         required: false
         default: none
 jobs:
+  actions-security:
+    if: inputs.enable-actions-security
+    permissions:
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@main
+
   semgrep:
     if: inputs.enable-semgrep
     permissions:

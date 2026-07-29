@@ -2,6 +2,11 @@
   "schema_version": 1,
   "umbrella": ".github/workflows/security-pipeline.yml",
   "scanners": {
+    "actions-security": {
+      "workflow": ".github/workflows/sec-actions.yml",
+      "gate_mode": "always-blocking",
+      "note": "Medium-or-higher auditor-persona zizmor findings and parser/tool failures block with source annotations."
+    },
     "codeql": {
       "workflow": ".github/workflows/sec-codeql.yml",
       "gate_mode": "provider-policy",

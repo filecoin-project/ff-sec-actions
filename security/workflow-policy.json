@@ -1,6 +1,13 @@
 {
   "schema_version": 1,
   "workflows": {
+    ".github/workflows/sec-actions.yml": {
+      "actions-security": {
+        "permissions": {
+          "contents": "read"
+        }
+      }
+    },
     ".github/workflows/ai-code-review.yml": {
       "review": {
         "permissions": {
@@ -107,6 +114,11 @@
       }
     },
     ".github/workflows/security-pipeline.yml": {
+      "actions-security": {
+        "permissions": {
+          "contents": "read"
+        }
+      },
       "codeql": {
         "permissions": {
           "contents": "read",

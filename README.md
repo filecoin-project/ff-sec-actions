@@ -47,7 +47,7 @@ dependency-ordered work queue and the commands used to claim and complete work.
 | Capability | Surface | Current status |
 |---|---|---|
 | Filecoin-aware AI PR review | Composite action and reusable workflow | Pilot; requires an Anthropic key |
-| Semgrep, CodeQL, Trivy, Gitleaks, dependency review, SBOM, Scorecard, Slither | Reusable workflows | Pilot; scanner behavior varies |
+| GitHub Actions security, Semgrep, CodeQL, Trivy, Gitleaks, dependency review, SBOM, Scorecard, Slither | Reusable workflows | Pilot; scanner behavior varies |
 | Combined scanner suite | Umbrella reusable workflow | Pilot; not yet transitively immutable |
 | Filecoin review invariants | Versioned prompts | Available to AI review |
 | Ecosystem Security Profiles | Planned profile layer | Not yet released |
@@ -72,8 +72,9 @@ roadmap/                 canonical machine-readable implementation state
 
 - The AI code-review action reads PR metadata and diffs through the GitHub API;
   it does not checkout or execute PR code.
-- Scanner workflows checkout Consumer Project content. Some current workflows
-  install dependencies; review
+- Scanner workflows checkout Consumer Project content. Baseline scanners do
+  not execute project code; opt-in CodeQL and Slither may build or analyze
+  project-controlled behavior. Review
   [permissions and secrets](docs/consumers/permissions-and-secrets.md) before
   enabling them on untrusted PRs.
 - Third-party GitHub actions should be pinned to immutable commits. A consumer

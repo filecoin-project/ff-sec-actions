@@ -35,6 +35,9 @@ jobs:
       # Safe baseline: inspect manifests and lockfiles without running package
       # installation hooks from repository content.
       skip-dirs: node_modules,contracts/lib,.sst
+      # GitHub Actions security is enabled by default and blocks medium-or-higher
+      # zizmor auditor findings. Set enable-actions-security: false only with a
+      # documented compensating control.
       # Finding gates are independent from tool failure; tool failure always
       # fails. Uncomment only after observing the advisory result volume:
       # dependency-blocking: true

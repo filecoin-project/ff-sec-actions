@@ -179,6 +179,9 @@ control design and threat-disposition matrix.
   tested outcomes and reviewed umbrella gate forwarding.
 - Secret detection now uses a checksum-pinned open-source CLI with no service
   license, and fixtures prove PR-range and full-history detection.
+- Consumer workflow analysis now catches mutable refs, dangerous triggers,
+  template injection, persisted credentials, broad authority, and OIDC exposure
+  with actionable source locations.
 - The documentation CI now executes the classification contract, so new or
   changed surfaces cannot silently bypass inventory.
 

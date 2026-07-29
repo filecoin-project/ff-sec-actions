@@ -1,0 +1,8 @@
+name: Excessive permissions fixture
+on: push
+permissions: write-all
+jobs:
+  unsafe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "read-only operation"

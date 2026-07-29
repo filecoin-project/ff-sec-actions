@@ -85,6 +85,7 @@ Source:
 | Input | Default | Event behavior |
 |---|---:|---|
 | `enable-semgrep` | `true` | Runs when enabled |
+| `enable-actions-security` | `true` | Offline GitHub Actions syntax/security analysis |
 | `enable-codeql` | `false` | Runs when enabled; product availability applies |
 | `enable-dependencies` | `true` | Runs when enabled |
 | `enable-secrets` | `true` | Runs when enabled |
@@ -139,6 +140,7 @@ Current umbrella limitations:
 
 | Workflow | Primary result | Current gate behavior |
 |---|---|---|
+| `sec-actions.yml` | Zizmor source annotations with exact locations and remediation links | Blocks on medium-or-higher auditor-persona findings and parser/tool failure |
 | `sec-semgrep.yml` | Custom and community SARIF artifacts | Each ruleset has an independent finding gate; malformed output/tool failure always fails |
 | `sec-codeql.yml` | GitHub code-scanning analysis | CodeQL analysis controls failure |
 | `sec-dependencies.yml` | Manifest/lockfile Trivy SARIF | Configurable finding gate; malformed output/tool failure always fails |

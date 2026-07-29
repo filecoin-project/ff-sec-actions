@@ -27,6 +27,8 @@ on:
       - scripts/check-evaluation-result.sh
       - scripts/test-evaluation-result.sh
       - scripts/test-gitleaks-scan.sh
+      - scripts/test-consumer-actions-security.sh
+      - test/fixtures/actions-security/**
   push:
     branches: [main]
     paths:
@@ -54,6 +56,8 @@ on:
       - scripts/check-evaluation-result.sh
       - scripts/test-evaluation-result.sh
       - scripts/test-gitleaks-scan.sh
+      - scripts/test-consumer-actions-security.sh
+      - test/fixtures/actions-security/**
   workflow_dispatch:
 
 permissions:
@@ -103,6 +107,9 @@ jobs:
 
       - name: Test secretless fork and history scanning
         run: bash scripts/test-gitleaks-scan.sh
+
+      - name: Test consumer GitHub Actions security evaluation
+        run: bash scripts/test-consumer-actions-security.sh
 
       - name: Validate shell scripts
         run: shellcheck scripts/*.sh actions/*/*.sh actions/*/scripts/*.sh

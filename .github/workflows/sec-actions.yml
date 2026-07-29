@@ -1,0 +1,38 @@
+# Reusable: static security analysis for consumer GitHub Actions definitions.
+# Zizmor runs offline with no repository secrets and never executes project code.
+name: GitHub Actions Security (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      config-path:
+        description: Explicit zizmor configuration path; empty disables repository config discovery.
+        type: string
+        required: false
+        default: ""
+
+jobs:
+  actions-security:
+    name: GitHub Actions Security
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Analyze workflow security with zizmor
+        uses: zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d # v0.5.6
+        with:
+          version: 1.28.0
+          inputs: ${{ inputs.config-path == '' && '--strict-collection --no-config .' || '--strict-collection .' }}
+          online-audits: false
+          token: ""
+          persona: auditor
+          min-severity: medium
+          min-confidence: low
+          advanced-security: false
+          annotations: true
+          color: false
+          config: ${{ inputs.config-path }}

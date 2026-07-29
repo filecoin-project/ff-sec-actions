@@ -53,9 +53,10 @@ Do not make a new evaluation a required merge gate on its first run. Start in
 advisory mode, inspect tool failures separately from findings, tune legitimate
 suppressions, and then define a Merge Gate.
 
-The current workflows do not yet emit the normalized Completion Status planned
-for v1. Until that lands, inspect every job and artifact rather than treating
-the parent workflow result as a complete security verdict.
+Scanner adapters and AI review emit the pre-v1 Completion Status, but the
+umbrella does not yet aggregate every job into one Evidence Bundle. Inspect
+every job and artifact rather than treating the parent result as a complete
+security verdict.
 
 ## 4. Interpret The First Run
 

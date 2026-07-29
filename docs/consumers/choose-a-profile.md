@@ -10,11 +10,11 @@ pilot.
 
 | Project signals | Candidate profile | Current useful evaluations | Important gap |
 |---|---|---|---|
-| Lotus, Venus, or other Go node code | Go node | Semgrep, CodeQL for Go, dependency and secret scanning | No released Filecoin node rule pack |
-| Builtin actors, ref-fvm, or Rust/WASM | Rust/FVM actor | Dependency, secret, generic static analysis | No released actor-invariant profile |
-| Solidity contracts targeting FEVM | Solidity/FEVM | Slither, dependency, secret scanning | Slither is opt-in and build-dependent |
-| TypeScript/JavaScript service or tooling | Service application | Semgrep, CodeQL, dependency review, IaC | Current defaults are closest to this class |
-| Terraform, Kubernetes, deployment repositories | Infrastructure | Trivy IaC, secrets, Scorecard | Runtime and cloud-policy coverage is project-specific |
+| Lotus, Venus, or other Go node code | Go node | Workflow security, Semgrep, CodeQL for Go, dependency and secret scanning | No released Filecoin node rule pack |
+| Builtin actors, ref-fvm, or Rust/WASM | Rust/FVM actor | Workflow security, dependency, secret, generic static analysis | No released actor-invariant profile |
+| Solidity contracts targeting FEVM | Solidity/FEVM | Workflow security, Slither, dependency, secret scanning | Slither is opt-in and build-dependent |
+| TypeScript/JavaScript service or tooling | Service application | Workflow security, Semgrep, CodeQL, dependency review, IaC | Current defaults are closest to this class |
+| Terraform, Kubernetes, deployment repositories | Infrastructure | Workflow security, Trivy IaC, secrets, Scorecard | Runtime and cloud-policy coverage is project-specific |
 | Several of the above in one repository | Composed monorepo | Run relevant evaluations by path | Profile composition is not yet implemented |
 
 ## Selection Rules

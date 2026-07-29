@@ -1,0 +1,6 @@
+name: Invalid syntax fixture
+on: push
+permissions: {}
+jobs:
+  invalid:
+    runs-on ubuntu-latest

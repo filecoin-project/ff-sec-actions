@@ -1,6 +1,17 @@
 {
   "schema_version": 1,
   "workflows": {
+    ".github/workflows/sec-actions.yml": {
+      "coverage_mode": "workflow-definitions",
+      "allowed_actions": [
+        "actions/checkout",
+        "zizmorcore/zizmor-action"
+      ],
+      "limitations": [
+        "Offline audits do not resolve remote action metadata or repository state.",
+        "Auditor-persona findings below medium severity are excluded from the default gate."
+      ]
+    },
     ".github/workflows/sec-dependencies.yml": {
       "coverage_mode": "manifest-and-lockfile",
       "allowed_actions": [

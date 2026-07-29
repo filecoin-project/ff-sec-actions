@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-29T00:21:57Z",
+  "updated_at": "2026-07-29T00:28:29Z",
   "current_task_id": null,
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
@@ -296,7 +296,7 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
+      "status": "done",
       "title": "Add consumer GitHub Actions security evaluation",
       "objective": "Detect mutable references, excessive permissions, dangerous triggers, expression injection, persisted credentials, and OIDC exposure in consumer workflows.",
       "blocked_by": [
@@ -316,8 +316,8 @@
       "artifacts": [
         ".github/workflows/sec-actions.yml"
       ],
-      "started_at": null,
-      "completed_at": null
+      "started_at": "2026-07-29T00:22:22Z",
+      "completed_at": "2026-07-29T00:28:29Z"
     },
     {
       "id": "G0-08",
