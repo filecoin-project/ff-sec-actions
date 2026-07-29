@@ -100,7 +100,7 @@ repository configuration as well as this repository's source contract.
 | `.github/workflows/manual-ai-code-review.yml` | `control-repository-ci` | `control-repository-ci` | Keep checkout pinned and retain trusted manual scope. |
 | `.github/workflows/sec-actions.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Pin zizmor and its installer resolution through the immutable release graph. |
 | `.github/workflows/sec-codeql.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority from build; publish separately. |
-| `.github/workflows/sec-dependencies.yml` | `legacy-mixed` | `ecosystem-baseline` | Move SARIF publication out; keep build-dependent work separate. |
+| `.github/workflows/sec-dependencies.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep SARIF publication and build-dependent work separate. |
 | `.github/workflows/sec-dependency-review.yml` | `legacy-mixed` | `ecosystem-baseline` | Separate baseline evaluation from optional commenting. |
 | `.github/workflows/sec-iac.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep inspection read-only and publish SARIF only from a separate tier. |
 | `.github/workflows/sec-licenses.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep build-dependent evidence in a separate Privileged Build Analysis. |

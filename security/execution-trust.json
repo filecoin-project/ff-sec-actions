@@ -269,14 +269,14 @@
     {
       "path": ".github/workflows/sec-dependencies.yml",
       "scope": "consumer",
-      "current_tier": "legacy-mixed",
+      "current_tier": "ecosystem-baseline",
       "target_tier": "ecosystem-baseline",
       "observed": {
         "checkout": true,
         "persists_checkout_credentials": false,
         "explicit_permissions": true,
         "secret_context": false,
-        "write_permissions": ["security-events"],
+        "write_permissions": [],
         "execution_markers": [],
         "mutable_references": false,
         "mutable_container": false,
@@ -284,8 +284,8 @@
         "cache": false,
         "self_hosted_runner": false
       },
-      "network": ["github-action-download", "node-package-registry", "vulnerability-database", "github-code-scanning"],
-      "migration": ["Move build-dependent reachability and SARIF publishing into separate privileged tiers."]
+      "network": ["github-action-download", "github-artifacts", "node-package-registry", "vulnerability-database"],
+      "migration": ["Keep build-dependent reachability and SARIF publishing in separate privileged tiers."]
     },
     {
       "path": ".github/workflows/sec-dependency-review.yml",

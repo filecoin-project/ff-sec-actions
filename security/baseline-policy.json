@@ -35,11 +35,9 @@
       "coverage_mode": "manifest-and-lockfile",
       "allowed_actions": [
         "actions/checkout",
-        "actions/download-artifact",
         "actions/upload-artifact",
         "aquasecurity/trivy-action",
-        "filecoin-project/ff-sec-actions/actions/evaluation-adapter",
-        "github/codeql-action/upload-sarif"
+        "filecoin-project/ff-sec-actions/actions/evaluation-adapter"
       ],
       "limitations": [
         "Native package-manager reachability and installed dependency state are excluded.",

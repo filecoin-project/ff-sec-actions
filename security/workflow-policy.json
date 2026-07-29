@@ -81,13 +81,6 @@
           "actions": "read",
           "contents": "read"
         }
-      },
-      "publish-sarif": {
-        "permissions": {
-          "actions": "read",
-          "contents": "read",
-          "security-events": "write"
-        }
       }
     },
     ".github/workflows/sec-dependency-review.yml": {
