@@ -39,10 +39,12 @@ required_pages=(
   "actions/aggregate-results/aggregate-results.sh"
   ".github/workflows/docs.yml"
   ".github/workflows/evaluation-pipeline.yml"
+  ".github/workflows/ecosystem-baseline.yml"
   ".github/workflows/g0-contract.yml"
   ".github/workflows/sec-actions.yml"
   "docs/README.md"
   "docs/consumers/quickstart.md"
+  "docs/consumers/ecosystem-baseline.md"
   "docs/consumers/choose-a-profile.md"
   "docs/consumers/understand-results.md"
   "docs/consumers/permissions-and-secrets.md"
@@ -85,6 +87,7 @@ required_pages=(
   "scripts/test-evaluation-result.sh"
   "scripts/test-evaluation-adapter.sh"
   "scripts/test-aggregate-results.sh"
+  "scripts/test-ecosystem-baseline.sh"
   "scripts/test-gitleaks-scan.sh"
   "scripts/test-consumer-actions-security.sh"
   "scripts/test-release-graph.sh"
@@ -118,6 +121,7 @@ if [ -f ".github/workflows/docs.yml" ]; then
   require_text ".github/workflows/docs.yml" "bash scripts/test-evaluation-result.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/test-evaluation-adapter.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/test-aggregate-results.sh"
+  require_text ".github/workflows/docs.yml" "bash scripts/test-ecosystem-baseline.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/test-gitleaks-scan.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/test-consumer-actions-security.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/check-release-graph.sh"
@@ -145,6 +149,7 @@ if [ -f ".github/workflows/g0-contract.yml" ]; then
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-release-graph.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/check-fork-pr.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-fork-pr.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-ecosystem-baseline.sh"
 fi
 
 if grep -REq '^[[:space:]-]*uses:.*@v1([[:space:]]|$)' examples; then

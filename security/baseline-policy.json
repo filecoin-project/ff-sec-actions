@@ -1,6 +1,23 @@
 {
   "schema_version": 1,
   "workflows": {
+    ".github/workflows/ecosystem-baseline.yml": {
+      "coverage_mode": "source-manifest",
+      "allowed_actions": [
+        "actions/download-artifact",
+        "actions/upload-artifact",
+        "filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml",
+        "filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml",
+        "filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml",
+        "filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml",
+        "filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml",
+        "filecoin-project/ff-sec-actions/actions/aggregate-results"
+      ],
+      "limitations": [
+        "The baseline inspects workflow definitions, Git history, source, configuration, manifests, and lockfiles without building the project.",
+        "Installed, build-generated, runtime-loaded, and unsupported-language behavior is excluded and remains visible in the Evidence Bundle."
+      ]
+    },
     ".github/workflows/sec-actions.yml": {
       "coverage_mode": "workflow-definitions",
       "allowed_actions": [

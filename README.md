@@ -51,7 +51,7 @@ dependency-ordered work queue and the commands used to claim and complete work.
 | GitHub Actions security, Semgrep, CodeQL, Trivy, Gitleaks, dependency review, SBOM, Scorecard, Slither | Reusable workflows | Pilot; scanner behavior varies |
 | Combined scanner suite | Umbrella reusable workflow | Pilot; transitively immutable at the example commit |
 | Filecoin review invariants | Versioned prompts | Available to AI review |
-| Ecosystem Security Profiles | Planned profile layer | Not yet released |
+| Ecosystem Security Profiles | Secretless Ecosystem Baseline | Consumer-testable pre-v1 model |
 | Normalized Evaluation Result | Scanner and AI action outputs | Stable `1.0.0` schema; aggregation is next |
 
 See the [decision map](docs/ECOSYSTEM-SECURITY-DECISION-MAP.md) for release

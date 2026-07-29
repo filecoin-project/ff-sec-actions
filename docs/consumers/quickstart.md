@@ -25,6 +25,7 @@ You need:
 
 | Goal | Starting point | Authority |
 |---|---|---|
+| Run the secretless normalized baseline | [Ecosystem Baseline](ecosystem-baseline.md) | Read-only repository inspection plus run-local artifacts |
 | Run the current scanner suite | [Security pipeline example](../../examples/consumer-security-pipeline.yml) | Repository contents plus explicitly declared result permissions |
 | Review a PR with Filecoin context | [AI review example](../../examples/consumer-ai-code-review.yml) | PR diff read, optional PR comment write, Anthropic API key |
 | Run AI review on demand | [Manual AI example](../../examples/consumer-manual-ai-code-review.yml) | Same as AI review, initiated manually |

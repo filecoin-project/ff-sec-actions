@@ -1,0 +1,98 @@
+name: Ecosystem Baseline (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      dependency-blocking:
+        type: boolean
+        required: false
+        default: false
+      iac-blocking:
+        type: boolean
+        required: false
+        default: false
+      static-analysis-blocking:
+        type: boolean
+        required: false
+        default: false
+      require-complete:
+        description: Fail when any required evaluation is missing, skipped, incomplete, or errored.
+        type: boolean
+        required: false
+        default: true
+      skip-dirs:
+        type: string
+        required: false
+        default: node_modules,vendor,target,dist
+
+jobs:
+  actions-security:
+    permissions:
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@cdd8b1f8fd4cef9ff8ae89af1f373e86daf71f5f
+
+  dependencies:
+    permissions:
+      actions: read
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@cdd8b1f8fd4cef9ff8ae89af1f373e86daf71f5f
+    with:
+      blocking: ${{ inputs.dependency-blocking }}
+      skip-dirs: ${{ inputs.skip-dirs }}
+
+  secrets:
+    permissions:
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@cdd8b1f8fd4cef9ff8ae89af1f373e86daf71f5f
+
+  infrastructure:
+    permissions:
+      actions: read
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@cdd8b1f8fd4cef9ff8ae89af1f373e86daf71f5f
+    with:
+      blocking: ${{ inputs.iac-blocking }}
+      skip-dirs: ${{ inputs.skip-dirs }}
+
+  static-analysis:
+    permissions:
+      actions: read
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@cdd8b1f8fd4cef9ff8ae89af1f373e86daf71f5f
+    with:
+      blocking: ${{ inputs.static-analysis-blocking }}
+
+  profile-conclusion:
+    name: Profile Conclusion
+    if: always()
+    needs: [actions-security, dependencies, secrets, infrastructure, static-analysis]
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Download normalized Evaluation Results
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: evaluation-result-*
+          path: evaluation-results
+          merge-multiple: true
+
+      - name: Aggregate Ecosystem Baseline evidence and enforce conclusion
+        if: always()
+        uses: filecoin-project/ff-sec-actions/actions/aggregate-results@650fdf6412ff2e3e19ac8f4f124a3257f81c19d9
+        with:
+          results-directory: evaluation-results
+          profile-id: ecosystem-baseline
+          profile-version: 1.0.0
+          required-evaluations: '["zizmor-actions","trivy-dependencies","gitleaks","trivy-iac","semgrep-baseline"]'
+          require-complete: ${{ inputs.require-complete }}
+
+      - name: Upload Ecosystem Baseline Evidence Bundle
+        if: always() && hashFiles('evidence-bundle.json') != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ecosystem-baseline-evidence
+          path: |
+            evidence-bundle.json
+            evidence-summary.md

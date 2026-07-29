@@ -1,6 +1,14 @@
 {
   "schema_version": 1,
   "workflows": {
+    ".github/workflows/ecosystem-baseline.yml": {
+      "actions-security": {"permissions": {"contents": "read"}},
+      "dependencies": {"permissions": {"actions": "read", "contents": "read"}},
+      "infrastructure": {"permissions": {"actions": "read", "contents": "read"}},
+      "profile-conclusion": {"permissions": {"actions": "read", "contents": "read"}},
+      "secrets": {"permissions": {"contents": "read"}},
+      "static-analysis": {"permissions": {"actions": "read", "contents": "read"}}
+    },
     ".github/workflows/sec-actions.yml": {
       "actions-security": {
         "permissions": {

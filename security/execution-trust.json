@@ -120,6 +120,27 @@
       "migration": ["Add execution-trust and workflow-security contracts to this job."]
     },
     {
+      "path": ".github/workflows/ecosystem-baseline.yml",
+      "scope": "consumer",
+      "current_tier": "ecosystem-baseline",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": true,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["delegated-scanner-network", "github-action-download", "github-artifacts"],
+      "migration": ["Keep the profile secretless, non-executing, immutable, and explicit about coverage limitations."]
+    },
+    {
       "path": ".github/workflows/evaluation-pipeline.yml",
       "scope": "consumer",
       "current_tier": "ecosystem-baseline",

@@ -34,6 +34,7 @@ on:
       - scripts/test-fork-pr.sh
       - test/fixtures/fork-pr/**
       - test/fixtures/evaluation-result/**
+      - test/fixtures/ecosystem-baseline/**
       - test/fixtures/actions-security/**
   push:
     branches: [main]
@@ -69,6 +70,7 @@ on:
       - scripts/test-fork-pr.sh
       - test/fixtures/fork-pr/**
       - test/fixtures/evaluation-result/**
+      - test/fixtures/ecosystem-baseline/**
       - test/fixtures/actions-security/**
   workflow_dispatch:
 
@@ -123,6 +125,9 @@ jobs:
 
       - name: Test Evidence Bundle aggregation
         run: bash scripts/test-aggregate-results.sh
+
+      - name: Validate Ecosystem Baseline composition and planted fixtures
+        run: bash scripts/test-ecosystem-baseline.sh
 
       - name: Test secretless fork and history scanning
         run: bash scripts/test-gitleaks-scan.sh

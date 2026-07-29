@@ -10,6 +10,7 @@ Use these pages when adopting or operating security evaluation inside one
 Consumer Project:
 
 - [Quickstart](consumers/quickstart.md)
+- [Adopt the Ecosystem Baseline](consumers/ecosystem-baseline.md)
 - [Choose a Security Profile](consumers/choose-a-profile.md)
 - [Understand Evaluation Results](consumers/understand-results.md)
 - [Permissions and secrets](consumers/permissions-and-secrets.md)
