@@ -33,7 +33,7 @@ jobs:
 
       - name: Evaluate Ecosystem Baseline static analysis
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@a6f4590b2f92d960abfa8edfd64a4787abc9821d
+        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@5565507389b1444bfdb6b36d366d17206faf3dc3
         with:
           evaluation-id: semgrep-baseline
           tool-name: semgrep
