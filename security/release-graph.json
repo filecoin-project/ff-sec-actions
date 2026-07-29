@@ -59,10 +59,6 @@
     ]
   },
   "required_markers": {
-    ".github/workflows/sec-actions.yml": [
-      "zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d",
-      "version: 1.28.0"
-    ],
     ".github/workflows/sec-dependencies.yml": ["version: v0.70.0"],
     ".github/workflows/sec-iac.yml": ["version: v0.70.0"],
     ".github/workflows/sec-licenses.yml": ["version: v0.70.0"],

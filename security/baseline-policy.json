@@ -24,7 +24,7 @@
         "actions/checkout",
         "actions/upload-artifact",
         "filecoin-project/ff-sec-actions/actions/evaluation-adapter",
-        "zizmorcore/zizmor-action"
+        "filecoin-project/ff-sec-actions/actions/zizmor-scan"
       ],
       "limitations": [
         "Offline audits do not resolve remote action metadata or repository state.",

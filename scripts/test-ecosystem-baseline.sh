@@ -4,6 +4,7 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 workflow="$repo_root/.github/workflows/ecosystem-baseline.yml"
+actions_workflow="$repo_root/.github/workflows/sec-actions.yml"
 rules="$repo_root/rules/ecosystem-baseline.yml"
 fixture="$repo_root/test/fixtures/ecosystem-baseline/monorepo"
 
@@ -20,6 +21,14 @@ for expected in "${expected_evaluations[@]}"; do
   grep -Fq "\"$expected\"" "$workflow" \
     || fail "Profile Conclusion does not require $expected"
 done
+
+grep -Eq 'uses: filecoin-project/ff-sec-actions/actions/zizmor-scan@[0-9a-f]{40}' "$actions_workflow" \
+  || fail "workflow-definition evaluation does not use the immutable permission-free adapter"
+grep -Fq "tool-outcome: \${{ steps.scan.outputs.scanner-outcome }}" "$actions_workflow" \
+  || fail "workflow-definition evaluation does not forward the real scanner outcome"
+if grep -Eq 'advanced-security:[[:space:]]+true|zizmorcore/zizmor-action@' "$actions_workflow"; then
+  fail "workflow-definition evaluation still couples SARIF creation to privileged upload"
+fi
 
 expected_rules=(
   filecoin.javascript.shell-command-construction

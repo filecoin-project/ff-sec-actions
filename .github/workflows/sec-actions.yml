@@ -24,20 +24,10 @@ jobs:
 
       - name: Analyze workflow security with zizmor
         id: scan
-        uses: zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d # v0.5.6
+        uses: filecoin-project/ff-sec-actions/actions/zizmor-scan@a6c0e17e90c5d2baef63b32e490c1f080ab97add
         with:
-          version: 1.28.0
-          inputs: ${{ inputs.config-path == '' && '--strict-collection --no-config .' || '--strict-collection .' }}
-          online-audits: false
-          token: ""
-          persona: auditor
-          min-severity: medium
-          min-confidence: low
-          advanced-security: true
-          annotations: false
-          color: false
-          config: ${{ inputs.config-path }}
-        continue-on-error: true
+          config-path: ${{ inputs.config-path }}
+          result-file: ${{ runner.temp }}/zizmor-actions.sarif
 
       - name: Normalize GitHub Actions security result
         if: always()
@@ -46,8 +36,8 @@ jobs:
           evaluation-id: zizmor-actions
           tool-name: zizmor
           tool-version: 1.28.0
-          tool-outcome: success
-          raw-evidence: ${{ steps.scan.outputs.output-file }}
+          tool-outcome: ${{ steps.scan.outputs.scanner-outcome }}
+          raw-evidence: ${{ steps.scan.outputs.result-file }}
           blocking: true
           coverage-included: '["GitHub Actions workflows and action metadata"]'
           coverage-excluded: '["online repository audits"]'
