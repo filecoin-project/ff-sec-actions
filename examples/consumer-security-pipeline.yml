@@ -30,7 +30,7 @@ jobs:
       contents: read
       security-events: write
       pull-requests: write # dependency-review PR comments
-    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@12c3ea8d24a42b6cf9f335e58e0b21c92db88171
+    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@217da702dc30df7fbee0ce0f6ff7c186f5529041
     with:
       # Safe baseline: inspect manifests and lockfiles without running package
       # installation hooks from repository content.
