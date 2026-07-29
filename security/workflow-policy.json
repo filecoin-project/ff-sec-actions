@@ -161,6 +161,12 @@
       "dependencies": {
         "permissions": {
           "actions": "read",
+          "contents": "read"
+        }
+      },
+      "publish-dependency-sarif": {
+        "permissions": {
+          "actions": "read",
           "contents": "read",
           "security-events": "write"
         }

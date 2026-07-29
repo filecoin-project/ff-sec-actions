@@ -119,7 +119,7 @@ Evidence Bundle and `Profile Conclusion`. Its inputs are
 | `dependency-review-fail-on-severity` | `high` | Dependency-review threshold |
 | `dependency-blocking` | `false` | Fail on dependency findings; tool failure always fails |
 | `dependency-severity` | `CRITICAL,HIGH,MEDIUM` | Dependency findings included in the gate |
-| `publish-sarif` | `false` | Publish dependency SARIF using a separate write-authorized job |
+| `publish-sarif` | `false` | Privileged umbrella only: publish dependency SARIF in a separate write-authorized job |
 | `iac-blocking` | `false` | Fail on IaC findings; tool failure always fails |
 | `iac-severity` | `CRITICAL,HIGH,MEDIUM` | IaC findings included in the gate |
 | `license-blocking` | `false` | Fail on license findings; tool failure always fails |
@@ -174,7 +174,8 @@ The Ecosystem Baseline never reads `ENABLE_GHAS` and never requests
 `security-events: write`. The privileged full-suite example converts
 `ENABLE_GHAS='true'` into the explicit `publish-sarif` input; private repository
 product availability still applies. Dependency SARIF publication runs in a
-separate job so the inspection job remains read-only.
+separate privileged-umbrella job, outside the reusable inspection workflow, so
+the inspection permission envelope remains read-only.
 
 Possible permissions across the current workflows:
 

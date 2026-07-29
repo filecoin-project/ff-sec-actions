@@ -181,13 +181,33 @@ jobs:
     permissions:
       actions: read
       contents: read
-      security-events: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@5b2da0e0fda3e9268b69a35451ca016f1b4d24ba
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@0644706f2dee239fe569d32219c1bba8c1069a0c
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
       blocking: ${{ inputs.dependency-blocking }}
       severity: ${{ inputs.dependency-severity }}
-      publish-sarif: ${{ inputs.publish-sarif }}
+
+  publish-dependency-sarif:
+    name: Publish Dependency SARIF
+    if: always() && inputs.enable-dependencies && inputs.publish-sarif
+    needs: dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Download Trivy dependency results
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: trivy-deps-results
+          path: trivy-deps-results
+
+      - name: Upload SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        with:
+          sarif_file: trivy-deps-results/trivy-deps.sarif
+          category: trivy-dependencies
 
   secrets-scan:
     if: inputs.enable-secrets

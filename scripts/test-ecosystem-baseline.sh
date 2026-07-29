@@ -46,17 +46,15 @@ grep -Fq "blocking: \${{ inputs.actions-security-blocking }}" "$workflow" \
 grep -Fq "blocking: \${{ inputs.actions-security-blocking }}" "$privileged_pipeline" \
   || fail "the privileged pipeline does not forward its workflow-definition gate"
 
-grep -Eq '^[[:space:]]+publish-sarif:[[:space:]]*$' "$dependencies_workflow" \
-  || fail "dependency evaluation does not expose explicit SARIF publication"
-grep -Eq '^  publish-sarif:[[:space:]]*$' "$dependencies_workflow" \
-  || fail "dependency SARIF publication is not isolated in its own job"
-grep -Fq "if: always() && inputs.publish-sarif" "$dependencies_workflow" \
-  || fail "dependency SARIF publication does not run after a finding gate fails"
-if grep -Fq "vars.ENABLE_GHAS" "$dependencies_workflow"; then
-  fail "dependency evaluation still inherits consumer repository publication state implicitly"
+if grep -Eq 'security-events:[[:space:]]+write|publish-sarif:' "$dependencies_workflow"; then
+  fail "dependency evaluation still mixes read-only inspection with SARIF publication"
 fi
-grep -Fq "publish-sarif: \${{ inputs.publish-sarif }}" "$privileged_pipeline" \
-  || fail "the privileged pipeline does not deliberately forward SARIF publication policy"
+grep -Eq '^  publish-dependency-sarif:[[:space:]]*$' "$privileged_pipeline" \
+  || fail "dependency SARIF publication is not isolated in the privileged pipeline"
+grep -Fq "if: always() && inputs.enable-dependencies && inputs.publish-sarif" "$privileged_pipeline" \
+  || fail "privileged dependency publication does not honor explicit consumer policy"
+grep -Fq "needs: dependencies" "$privileged_pipeline" \
+  || fail "privileged dependency publication is not ordered after inspection"
 if grep -Eq 'security-events:[[:space:]]+write|publish-sarif:' "$workflow" "$consumer_example"; then
   fail "the Ecosystem Baseline requests privileged SARIF publication"
 fi
