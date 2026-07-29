@@ -10,10 +10,11 @@ and documentation contracts.
 
 1. Read the shared [domain language](../../CONTEXT.md).
 2. Read the [decision map](../ECOSYSTEM-SECURITY-DECISION-MAP.md).
-3. Read the [documentation architecture](../DOCUMENTATION-ARCHITECTURE.md).
-4. Identify whether the change affects a consumer interface, execution trust,
+3. Read the accepted [distribution model](../decisions/distribution-model.md).
+4. Read the [documentation architecture](../DOCUMENTATION-ARCHITECTURE.md).
+5. Identify whether the change affects a consumer interface, execution trust,
    Evaluation Result, Security Profile, or release graph.
-5. Run `bash scripts/check-docs.sh` for documentation changes.
+6. Run `bash scripts/check-docs.sh` for documentation changes.
 
 ## Repository Responsibilities
 

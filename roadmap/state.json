@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-29T00:28:29Z",
+  "updated_at": "2026-07-29T00:31:23Z",
   "current_task_id": null,
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
@@ -325,7 +325,7 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "decision",
-      "status": "pending",
+      "status": "done",
       "title": "Choose the cross-organization distribution model",
       "objective": "Confirm whether immutable public reusable workflows are sufficient for initial self-service delivery and define when a GitHub App becomes justified.",
       "blocked_by": [
@@ -344,8 +344,8 @@
       "artifacts": [
         "docs/decisions/distribution-model.md"
       ],
-      "started_at": null,
-      "completed_at": null
+      "started_at": "2026-07-29T00:28:56Z",
+      "completed_at": "2026-07-29T00:31:23Z"
     },
     {
       "id": "G0-09",

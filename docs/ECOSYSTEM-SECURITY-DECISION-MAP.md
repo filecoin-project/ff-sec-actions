@@ -98,8 +98,8 @@ reported no findings at their configured thresholds.
 ## distribution-model: Choose The Cross-Organization Delivery Model
 
 Blocked by: product-contract
-Status: open
-Type: Grilling
+Status: resolved
+Type: Decision
 
 ### Question
 
@@ -109,10 +109,12 @@ a staged combination?
 
 ### Answer
 
-Pending. Recommended starting position: publish immutable public workflows and
-profiles for self-service adoption, then add a narrowly scoped GitHub App only
-if installation drift, fork coverage, or centralized evidence cannot be solved
-cleanly with native Actions.
+Use [immutable public reusable workflows](decisions/distribution-model.md) for
+the initial self-service release. Consumers install by full release commit SHA;
+updates and rollback are reviewed SHA changes. Add a narrowly scoped GitHub App
+only when measured installation drift, fork publishing, cross-organization
+health, evidence retention, or onboarding scale cannot be solved cleanly with
+native Actions.
 
 ## release-integrity: Make A Pin Cover The Whole Execution Graph
 

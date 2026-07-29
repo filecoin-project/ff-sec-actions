@@ -38,6 +38,7 @@ policy, exceptions, upgrades, and rollback across projects.
 - [Evaluation Result contract](reference/evaluation-result.md)
 - [Documentation architecture](DOCUMENTATION-ARCHITECTURE.md)
 - [Ecosystem security decision map](ECOSYSTEM-SECURITY-DECISION-MAP.md)
+- [Distribution model decision](decisions/distribution-model.md)
 - [Machine-readable implementation roadmap](../roadmap/README.md)
 
 ## Executable Examples

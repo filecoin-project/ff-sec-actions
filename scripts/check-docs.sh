@@ -47,6 +47,7 @@ required_pages=(
   "docs/reference/evaluation-result.md"
   "docs/DOCUMENTATION-ARCHITECTURE.md"
   "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md"
+  "docs/decisions/distribution-model.md"
   "roadmap/README.md"
   "roadmap/state.json"
   "schemas/evaluation-result.schema.json"
