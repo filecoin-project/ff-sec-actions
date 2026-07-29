@@ -33,7 +33,7 @@ jobs:
   actions-security:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@c8b42b9a40fd3b1052e34e85742fcc22cd2044db
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@5b2da0e0fda3e9268b69a35451ca016f1b4d24ba
     with:
       blocking: ${{ inputs.actions-security-blocking }}
 
@@ -41,7 +41,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@c8b42b9a40fd3b1052e34e85742fcc22cd2044db
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@5b2da0e0fda3e9268b69a35451ca016f1b4d24ba
     with:
       blocking: ${{ inputs.dependency-blocking }}
       skip-dirs: ${{ inputs.skip-dirs }}
@@ -49,13 +49,13 @@ jobs:
   secrets:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@c8b42b9a40fd3b1052e34e85742fcc22cd2044db
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@5b2da0e0fda3e9268b69a35451ca016f1b4d24ba
 
   infrastructure:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@c8b42b9a40fd3b1052e34e85742fcc22cd2044db
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@5b2da0e0fda3e9268b69a35451ca016f1b4d24ba
     with:
       blocking: ${{ inputs.iac-blocking }}
       skip-dirs: ${{ inputs.skip-dirs }}
@@ -64,7 +64,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@c8b42b9a40fd3b1052e34e85742fcc22cd2044db
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@5b2da0e0fda3e9268b69a35451ca016f1b4d24ba
     with:
       blocking: ${{ inputs.static-analysis-blocking }}
 

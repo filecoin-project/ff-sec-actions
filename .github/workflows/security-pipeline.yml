@@ -182,7 +182,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@576b8c8763c920feab700a694eb25b86bc2ad70d
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@5b2da0e0fda3e9268b69a35451ca016f1b4d24ba
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
       blocking: ${{ inputs.dependency-blocking }}
