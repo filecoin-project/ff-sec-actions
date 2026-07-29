@@ -16,23 +16,24 @@ not equivalent to zero findings.
 
 ## Current Behavior
 
-The current workflows predate the normalized Evaluation Result contract:
+The scanner outcome adapter and AI review action now emit the pre-v1
+[Evaluation Result contract](../reference/evaluation-result.md):
 
 - scanner outputs may appear in job logs, SARIF, or artifacts;
 - supported scanner gates keep advisory findings green by policy while
   malformed SARIF and tool failure fail independently;
-- event conditions can skip jobs;
-- AI refusal is currently represented as zero findings;
-- large AI diffs can be truncated;
+- scanner event/configuration skips are represented as `skipped`;
+- AI refusal and large-diff or response truncation are `incomplete`;
+- a missing Anthropic secret is `skipped`, never zero findings;
 - the umbrella workflow does not aggregate one authoritative completion status.
 
-Until G0 and the `evaluation-contract` ticket are complete, inspect individual
-job conclusions and artifacts.
+Until evidence aggregation is complete, inspect each action's
+`evaluation-result` output alongside its raw artifact and job conclusion.
 
-For Trivy and Semgrep, the scanner-outcome adapter currently validates SARIF
-and reports `complete`/`error`, `findings`/`no-findings`, and
-`pass`/`fail`/`error` at the step seam. The parent workflow does not yet
-aggregate those values into one authoritative Evaluation Result.
+For Trivy and Semgrep, the scanner-outcome adapter validates SARIF and reports
+all four completion states independently from `findings`/`no-findings` and
+`pass`/`fail`/`skip`/`error`. The parent workflow does not yet aggregate those
+values into one authoritative Evidence Bundle.
 
 ## Target Completion Status
 

@@ -41,12 +41,17 @@ on:
         default: "true"
     secrets:
       anthropic-api-key:
-        required: true
+        description: Optional at dispatch time; a missing key emits a skipped result.
+        required: false
     outputs:
       findings-count:
         value: ${{ jobs.review.outputs.findings-count }}
       highest-severity:
         value: ${{ jobs.review.outputs.highest-severity }}
+      completion-status:
+        value: ${{ jobs.review.outputs.completion-status }}
+      evaluation-result:
+        value: ${{ jobs.review.outputs.evaluation-result }}
 
 jobs:
   review:
@@ -57,6 +62,8 @@ jobs:
     outputs:
       findings-count: ${{ steps.ai-review.outputs.findings-count }}
       highest-severity: ${{ steps.ai-review.outputs.highest-severity }}
+      completion-status: ${{ steps.ai-review.outputs.completion-status }}
+      evaluation-result: ${{ steps.ai-review.outputs.evaluation-result }}
     steps:
       # No checkout: the action works from the PR diff via the GitHub API and
       # never executes PR code.

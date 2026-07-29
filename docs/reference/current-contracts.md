@@ -28,7 +28,7 @@ Source: [`actions/ai-code-review/action.yml`](../../actions/ai-code-review/actio
 
 | Input | Required | Default | Purpose |
 |---|---:|---|---|
-| `anthropic-api-key` | Yes | — | Authenticate the Anthropic request |
+| `anthropic-api-key` | No | Empty | Authenticate the request; empty emits `skipped` |
 | `github-token` | No | `github.token` | Read PR metadata/diff and optionally write a comment |
 | `pr-number` | No | Current PR | Select a PR for dispatch or cross-repository use |
 | `repo` | No | Current repository | Select the repository containing the PR |
@@ -49,13 +49,14 @@ Outputs:
 | `findings-count` | Number of structured findings |
 | `highest-severity` | Highest finding severity or `none` |
 | `findings-json` | Runner-local path to the structured result |
+| `completion-status` | `complete`, `incomplete`, `skipped`, or `error` |
+| `evaluation-result` | Runner-local path to the pre-v1 Evaluation Result JSON |
 
 Current limitations:
 
-- refusal exits successfully with zero findings;
-- large diffs are truncated rather than partitioned;
-- there is no separate Completion Status;
-- a normal fork PR cannot access the Anthropic secret;
+- refusal and truncation are explicit `incomplete` results, but large diffs are
+  not yet partitioned;
+- a normal fork PR cannot access the Anthropic secret and emits `skipped`;
 - diff-only context can miss repository-wide behavior.
 
 ## AI Reusable Workflow
@@ -66,8 +67,9 @@ The reusable workflow currently exposes:
 
 - inputs: `model`, `domain`, `effort`, `max-tokens`, `max-diff-bytes`,
   `exclude-pattern`, `fail-on-severity`, and `post-comment`;
-- required secret: `anthropic-api-key`;
-- outputs: `findings-count` and `highest-severity`.
+- optional secret: `anthropic-api-key` (missing emits `skipped`);
+- outputs: `findings-count`, `highest-severity`, `completion-status`, and
+  `evaluation-result`.
 
 It does not mirror the composite action's `github-token`, `pr-number`, `repo`,
 `prompt-file`, or `findings-json` surface. Its internal action reference points

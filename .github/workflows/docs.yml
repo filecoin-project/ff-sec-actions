@@ -8,6 +8,7 @@ on:
       - docs/**
       - examples/**
       - actions/**
+      - schemas/**
       - prompts/**
       - roadmap/**
       - security/**
@@ -23,6 +24,8 @@ on:
       - scripts/test-baseline-no-exec.sh
       - scripts/check-scanner-gates.sh
       - scripts/test-scanner-outcome.sh
+      - scripts/check-evaluation-result.sh
+      - scripts/test-evaluation-result.sh
   push:
     branches: [main]
     paths:
@@ -31,6 +34,7 @@ on:
       - docs/**
       - examples/**
       - actions/**
+      - schemas/**
       - prompts/**
       - roadmap/**
       - security/**
@@ -46,6 +50,8 @@ on:
       - scripts/test-baseline-no-exec.sh
       - scripts/check-scanner-gates.sh
       - scripts/test-scanner-outcome.sh
+      - scripts/check-evaluation-result.sh
+      - scripts/test-evaluation-result.sh
   workflow_dispatch:
 
 permissions:
@@ -89,6 +95,9 @@ jobs:
 
       - name: Test scanner outcome semantics
         run: bash scripts/test-scanner-outcome.sh
+
+      - name: Test Evaluation Result completion semantics
+        run: bash scripts/test-evaluation-result.sh
 
       - name: Validate shell scripts
         run: shellcheck scripts/*.sh actions/*/*.sh actions/*/scripts/*.sh

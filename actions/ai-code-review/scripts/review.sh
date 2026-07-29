@@ -3,14 +3,6 @@
 # Operates on the diff via the GitHub API only; never checks out or executes PR code.
 set -euo pipefail
 
-: "${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY is required}"
-: "${GH_TOKEN:?GH_TOKEN is required}"
-: "${PR_NUMBER:?PR_NUMBER is required}"
-: "${REPO:?REPO is required}"
-: "${PROMPT_FILE:?PROMPT_FILE is required}"
-: "${BASE_PROMPT_FILE:?BASE_PROMPT_FILE is required}"
-: "${SCHEMA_FILE:?SCHEMA_FILE is required}"
-
 MODEL="${MODEL:-claude-opus-4-8}"
 EFFORT="${EFFORT:-high}"
 MAX_TOKENS="${MAX_TOKENS:-16000}"
@@ -20,18 +12,115 @@ POST_COMMENT="${POST_COMMENT:-true}"
 GITHUB_OUTPUT="${GITHUB_OUTPUT:-/dev/null}"
 GITHUB_STEP_SUMMARY="${GITHUB_STEP_SUMMARY:-/dev/null}"
 MARKER="<!-- ff-sec-action:ai-code-review -->"
+EVALUATION_RESULT_FILE="${EVALUATION_RESULT_FILE:-${RUNNER_TEMP:-$PWD}/ai-code-review-evaluation-result.json}"
+evaluation_emitted=false
 
 DEFAULT_EXCLUDE_RE='(^|/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|Cargo\.lock|go\.sum|flake\.lock|poetry\.lock|Gemfile\.lock)$|(^|/)(vendor|node_modules|dist|build|target)/|\.min\.(js|css)$|\.(svg|png|jpe?g|gif|ico|woff2?|ttf|pdf|lock)$|\.pb\.(go|rs)$|_generated\.|\.gen\.(go|rs|ts)$'
 EXCLUDE_RE="${EXCLUDE_RE:-$DEFAULT_EXCLUDE_RE}"
-
-for f in "$PROMPT_FILE" "$BASE_PROMPT_FILE" "$SCHEMA_FILE"; do
-  [ -f "$f" ] || { echo "::error::Missing required file: $f"; exit 1; }
-done
 
 workdir="$(mktemp -d)"
 trap 'rm -rf "$workdir"' EXIT
 
 set_output() { printf '%s=%s\n' "$1" "$2" >> "$GITHUB_OUTPUT"; }
+
+emit_evaluation() {
+  local completion="$1"
+  local reason="$2"
+  local findings_count="$3"
+  local highest_severity="$4"
+  local coverage_status="$5"
+  local evidence_type="$6"
+  local evidence_path="$7"
+  local evidence_sha=null
+  local repository=null
+  local ref=null
+
+  if [ -n "$evidence_path" ] && [ -s "$evidence_path" ]; then
+    evidence_sha="$(shasum -a 256 "$evidence_path" | awk '{print $1}')"
+  fi
+  if [ -n "${REPO:-}" ]; then
+    repository="$(jq -Rn --arg value "$REPO" '$value')"
+  fi
+  if [ -n "${GITHUB_SHA:-}" ]; then
+    ref="$(jq -Rn --arg value "$GITHUB_SHA" '$value')"
+  fi
+
+  mkdir -p "$(dirname "$EVALUATION_RESULT_FILE")"
+  jq -n \
+    --arg model "$MODEL" \
+    --argjson repository "$repository" \
+    --argjson ref "$ref" \
+    --arg target "pull-request:${PR_NUMBER:-unknown}" \
+    --arg completion "$completion" \
+    --arg reason "$reason" \
+    --arg coverage_status "$coverage_status" \
+    --argjson findings_count "$findings_count" \
+    --arg highest_severity "$highest_severity" \
+    --arg evidence_type "$evidence_type" \
+    --arg evidence_path "$evidence_path" \
+    --argjson evidence_sha "$(if [ "$evidence_sha" = null ]; then printf null; else jq -Rn --arg value "$evidence_sha" '$value'; fi)" \
+    '{
+      schema_version: "0.1.0",
+      evaluation: {id: "ai-code-review", kind: "ai-review"},
+      tool: {name: "anthropic-claude", version: $model},
+      scope: {repository: $repository, ref: $ref, target: $target},
+      completion: {status: $completion, reason: $reason},
+      coverage: {
+        status: $coverage_status,
+        included: ["reviewable pull-request diff"],
+        excluded: (if $coverage_status == "partial" then ["diff content beyond configured or model limit"] else [] end)
+      },
+      findings: {count: $findings_count, highest_severity: $highest_severity},
+      suppressions: {count: null},
+      timing: {started_at: null, completed_at: (now | todateiso8601), duration_ms: null},
+      evidence: [
+        if $evidence_sha == null
+        then {type: "none", path: null, sha256: null}
+        else {type: $evidence_type, path: $evidence_path, sha256: $evidence_sha}
+        end
+      ]
+    }' > "$EVALUATION_RESULT_FILE"
+
+  set_output completion_status "$completion"
+  set_output evaluation_result "$EVALUATION_RESULT_FILE"
+  evaluation_emitted=true
+}
+
+on_error() {
+  local exit_code="$?"
+  trap - ERR
+  set +e
+  if [ "$evaluation_emitted" != "true" ]; then
+    emit_evaluation error "AI review terminated before producing a valid result" null unknown unknown none ""
+  fi
+  exit "$exit_code"
+}
+trap on_error ERR
+
+if [ -z "${ANTHROPIC_API_KEY:-}" ]; then
+  echo "::warning::ANTHROPIC_API_KEY is unavailable; AI review was skipped."
+  set_output findings_count ""
+  set_output highest_severity unknown
+  set_output findings_json ""
+  emit_evaluation skipped "required Anthropic API secret is unavailable" null unknown not-applicable none ""
+  exit 0
+fi
+
+for variable in GH_TOKEN PR_NUMBER REPO PROMPT_FILE BASE_PROMPT_FILE SCHEMA_FILE; do
+  if [ -z "${!variable:-}" ]; then
+    echo "::error::${variable} is required."
+    emit_evaluation error "required input ${variable} is unavailable" null unknown unknown none ""
+    exit 1
+  fi
+done
+
+for f in "$PROMPT_FILE" "$BASE_PROMPT_FILE" "$SCHEMA_FILE"; do
+  if [ ! -f "$f" ]; then
+    echo "::error::Missing required file: $f"
+    emit_evaluation error "required review asset is unavailable" null unknown unknown none ""
+    exit 1
+  fi
+done
 
 # --- 1. Fetch PR metadata and diff ------------------------------------------
 gh pr view "$PR_NUMBER" --repo "$REPO" --json title,body,author,baseRefName \
@@ -53,6 +142,7 @@ if [ ! -s "$workdir/filtered.patch" ]; then
   set_output findings_count 0
   set_output highest_severity none
   set_output findings_json ""
+  emit_evaluation complete "no reviewable changes remained after filtering" 0 none not-applicable none ""
   echo "AI code review: no reviewable changes after filtering." >> "$GITHUB_STEP_SUMMARY"
   exit 0
 fi
@@ -122,11 +212,13 @@ for attempt in 1 2 3; do
       sleep $((attempt * 20)) ;;
     *)
       echo "::error::Claude API returned HTTP ${http_code}: $(jq -r '.error.message // "unknown error"' "$workdir/response.json" 2>/dev/null)"
+      emit_evaluation error "Anthropic API returned HTTP ${http_code}" null unknown unknown log "$workdir/response.json"
       exit 1 ;;
   esac
 done
 if [ "$http_code" != "200" ]; then
   echo "::error::Claude API unavailable after 3 attempts (last HTTP ${http_code})."
+  emit_evaluation error "Anthropic API unavailable after retries" null unknown unknown log "$workdir/response.json"
   exit 1
 fi
 
@@ -134,9 +226,10 @@ stop_reason=$(jq -r '.stop_reason // "unknown"' "$workdir/response.json")
 if [ "$stop_reason" = "refusal" ]; then
   echo "::warning::Model declined to review this diff (stop_reason=refusal). Skipping without failing the build."
   echo "AI code review: model declined this diff; no review posted." >> "$GITHUB_STEP_SUMMARY"
-  set_output findings_count 0
-  set_output highest_severity none
+  set_output findings_count ""
+  set_output highest_severity unknown
   set_output findings_json ""
+  emit_evaluation incomplete "model refused the review" null unknown unknown log "$workdir/response.json"
   exit 0
 fi
 if [ "$stop_reason" = "max_tokens" ]; then
@@ -147,7 +240,11 @@ fi
 jq -r '[.content[] | select(.type == "text")][0].text' "$workdir/response.json" \
   > "$workdir/findings.raw"
 jq -e '.summary and (.findings | type == "array")' "$workdir/findings.raw" > /dev/null \
-  || { echo "::error::Model output did not match the findings schema."; exit 1; }
+  || {
+    echo "::error::Model output did not match the findings schema."
+    emit_evaluation error "model output failed structured-result validation" null unknown unknown log "$workdir/response.json"
+    exit 1
+  }
 
 findings_json="${RUNNER_TEMP:-$PWD}/ai-review-findings.json"
 jq '.' "$workdir/findings.raw" > "$findings_json"
@@ -161,6 +258,20 @@ highest_severity=$(jq -r '
 set_output findings_count "$findings_count"
 set_output highest_severity "$highest_severity"
 set_output findings_json "$findings_json"
+
+completion_status=complete
+completion_reason="model returned a validated review"
+coverage_status=complete
+if [ "$truncated" = "true" ]; then
+  completion_status=incomplete
+  completion_reason="pull-request diff exceeded max-diff-bytes"
+  coverage_status=partial
+elif [ "$stop_reason" = "max_tokens" ]; then
+  completion_status=incomplete
+  completion_reason="model response reached max-tokens"
+  coverage_status=partial
+fi
+emit_evaluation "$completion_status" "$completion_reason" "$findings_count" "$highest_severity" "$coverage_status" json "$findings_json"
 
 # --- 6. Render the review comment ---------------------------------------------
 jq -r \

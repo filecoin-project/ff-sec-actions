@@ -7,8 +7,9 @@ author: ff-sec
 
 inputs:
   anthropic-api-key:
-    description: Anthropic API key.
-    required: true
+    description: Anthropic API key. A missing key emits a skipped Evaluation Result.
+    required: false
+    default: ""
   github-token:
     description: Token used to read the PR diff and post the review comment.
     required: false
@@ -70,6 +71,12 @@ outputs:
   findings-json:
     description: Path to the raw findings JSON file.
     value: ${{ steps.review.outputs.findings_json }}
+  completion-status:
+    description: complete, incomplete, skipped, or error.
+    value: ${{ steps.review.outputs.completion_status }}
+  evaluation-result:
+    description: Path to the machine-readable Evaluation Result JSON.
+    value: ${{ steps.review.outputs.evaluation_result }}
 
 runs:
   using: composite

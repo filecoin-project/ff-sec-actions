@@ -15,20 +15,31 @@ inputs:
     description: Whether one or more findings fail this evaluation.
     required: false
     default: "false"
+  scanner-version:
+    description: Scanner version when known.
+    required: false
+    default: ""
+  evaluation-result-file:
+    description: Destination for the machine-readable Evaluation Result JSON.
+    required: false
+    default: ""
 
 outputs:
   completion:
-    description: complete or error.
+    description: complete, incomplete, skipped, or error.
     value: ${{ steps.normalize.outputs.completion }}
   result:
-    description: no-findings, findings, or error.
+    description: no-findings, findings, incomplete, skipped, or error.
     value: ${{ steps.normalize.outputs.result }}
   conclusion:
-    description: pass, fail, or error.
+    description: pass, fail, skip, or error.
     value: ${{ steps.normalize.outputs.conclusion }}
   findings-count:
     description: Number of SARIF results when validation completed.
     value: ${{ steps.normalize.outputs.findings_count }}
+  evaluation-result:
+    description: Path to the machine-readable Evaluation Result JSON.
+    value: ${{ steps.normalize.outputs.evaluation_result }}
 
 runs:
   using: composite
@@ -40,4 +51,8 @@ runs:
         SCANNER_OUTCOME: ${{ inputs.scanner-outcome }}
         RESULT_FILE: ${{ inputs.result-file }}
         BLOCKING: ${{ inputs.blocking }}
+        SCANNER_VERSION: ${{ inputs.scanner-version }}
+        EVALUATION_RESULT_FILE: ${{ inputs.evaluation-result-file }}
+        EVALUATION_REPOSITORY: ${{ github.repository }}
+        EVALUATION_REF: ${{ github.sha }}
       run: bash "${GITHUB_ACTION_PATH}/scanner-outcome.sh"

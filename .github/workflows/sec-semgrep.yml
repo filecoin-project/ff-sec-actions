@@ -58,7 +58,7 @@ jobs:
         continue-on-error: true
 
       - name: Evaluate custom-rule outcome
-        if: always() && hashFiles(inputs.custom-config) != ''
+        if: always()
         uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@main
         with:
           scanner-name: semgrep-custom
@@ -85,7 +85,7 @@ jobs:
         continue-on-error: true
 
       - name: Evaluate community-rule outcome
-        if: always() && inputs.community-configs != ''
+        if: always()
         uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@main
         with:
           scanner-name: semgrep-community

@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/filecoin-project/ff-sec-actions/schemas/evaluation-result.schema.json",
+  "title": "Filecoin Ecosystem Security Evaluation Result",
+  "description": "Pre-v1 contract separating evaluation completion from observed findings.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluation",
+    "tool",
+    "scope",
+    "completion",
+    "coverage",
+    "findings",
+    "suppressions",
+    "timing",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1.0" },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["scanner", "ai-review"] }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": ["string", "null"] }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "ref", "target"],
+      "properties": {
+        "repository": { "type": ["string", "null"] },
+        "ref": { "type": ["string", "null"] },
+        "target": { "type": "string", "minLength": 1 }
+      }
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason"],
+      "properties": {
+        "status": { "enum": ["complete", "incomplete", "skipped", "error"] },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "included", "excluded"],
+      "properties": {
+        "status": { "enum": ["complete", "partial", "not-applicable", "unknown"] },
+        "included": { "type": "array", "items": { "type": "string" } },
+        "excluded": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count", "highest_severity"],
+      "properties": {
+        "count": { "type": ["integer", "null"], "minimum": 0 },
+        "highest_severity": {
+          "enum": ["critical", "high", "medium", "low", "info", "none", "unknown"]
+        }
+      }
+    },
+    "suppressions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count"],
+      "properties": {
+        "count": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["started_at", "completed_at", "duration_ms"],
+      "properties": {
+        "started_at": { "type": ["string", "null"], "format": "date-time" },
+        "completed_at": { "type": ["string", "null"], "format": "date-time" },
+        "duration_ms": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "path"],
+        "properties": {
+          "type": { "enum": ["sarif", "json", "log", "none"] },
+          "path": { "type": ["string", "null"] },
+          "sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "completion": {
+            "properties": { "status": { "const": "complete" } },
+            "required": ["status"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "findings": {
+            "properties": { "count": { "type": "integer" } }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -85,3 +85,5 @@ jobs:
           echo "findings-count:    ${{ steps.ai.outputs.findings-count }}"
           echo "highest-severity:  ${{ steps.ai.outputs.highest-severity }}"
           echo "findings-json:     ${{ steps.ai.outputs.findings-json }}"
+          echo "completion-status: ${{ steps.ai.outputs.completion-status }}"
+          echo "evaluation-result: ${{ steps.ai.outputs.evaluation-result }}"

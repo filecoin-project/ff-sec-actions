@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-29T00:03:54Z",
+  "updated_at": "2026-07-29T00:14:40Z",
   "current_task_id": null,
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
@@ -238,7 +238,7 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
+      "status": "done",
       "title": "Add completion status to existing evaluations",
       "objective": "Represent complete, incomplete, skipped, and error independently from finding severity.",
       "blocked_by": [
@@ -258,8 +258,8 @@
       "artifacts": [
         "schemas/evaluation-result.schema.json"
       ],
-      "started_at": null,
-      "completed_at": null
+      "started_at": "2026-07-29T00:04:59Z",
+      "completed_at": "2026-07-29T00:14:40Z"
     },
     {
       "id": "G0-06",
