@@ -35,6 +35,7 @@
       "coverage_mode": "manifest-and-lockfile",
       "allowed_actions": [
         "actions/checkout",
+        "actions/download-artifact",
         "actions/upload-artifact",
         "aquasecurity/trivy-action",
         "filecoin-project/ff-sec-actions/actions/evaluation-adapter",

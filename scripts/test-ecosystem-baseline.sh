@@ -5,6 +5,7 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 workflow="$repo_root/.github/workflows/ecosystem-baseline.yml"
 actions_workflow="$repo_root/.github/workflows/sec-actions.yml"
+dependencies_workflow="$repo_root/.github/workflows/sec-dependencies.yml"
 rules="$repo_root/rules/ecosystem-baseline.yml"
 fixture="$repo_root/test/fixtures/ecosystem-baseline/monorepo"
 
@@ -28,6 +29,16 @@ grep -Fq "tool-outcome: \${{ steps.scan.outputs.scanner-outcome }}" "$actions_wo
   || fail "workflow-definition evaluation does not forward the real scanner outcome"
 if grep -Eq 'advanced-security:[[:space:]]+true|zizmorcore/zizmor-action@' "$actions_workflow"; then
   fail "workflow-definition evaluation still couples SARIF creation to privileged upload"
+fi
+
+grep -Eq '^[[:space:]]+publish-sarif:[[:space:]]*$' "$dependencies_workflow" \
+  || fail "dependency evaluation does not expose explicit SARIF publication"
+grep -Eq '^  publish-sarif:[[:space:]]*$' "$dependencies_workflow" \
+  || fail "dependency SARIF publication is not isolated in its own job"
+grep -Fq "if: inputs.publish-sarif" "$dependencies_workflow" \
+  || fail "dependency SARIF publication is not controlled by its explicit input"
+if grep -Fq "vars.ENABLE_GHAS" "$dependencies_workflow"; then
+  fail "dependency evaluation still inherits consumer repository publication state implicitly"
 fi
 
 expected_rules=(
