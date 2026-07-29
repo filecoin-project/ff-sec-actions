@@ -2,8 +2,8 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-29T00:31:23Z",
-  "current_task_id": null,
+  "updated_at": "2026-07-29T00:31:57Z",
+  "current_task_id": "G0-09",
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
   "status_semantics": {
@@ -353,7 +353,7 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
+      "status": "in_progress",
       "title": "Make consumer pins cover the complete execution graph",
       "objective": "Ensure one reviewed consumer SHA immutably selects nested workflows, actions, containers, prompts, rules, and third-party dependencies.",
       "blocked_by": [
@@ -373,7 +373,7 @@
         "scripts/check-release-graph.sh",
         ".github/workflows/security-pipeline.yml"
       ],
-      "started_at": null,
+      "started_at": "2026-07-29T00:31:57Z",
       "completed_at": null
     },
     {

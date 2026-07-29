@@ -8,7 +8,8 @@
 #
 # This checks out THIS repo at the ref you dispatch from and runs the LOCAL
 # action (./actions/ai-code-review), so you can test branch changes before
-# tagging a release — unlike the reusable workflow, which uses the pinned @v1.
+# tagging a release. The reusable workflow resolves the action from an immutable
+# repository commit.
 #
 # Notes:
 # - Requires the ANTHROPIC_API_KEY secret on this repo (or via the org).
@@ -61,7 +62,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout this repo (the action + prompts under test)
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 

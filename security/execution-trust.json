@@ -89,14 +89,14 @@
         "secret_context": true,
         "write_permissions": ["pull-requests"],
         "execution_markers": [],
-        "mutable_references": true,
+        "mutable_references": false,
         "mutable_container": false,
         "oidc": false,
         "cache": false,
         "self_hosted_runner": false
       },
       "network": ["github-api", "anthropic-api"],
-      "migration": ["Replace the unresolved @v1 action reference with the immutable release graph.", "Keep Consumer Project checkout and execution forbidden."]
+      "migration": ["Keep the internal action on the immutable release graph.", "Keep Consumer Project checkout and execution forbidden."]
     },
     {
       "path": ".github/workflows/docs.yml",
@@ -131,14 +131,14 @@
         "secret_context": true,
         "write_permissions": ["pull-requests"],
         "execution_markers": ["local-action"],
-        "mutable_references": true,
+        "mutable_references": false,
         "mutable_container": false,
         "oidc": false,
         "cache": false,
         "self_hosted_runner": false
       },
       "network": ["github-api", "github-action-download", "anthropic-api"],
-      "migration": ["Pin the remaining mutable checkout reference.", "Keep this workflow manual and restricted to trusted Control Repository refs."]
+      "migration": ["Keep third-party actions pinned to full commits.", "Keep this workflow manual and restricted to trusted Control Repository refs."]
     },
     {
       "path": ".github/workflows/sec-actions.yml",
@@ -194,7 +194,7 @@
         "secret_context": false,
         "write_permissions": ["security-events"],
         "execution_markers": [],
-        "mutable_references": true,
+        "mutable_references": false,
         "mutable_container": false,
         "oidc": false,
         "cache": false,
@@ -236,7 +236,7 @@
         "secret_context": false,
         "write_permissions": ["security-events"],
         "execution_markers": [],
-        "mutable_references": true,
+        "mutable_references": false,
         "mutable_container": false,
         "oidc": false,
         "cache": false,
@@ -257,7 +257,7 @@
         "secret_context": false,
         "write_permissions": [],
         "execution_markers": [],
-        "mutable_references": true,
+        "mutable_references": false,
         "mutable_container": false,
         "oidc": false,
         "cache": false,
@@ -320,14 +320,14 @@
         "secret_context": false,
         "write_permissions": [],
         "execution_markers": [],
-        "mutable_references": true,
+        "mutable_references": false,
         "mutable_container": false,
         "oidc": false,
         "cache": false,
         "self_hosted_runner": false
       },
       "network": ["github-action-download", "github-release-download"],
-      "migration": ["Pin the nested actions and verified Gitleaks archive through the immutable release graph."]
+      "migration": ["Keep nested actions and the verified Gitleaks archive on the immutable release graph."]
     },
     {
       "path": ".github/workflows/sec-semgrep.yml",
@@ -341,14 +341,14 @@
         "secret_context": false,
         "write_permissions": ["security-events"],
         "execution_markers": [],
-        "mutable_references": true,
-        "mutable_container": true,
+        "mutable_references": false,
+        "mutable_container": false,
         "oidc": false,
         "cache": false,
         "self_hosted_runner": false
       },
       "network": ["container-registry", "github-action-download", "semgrep-rule-registry", "github-code-scanning"],
-      "migration": ["Pin the scanner image by digest and use contents:read only.", "Split optional SARIF publication from inspection."]
+      "migration": ["Keep the scanner image pinned by digest and use contents:read only.", "Split optional SARIF publication from inspection."]
     },
     {
       "path": ".github/workflows/sec-slither.yml",

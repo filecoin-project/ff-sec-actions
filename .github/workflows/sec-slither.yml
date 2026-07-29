@@ -48,6 +48,8 @@ jobs:
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@c7450ba673e133f5ee30098b3b54f444d3a2ca2d # v1
+        with:
+          version: v1.7.1
 
       - name: Run Slither
         uses: crytic/slither-action@b52cc1cbfee9ca3e8722dd5224299d16c9a6b80f # v0.4.2
@@ -57,6 +59,7 @@ jobs:
           slither-args: ${{ inputs.slither-args }}
           sarif: slither-results.sarif
           solc-version: ${{ inputs.solc-version }}
+          slither-version: 0.11.5
           fail-on: ${{ inputs.fail-on }}
 
       - name: Upload Slither results

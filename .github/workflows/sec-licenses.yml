@@ -36,6 +36,7 @@ jobs:
         id: scan
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
         with:
+          version: v0.70.0
           scan-type: fs
           scan-ref: .
           format: sarif
@@ -50,7 +51,7 @@ jobs:
 
       - name: Evaluate license scan outcome
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@main
+        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@0548d1ad3feef0a984d652abc86d4a59f1982c72
         with:
           scanner-name: trivy-licenses
           scanner-outcome: ${{ steps.scan.outcome }}

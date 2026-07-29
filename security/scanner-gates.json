@@ -78,13 +78,6 @@
       "umbrella_input": "semgrep-blocking",
       "enforcement_marker": "blocking: ${{ inputs.blocking }}"
     },
-    "semgrep-community": {
-      "workflow": ".github/workflows/sec-semgrep.yml",
-      "gate_mode": "configurable",
-      "workflow_input": "community-blocking",
-      "umbrella_input": "semgrep-community-blocking",
-      "enforcement_marker": "blocking: ${{ inputs.community-blocking }}"
-    },
     "slither": {
       "workflow": ".github/workflows/sec-slither.yml",
       "gate_mode": "configurable",

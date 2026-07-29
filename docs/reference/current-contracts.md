@@ -18,9 +18,9 @@ their contracts differ from the target v1 platform.
 | Composite action | You need a step inside a custom job | Runner, permissions, setup, and surrounding steps |
 | Standalone script | You are developing locally or outside GitHub Actions | Runtime tools, environment, credentials, and output paths |
 
-The AI examples currently use the composite action because the reusable AI
-workflow contains an unresolved release reference. The scanner example uses
-the umbrella on `main` and is explicitly pilot-only.
+The AI examples currently use the composite action at a reviewed pilot commit.
+The reusable AI workflow now resolves that action immutably. The scanner
+example uses the umbrella on `main` and is explicitly pilot-only.
 
 ## AI Code Review Composite Action
 
@@ -72,8 +72,8 @@ The reusable workflow currently exposes:
   `evaluation-result`.
 
 It does not mirror the composite action's `github-token`, `pr-number`, `repo`,
-`prompt-file`, or `findings-json` surface. Its internal action reference points
-to an unreleased `v1`, so the consumer examples do not use it.
+`prompt-file`, or `findings-json` surface. Its internal action reference is
+pinned to a full repository commit.
 
 ## Security Pipeline Umbrella
 
@@ -101,9 +101,7 @@ Source:
 | Input | Default | Notes |
 |---|---|---|
 | `skip-dirs` | `node_modules` | Comma-separated Trivy exclusions |
-| `semgrep-community-configs` | TypeScript/JWT/OWASP/secrets/security-audit sets | Space-separated registry configs |
 | `semgrep-blocking` | `false` | Fail on custom-rule findings; tool failure always fails |
-| `semgrep-community-blocking` | `false` | Fail on community-rule findings; tool failure always fails |
 | `codeql-languages` | `["javascript-typescript"]` | JSON array |
 | `dependency-review-fail-on-severity` | `high` | Dependency-review threshold |
 | `dependency-blocking` | `false` | Fail on dependency findings; tool failure always fails |
@@ -141,7 +139,7 @@ Current umbrella limitations:
 | Workflow | Primary result | Current gate behavior |
 |---|---|---|
 | `sec-actions.yml` | Zizmor source annotations with exact locations and remediation links | Blocks on medium-or-higher auditor-persona findings and parser/tool failure |
-| `sec-semgrep.yml` | Custom and community SARIF artifacts | Each ruleset has an independent finding gate; malformed output/tool failure always fails |
+| `sec-semgrep.yml` | Repository-owned custom-rule SARIF artifact | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-codeql.yml` | GitHub code-scanning analysis | CodeQL analysis controls failure |
 | `sec-dependencies.yml` | Manifest/lockfile Trivy SARIF | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-secrets.yml` | Secretless Gitleaks SARIF; PR range or full history | Blocking; findings and operational failure remain distinct |

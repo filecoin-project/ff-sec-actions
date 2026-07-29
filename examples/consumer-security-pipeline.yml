@@ -44,7 +44,6 @@ jobs:
       # iac-blocking: true
       # license-blocking: true
       # semgrep-blocking: true
-      # semgrep-community-blocking: true
       # dependency-severity: CRITICAL,HIGH
       # iac-severity: CRITICAL,HIGH
       # license-severity: CRITICAL,HIGH

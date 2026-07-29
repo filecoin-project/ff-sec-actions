@@ -91,9 +91,9 @@ repository configuration as well as this repository's source contract.
 
 | Surface | Current tier | Target tier | Required migration |
 |---|---|---|---|
-| `.github/workflows/ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the mutable action reference; preserve no-checkout/no-execution behavior. |
+| `.github/workflows/ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Keep the internal action pinned; preserve no-checkout/no-execution behavior. |
 | `.github/workflows/docs.yml` | `control-repository-ci` | `control-repository-ci` | Keep repository contracts in its validation job. |
-| `.github/workflows/manual-ai-code-review.yml` | `control-repository-ci` | `control-repository-ci` | Pin checkout and keep trusted manual scope. |
+| `.github/workflows/manual-ai-code-review.yml` | `control-repository-ci` | `control-repository-ci` | Keep checkout pinned and retain trusted manual scope. |
 | `.github/workflows/sec-actions.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Pin zizmor and its installer resolution through the immutable release graph. |
 | `.github/workflows/sec-codeql.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority from build; publish separately. |
 | `.github/workflows/sec-dependencies.yml` | `legacy-mixed` | `ecosystem-baseline` | Move SARIF publication out; keep build-dependent work separate. |
@@ -102,8 +102,8 @@ repository configuration as well as this repository's source contract.
 | `.github/workflows/sec-licenses.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep build-dependent evidence in a separate Privileged Build Analysis. |
 | `.github/workflows/sec-sbom.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep build-enhanced SBOM evidence in a separate Privileged Build Analysis. |
 | `.github/workflows/sec-scorecard.yml` | `legacy-mixed` | `ecosystem-baseline` | Separate read-only evaluation from the named OIDC/security-event publisher. |
-| `.github/workflows/sec-secrets.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Pin its nested actions and verified scanner archive through the release graph. |
-| `.github/workflows/sec-semgrep.yml` | `legacy-mixed` | `ecosystem-baseline` | Pin the image by digest, inspect read-only, and publish separately. |
+| `.github/workflows/sec-secrets.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep nested actions and the verified scanner archive on the immutable graph. |
+| `.github/workflows/sec-semgrep.yml` | `legacy-mixed` | `ecosystem-baseline` | Keep the image digest-pinned, inspect read-only, and publish separately. |
 | `.github/workflows/sec-slither.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority from the build, constrain submodules, and publish separately. |
 | `.github/workflows/security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Replace the mixed umbrella with a strict baseline and separate opt-in privileged jobs. |
 | `examples/consumer-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |

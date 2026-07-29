@@ -74,17 +74,8 @@ on:
         required: false
         default: node_modules
       # ── Per-scanner configuration ────────────────────
-      semgrep-community-configs:
-        type: string
-        required: false
-        default: p/typescript p/jwt p/owasp-top-ten p/secrets p/security-audit
       semgrep-blocking:
         description: Fail when custom Semgrep rules produce findings.
-        type: boolean
-        required: false
-        default: false
-      semgrep-community-blocking:
-        description: Fail when community Semgrep rules produce findings.
         type: boolean
         required: false
         default: false
@@ -163,9 +154,7 @@ jobs:
       security-events: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@main
     with:
-      community-configs: ${{ inputs.semgrep-community-configs }}
       blocking: ${{ inputs.semgrep-blocking }}
-      community-blocking: ${{ inputs.semgrep-community-blocking }}
 
   codeql:
     if: inputs.enable-codeql

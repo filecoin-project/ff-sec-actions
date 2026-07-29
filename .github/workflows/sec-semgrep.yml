@@ -11,23 +11,8 @@ on:
         type: string
         required: false
         default: .semgrep.yml
-      community-configs:
-        description: Space-separated Semgrep registry rulesets ("" to skip).
-        type: string
-        required: false
-        default: p/typescript p/jwt p/owasp-top-ten p/secrets p/security-audit
-      semgrep-image:
-        description: Semgrep container image (pin a version).
-        type: string
-        required: false
-        default: semgrep/semgrep:1.93.0
       blocking:
         description: Fail the job on custom-rule findings (community rules are always advisory).
-        type: boolean
-        required: false
-        default: false
-      community-blocking:
-        description: Fail the job on community-rule findings.
         type: boolean
         required: false
         default: false
@@ -41,7 +26,7 @@ jobs:
       contents: read
       security-events: write
     container:
-      image: ${{ inputs.semgrep-image }}
+      image: semgrep/semgrep:1.93.0@sha256:f35c7891e2030110a84a721fdd556ce8f3da6e7e69d7fab1d3660ae1bb334474
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -59,39 +44,12 @@ jobs:
 
       - name: Evaluate custom-rule outcome
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@main
+        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@0548d1ad3feef0a984d652abc86d4a59f1982c72
         with:
           scanner-name: semgrep-custom
           scanner-outcome: ${{ steps.custom-scan.outcome }}
           result-file: semgrep-custom.sarif
           blocking: ${{ inputs.blocking }}
-
-      - name: Run Semgrep (community rules — advisory)
-        id: community-scan
-        if: always() && inputs.community-configs != ''
-        shell: bash
-        env:
-          COMMUNITY_CONFIGS: ${{ inputs.community-configs }}
-        run: |
-          read -r -a configs <<< "$COMMUNITY_CONFIGS"
-          args=()
-          for cfg in "${configs[@]}"; do
-            args+=(--config "$cfg")
-          done
-          semgrep scan "${args[@]}" \
-            --metrics=off \
-            --sarif --output semgrep-community.sarif \
-            --verbose
-        continue-on-error: true
-
-      - name: Evaluate community-rule outcome
-        if: always()
-        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@main
-        with:
-          scanner-name: semgrep-community
-          scanner-outcome: ${{ steps.community-scan.outcome }}
-          result-file: semgrep-community.sarif
-          blocking: ${{ inputs.community-blocking }}
 
       - name: Upload custom-rule results
         if: always() && hashFiles('semgrep-custom.sarif') != ''
@@ -100,23 +58,9 @@ jobs:
           name: semgrep-custom-results
           path: semgrep-custom.sarif
 
-      - name: Upload community-rule results
-        if: always() && hashFiles('semgrep-community.sarif') != ''
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: semgrep-community-results
-          path: semgrep-community.sarif
-
       - name: Upload custom SARIF to GitHub Security tab
         if: always() && vars.ENABLE_GHAS == 'true' && hashFiles('semgrep-custom.sarif') != ''
         uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
         with:
           sarif_file: semgrep-custom.sarif
           category: semgrep-custom
-
-      - name: Upload community SARIF to GitHub Security tab
-        if: always() && vars.ENABLE_GHAS == 'true' && hashFiles('semgrep-community.sarif') != ''
-        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
-        with:
-          sarif_file: semgrep-community.sarif
-          category: semgrep-community
