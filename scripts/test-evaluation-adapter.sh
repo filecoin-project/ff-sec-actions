@@ -12,7 +12,25 @@ cat > "$test_root/clean.sarif" <<'JSON'
 {"version":"2.1.0","runs":[{"tool":{"driver":{"name":"fixture"}},"results":[]}]}
 JSON
 cat > "$test_root/findings.sarif" <<'JSON'
-{"version":"2.1.0","runs":[{"tool":{"driver":{"name":"fixture"}},"results":[{"ruleId":"fixture.high","level":"error","message":{"text":"fixture finding"}}]}]}
+{
+  "version": "2.1.0",
+  "runs": [{
+    "tool": {"driver": {"name": "fixture", "rules": [{
+      "id": "fixture.high",
+      "shortDescription": {"text": "Unsafe fixture behavior"},
+      "helpUri": "https://example.invalid/rules/fixture.high"
+    }]}},
+    "results": [{
+      "ruleId": "fixture.high",
+      "level": "error",
+      "message": {"text": "fixture finding"},
+      "locations": [{"physicalLocation": {
+        "artifactLocation": {"uri": "src/fixture.js"},
+        "region": {"startLine": 42}
+      }}]
+    }]
+  }]
+}
 JSON
 printf '{not-json\n' > "$test_root/malformed.sarif"
 
@@ -26,6 +44,8 @@ run_case() {
   local expected_gate="$7"
   local expected_count="$8"
   local result="$test_root/${name}.json"
+  local summary="$test_root/${name}.md"
+  local step_summary="$test_root/${name}.step-summary.md"
   local actual_exit=0
 
   EVALUATION_ID=fixture-scan \
@@ -38,6 +58,10 @@ run_case() {
   COVERAGE_INCLUDED='["repository files"]' \
   COVERAGE_EXCLUDED='[]' \
   COVERAGE_LIMITATIONS='["fixture limitation"]' \
+  EVIDENCE_ARTIFACT=fixture-sarif \
+  REMEDIATION_GUIDANCE='Replace the unsafe fixture behavior with the documented safe pattern.' \
+  SUMMARY_FILE="$summary" \
+  GITHUB_STEP_SUMMARY="$step_summary" \
   EVALUATION_RESULT_FILE="$result" \
     bash "$adapter" >/dev/null 2>&1 || actual_exit="$?"
 
@@ -52,6 +76,25 @@ run_case() {
     '.completion.status == $completion and .merge_gate.conclusion == $gate and .findings.count == $count' \
     "$result" >/dev/null \
     || { printf 'evaluation-adapter test failure: %s emitted incorrect semantics\n' "$name" >&2; exit 1; }
+
+  if [ "$name" = blocking-findings ]; then
+    jq -e '.evidence[0].artifact == "fixture-sarif"' "$result" >/dev/null \
+      || { printf 'evaluation-adapter test failure: durable artifact identity is missing\n' >&2; exit 1; }
+    for expected in \
+      '# Evaluation: fixture-scan' \
+      'Completion: **complete**' \
+      'Gate: **fail**' \
+      "Scope: \`repository\`" \
+      "Evidence artifact: \`fixture-sarif\`" \
+      "\`src/fixture.js:42\`" \
+      'fixture finding' \
+      'Replace the unsafe fixture behavior'; do
+      grep -Fq "$expected" "$summary" \
+        || { printf 'evaluation-adapter test failure: summary is missing %s\n' "$expected" >&2; exit 1; }
+      grep -Fq "$expected" "$step_summary" \
+        || { printf 'evaluation-adapter test failure: job summary is missing %s\n' "$expected" >&2; exit 1; }
+    done
+  fi
 }
 
 run_case success success "$test_root/clean.sarif" false 0 complete pass 0

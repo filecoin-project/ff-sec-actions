@@ -22,6 +22,18 @@ inputs:
     description: Raw SARIF file produced by the scanner.
     required: false
     default: ""
+  evidence-artifact:
+    description: Durable GitHub artifact name containing the raw evidence.
+    required: false
+    default: ""
+  remediation-guidance:
+    description: Actionable remediation guidance shown with findings.
+    required: false
+    default: Review the reported rule, correct the affected source, and document any verified false positive.
+  max-summary-findings:
+    description: Maximum findings rendered in the job summary and annotations.
+    required: false
+    default: "20"
   blocking:
     description: Fail when validated evidence contains findings.
     required: false
@@ -46,6 +58,10 @@ inputs:
     description: Destination for normalized Evaluation Result JSON.
     required: false
     default: ""
+  summary-file:
+    description: Destination for the readable evaluation summary.
+    required: false
+    default: ""
 
 outputs:
   completion:
@@ -60,6 +76,12 @@ outputs:
   evaluation-result:
     description: Path to the v1 Evaluation Result JSON.
     value: ${{ steps.adapt.outputs.evaluation_result }}
+  evidence-artifact:
+    description: Durable artifact name containing raw evidence.
+    value: ${{ steps.adapt.outputs.evidence_artifact }}
+  summary:
+    description: Path to the readable evaluation summary.
+    value: ${{ steps.adapt.outputs.summary }}
 
 runs:
   using: composite
@@ -73,12 +95,16 @@ runs:
         TOOL_OUTCOME: ${{ inputs.tool-outcome }}
         TOOL_EXIT_CODE: ${{ inputs.tool-exit-code }}
         RAW_EVIDENCE: ${{ inputs.raw-evidence }}
+        EVIDENCE_ARTIFACT: ${{ inputs.evidence-artifact }}
+        REMEDIATION_GUIDANCE: ${{ inputs.remediation-guidance }}
+        MAX_SUMMARY_FINDINGS: ${{ inputs.max-summary-findings }}
         BLOCKING: ${{ inputs.blocking }}
         SCOPE_TARGET: ${{ inputs.scope-target }}
         COVERAGE_INCLUDED: ${{ inputs.coverage-included }}
         COVERAGE_EXCLUDED: ${{ inputs.coverage-excluded }}
         COVERAGE_LIMITATIONS: ${{ inputs.coverage-limitations }}
         EVALUATION_RESULT_FILE: ${{ inputs.evaluation-result-file }}
+        SUMMARY_FILE: ${{ inputs.summary-file }}
         EVALUATION_REPOSITORY: ${{ github.repository }}
         EVALUATION_REF: ${{ github.sha }}
       run: bash "${GITHUB_ACTION_PATH}/evaluation-adapter.sh"
