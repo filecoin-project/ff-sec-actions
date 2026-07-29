@@ -100,12 +100,12 @@ repository configuration as well as this repository's source contract.
 | `.github/workflows/sec-codeql.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority from build; publish separately. |
 | `.github/workflows/sec-dependencies.yml` | `legacy-mixed` | `ecosystem-baseline` | Move SARIF publication out; keep build-dependent work separate. |
 | `.github/workflows/sec-dependency-review.yml` | `legacy-mixed` | `ecosystem-baseline` | Separate baseline evaluation from optional commenting. |
-| `.github/workflows/sec-iac.yml` | `legacy-mixed` | `ecosystem-baseline` | Inspect read-only; move optional SARIF upload to a publisher. |
+| `.github/workflows/sec-iac.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep inspection read-only and publish SARIF only from a separate tier. |
 | `.github/workflows/sec-licenses.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep build-dependent evidence in a separate Privileged Build Analysis. |
 | `.github/workflows/sec-sbom.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep build-enhanced SBOM evidence in a separate Privileged Build Analysis. |
 | `.github/workflows/sec-scorecard.yml` | `legacy-mixed` | `ecosystem-baseline` | Separate read-only evaluation from the named OIDC/security-event publisher. |
 | `.github/workflows/sec-secrets.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep nested actions and the verified scanner archive on the immutable graph. |
-| `.github/workflows/sec-semgrep.yml` | `legacy-mixed` | `ecosystem-baseline` | Keep the image digest-pinned, inspect read-only, and publish separately. |
+| `.github/workflows/sec-semgrep.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep the image digest-pinned, rules repository-owned, and inspection read-only. |
 | `.github/workflows/sec-slither.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority from the build, constrain submodules, and publish separately. |
 | `.github/workflows/security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Keep nested pins immutable; replace the mixed umbrella with a strict baseline and separate opt-in privileged jobs. |
 | `examples/consumer-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |

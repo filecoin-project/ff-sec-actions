@@ -5,6 +5,8 @@
       "coverage_mode": "workflow-definitions",
       "allowed_actions": [
         "actions/checkout",
+        "actions/upload-artifact",
+        "filecoin-project/ff-sec-actions/actions/evaluation-adapter",
         "zizmorcore/zizmor-action"
       ],
       "limitations": [
@@ -38,13 +40,25 @@
         "Licenses visible only after installation or a project build are excluded."
       ]
     },
+    ".github/workflows/sec-iac.yml": {
+      "coverage_mode": "source-manifest",
+      "allowed_actions": [
+        "actions/checkout",
+        "actions/upload-artifact",
+        "aquasecurity/trivy-action",
+        "filecoin-project/ff-sec-actions/actions/evaluation-adapter"
+      ],
+      "limitations": [
+        "Runtime cloud state and configuration generated only during a build are excluded."
+      ]
+    },
     ".github/workflows/sec-secrets.yml": {
       "coverage_mode": "git-history",
       "allowed_actions": [
         "actions/checkout",
         "actions/upload-artifact",
         "filecoin-project/ff-sec-actions/actions/gitleaks-scan",
-        "filecoin-project/ff-sec-actions/actions/scanner-outcome"
+        "filecoin-project/ff-sec-actions/actions/evaluation-adapter"
       ],
       "limitations": [
         "Pull requests inspect only commits introduced by the pull request.",
@@ -60,6 +74,18 @@
       "limitations": [
         "The SBOM is source-manifest evidence, not a build-complete inventory.",
         "Generated, vendored-at-build, and runtime-loaded packages may be absent."
+      ]
+    },
+    ".github/workflows/sec-semgrep.yml": {
+      "coverage_mode": "source-manifest",
+      "allowed_actions": [
+        "actions/checkout",
+        "actions/upload-artifact",
+        "filecoin-project/ff-sec-actions/actions/evaluation-adapter",
+        "filecoin-project/ff-sec-actions/actions/semgrep-scan"
+      ],
+      "limitations": [
+        "The conservative ruleset supports selected Go, Rust, JavaScript, TypeScript, Solidity, and Dockerfile patterns; it is not a complete language audit."
       ]
     }
   }

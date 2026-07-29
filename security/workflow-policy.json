@@ -80,8 +80,7 @@
       "iac": {
         "permissions": {
           "actions": "read",
-          "contents": "read",
-          "security-events": "write"
+          "contents": "read"
         }
       }
     },
@@ -119,8 +118,7 @@
       "semgrep": {
         "permissions": {
           "actions": "read",
-          "contents": "read",
-          "security-events": "write"
+          "contents": "read"
         }
       }
     },

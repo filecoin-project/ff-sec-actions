@@ -23,6 +23,7 @@ jobs:
           persist-credentials: false
 
       - name: Analyze workflow security with zizmor
+        id: scan
         uses: zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d # v0.5.6
         with:
           version: 1.28.0
@@ -32,7 +33,30 @@ jobs:
           persona: auditor
           min-severity: medium
           min-confidence: low
-          advanced-security: false
-          annotations: true
+          advanced-security: true
+          annotations: false
           color: false
           config: ${{ inputs.config-path }}
+        continue-on-error: true
+
+      - name: Normalize GitHub Actions security result
+        if: always()
+        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@650fdf6412ff2e3e19ac8f4f124a3257f81c19d9
+        with:
+          evaluation-id: zizmor-actions
+          tool-name: zizmor
+          tool-version: 1.28.0
+          tool-outcome: success
+          raw-evidence: ${{ steps.scan.outputs.output-file }}
+          blocking: true
+          coverage-included: '["GitHub Actions workflows and action metadata"]'
+          coverage-excluded: '["online repository audits"]'
+          coverage-limitations: '["offline mode does not resolve remote action metadata"]'
+
+      - name: Upload normalized GitHub Actions Evaluation Result
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evaluation-result-zizmor-actions
+          path: ${{ runner.temp }}/zizmor-actions-evaluation-result.json
+          if-no-files-found: error

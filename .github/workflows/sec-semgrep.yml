@@ -6,13 +6,8 @@ name: Semgrep SAST (reusable)
 on:
   workflow_call:
     inputs:
-      custom-config:
-        description: Path to the repo's custom Semgrep rules (skipped if absent).
-        type: string
-        required: false
-        default: .semgrep.yml
       blocking:
-        description: Fail the job on custom-rule findings (community rules are always advisory).
+        description: Fail the job on Ecosystem Baseline rule findings.
         type: boolean
         required: false
         default: false
@@ -24,7 +19,6 @@ jobs:
     permissions:
       actions: read
       contents: read
-      security-events: write
     container:
       image: semgrep/semgrep:1.93.0@sha256:f35c7891e2030110a84a721fdd556ce8f3da6e7e69d7fab1d3660ae1bb334474
     steps:
@@ -32,35 +26,36 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Run Semgrep (custom rules)
-        id: custom-scan
-        if: hashFiles(inputs.custom-config) != ''
-        run: |
-          semgrep scan \
-            --config "${{ inputs.custom-config }}" \
-            --sarif --output semgrep-custom.sarif \
-            --verbose
+      - name: Run Semgrep with versioned Ecosystem Baseline rules
+        id: scan
+        uses: filecoin-project/ff-sec-actions/actions/semgrep-scan@b628c4771ea6e320f2f868ea6e158091bf8a9609
         continue-on-error: true
 
-      - name: Evaluate custom-rule outcome
+      - name: Evaluate Ecosystem Baseline static analysis
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@0548d1a4f26c20a6dd62d9793420a8c54b8596f6
+        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@650fdf6412ff2e3e19ac8f4f124a3257f81c19d9
         with:
-          scanner-name: semgrep-custom
-          scanner-outcome: ${{ steps.custom-scan.outcome }}
-          result-file: semgrep-custom.sarif
+          evaluation-id: semgrep-baseline
+          tool-name: semgrep
+          tool-version: 1.93.0
+          tool-outcome: ${{ steps.scan.outputs.scanner-outcome || 'failure' }}
+          raw-evidence: semgrep-baseline.sarif
           blocking: ${{ inputs.blocking }}
+          coverage-included: '["supported Go, Rust, JavaScript, TypeScript, Solidity, and Dockerfile source"]'
+          coverage-excluded: '["unsupported languages and generated source"]'
+          coverage-limitations: '["the conservative baseline ruleset is not a complete language security audit"]'
+
+      - name: Upload normalized Semgrep Evaluation Result
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evaluation-result-semgrep-baseline
+          path: ${{ runner.temp }}/semgrep-baseline-evaluation-result.json
+          if-no-files-found: error
 
       - name: Upload custom-rule results
         if: always() && hashFiles('semgrep-custom.sarif') != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: semgrep-custom-results
-          path: semgrep-custom.sarif
-
-      - name: Upload custom SARIF to GitHub Security tab
-        if: always() && vars.ENABLE_GHAS == 'true' && hashFiles('semgrep-custom.sarif') != ''
-        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
-        with:
-          sarif_file: semgrep-custom.sarif
-          category: semgrep-custom
+          name: semgrep-baseline-results
+          path: semgrep-baseline.sarif
