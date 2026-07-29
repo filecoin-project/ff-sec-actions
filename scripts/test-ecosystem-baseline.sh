@@ -6,6 +6,8 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 workflow="$repo_root/.github/workflows/ecosystem-baseline.yml"
 actions_workflow="$repo_root/.github/workflows/sec-actions.yml"
 dependencies_workflow="$repo_root/.github/workflows/sec-dependencies.yml"
+privileged_pipeline="$repo_root/.github/workflows/security-pipeline.yml"
+consumer_example="$repo_root/examples/consumer-ecosystem-baseline.yml"
 rules="$repo_root/rules/ecosystem-baseline.yml"
 fixture="$repo_root/test/fixtures/ecosystem-baseline/monorepo"
 
@@ -39,6 +41,11 @@ grep -Fq "if: inputs.publish-sarif" "$dependencies_workflow" \
   || fail "dependency SARIF publication is not controlled by its explicit input"
 if grep -Fq "vars.ENABLE_GHAS" "$dependencies_workflow"; then
   fail "dependency evaluation still inherits consumer repository publication state implicitly"
+fi
+grep -Fq "publish-sarif: \${{ inputs.publish-sarif }}" "$privileged_pipeline" \
+  || fail "the privileged pipeline does not deliberately forward SARIF publication policy"
+if grep -Eq 'security-events:[[:space:]]+write|publish-sarif:' "$workflow" "$consumer_example"; then
+  fail "the Ecosystem Baseline requests privileged SARIF publication"
 fi
 
 expected_rules=(

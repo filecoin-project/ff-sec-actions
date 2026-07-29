@@ -6,8 +6,7 @@
 # select this umbrella with one full release commit SHA.
 #
 # Conventions carried from fil-one:
-# - Repo/org variable ENABLE_GHAS='true' turns on SARIF upload to the Security tab
-#   (vars resolve from the CALLING repo).
+# - SARIF publication is an explicit input and requires matching caller authority.
 # - Scanners are advisory by default; flip per-scanner `blocking` inputs to gate.
 # - Repo config files (.semgrep.yml, .gitleaks.toml, .trivyignore,
 #   slither.config.json) are auto-detected and skipped when absent.
@@ -73,6 +72,11 @@ on:
         type: string
         required: false
         default: node_modules
+      publish-sarif:
+        description: Publish supported SARIF evidence to GitHub Code Security.
+        type: boolean
+        required: false
+        default: false
       # ── Per-scanner configuration ────────────────────
       semgrep-blocking:
         description: Fail when custom Semgrep rules produce findings.
@@ -144,7 +148,7 @@ jobs:
     if: inputs.enable-actions-security
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@576b8c8763c920feab700a694eb25b86bc2ad70d
 
   semgrep:
     if: inputs.enable-semgrep
@@ -171,11 +175,12 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@578d2e6d23695fae7bba58a13a80f7c3326cb97b
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@576b8c8763c920feab700a694eb25b86bc2ad70d
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
       blocking: ${{ inputs.dependency-blocking }}
       severity: ${{ inputs.dependency-severity }}
+      publish-sarif: ${{ inputs.publish-sarif }}
 
   secrets-scan:
     if: inputs.enable-secrets

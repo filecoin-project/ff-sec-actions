@@ -18,7 +18,7 @@ jobs:
   dependencies:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@650fdf6412ff2e3e19ac8f4f124a3257f81c19d9
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@576b8c8763c920feab700a694eb25b86bc2ad70d
     with:
       blocking: ${{ inputs.dependency-blocking }}
 
