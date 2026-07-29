@@ -32,8 +32,8 @@ done
 
 grep -Eq 'uses: filecoin-project/ff-sec-actions/actions/zizmor-scan@[0-9a-f]{40}' "$actions_workflow" \
   || fail "workflow-definition evaluation does not use the immutable permission-free adapter"
-grep -Fq "tool-outcome: \${{ steps.scan.outputs.scanner-outcome }}" "$actions_workflow" \
-  || fail "workflow-definition evaluation does not forward the real scanner outcome"
+grep -Fq "tool-outcome: \${{ steps.scan.outputs.scanner-outcome || 'failure' }}" "$actions_workflow" \
+  || fail "workflow-definition evaluation does not forward scanner outcome with a fail-closed fallback"
 grep -Eq '^[[:space:]]+blocking:[[:space:]]*$' "$actions_workflow" \
   || fail "workflow-definition findings do not expose an advisory-to-blocking input"
 grep -Fq "blocking: \${{ inputs.blocking }}" "$actions_workflow" \
