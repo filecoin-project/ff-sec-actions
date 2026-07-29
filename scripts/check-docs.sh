@@ -36,6 +36,7 @@ required_pages=(
   "actions/aggregate-results/action.yml"
   "actions/aggregate-results/aggregate-results.sh"
   ".github/workflows/docs.yml"
+  ".github/workflows/evaluation-pipeline.yml"
   ".github/workflows/g0-contract.yml"
   ".github/workflows/sec-actions.yml"
   "docs/README.md"

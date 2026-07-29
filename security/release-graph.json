@@ -3,6 +3,7 @@
   "repository": "filecoin-project/ff-sec-actions",
   "entrypoints": [
     ".github/workflows/security-pipeline.yml",
+    ".github/workflows/evaluation-pipeline.yml",
     ".github/workflows/ai-code-review.yml",
     ".github/workflows/sec-actions.yml",
     ".github/workflows/sec-codeql.yml",

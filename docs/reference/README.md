@@ -17,6 +17,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 
 - [AI code review](../../.github/workflows/ai-code-review.yml)
 - [Security pipeline](../../.github/workflows/security-pipeline.yml)
+- [Evaluation pipeline vertical slice](../../.github/workflows/evaluation-pipeline.yml)
 - [GitHub Actions security](../../.github/workflows/sec-actions.yml)
 - [CodeQL](../../.github/workflows/sec-codeql.yml)
 - [Dependency scan](../../.github/workflows/sec-dependencies.yml)

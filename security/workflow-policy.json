@@ -23,6 +23,19 @@
         }
       }
     },
+    ".github/workflows/evaluation-pipeline.yml": {
+      "dependencies": {
+        "permissions": {
+          "contents": "read"
+        }
+      },
+      "profile-conclusion": {
+        "permissions": {
+          "actions": "read",
+          "contents": "read"
+        }
+      }
+    },
     ".github/workflows/g0-contract.yml": {
       "g0-contract": {
         "permissions": {

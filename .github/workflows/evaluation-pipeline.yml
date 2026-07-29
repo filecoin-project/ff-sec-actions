@@ -1,0 +1,59 @@
+name: Evaluation Pipeline (vertical slice)
+
+on:
+  workflow_call:
+    inputs:
+      dependency-blocking:
+        description: Fail when dependency findings match the configured severity.
+        type: boolean
+        required: false
+        default: false
+      require-complete:
+        description: Require every profile evaluation to complete.
+        type: boolean
+        required: false
+        default: true
+
+jobs:
+  dependencies:
+    permissions:
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@650fdf6412ff2e3e19ac8f4f124a3257f81c19d9
+    with:
+      blocking: ${{ inputs.dependency-blocking }}
+
+  profile-conclusion:
+    name: Profile Conclusion
+    if: always()
+    needs: [dependencies]
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Download normalized Evaluation Results
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: evaluation-result-*
+          path: evaluation-results
+          merge-multiple: true
+
+      - name: Aggregate profile evidence and enforce conclusion
+        id: aggregate
+        if: always()
+        uses: filecoin-project/ff-sec-actions/actions/aggregate-results@650fdf6412ff2e3e19ac8f4f124a3257f81c19d9
+        with:
+          results-directory: evaluation-results
+          profile-id: evaluation-vertical-slice
+          profile-version: 1.0.0
+          required-evaluations: '["trivy-dependencies"]'
+          require-complete: ${{ inputs.require-complete }}
+
+      - name: Upload Evidence Bundle and readable summary
+        if: always() && hashFiles('evidence-bundle.json') != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evidence-bundle
+          path: |
+            evidence-bundle.json
+            evidence-summary.md

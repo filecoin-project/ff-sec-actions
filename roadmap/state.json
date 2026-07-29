@@ -2,8 +2,8 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-29T01:19:41Z",
-  "current_task_id": "EVAL-03",
+  "updated_at": "2026-07-29T01:26:14Z",
+  "current_task_id": null,
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
   "status_semantics": {
@@ -503,7 +503,7 @@
       "phase": "evaluation-platform",
       "priority": "P0",
       "kind": "implementation",
-      "status": "in_progress",
+      "status": "done",
       "title": "Aggregate one Evidence Bundle and profile conclusion",
       "objective": "Present humans and automation with one authoritative completion, findings, coverage, and policy surface.",
       "blocked_by": [
@@ -524,7 +524,7 @@
         "actions/aggregate-results/"
       ],
       "started_at": "2026-07-29T01:19:41Z",
-      "completed_at": null
+      "completed_at": "2026-07-29T01:26:14Z"
     },
     {
       "id": "BASE-01",

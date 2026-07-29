@@ -93,6 +93,7 @@ repository configuration as well as this repository's source contract.
 |---|---|---|---|
 | `.github/workflows/ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Keep the internal action pinned; preserve no-checkout/no-execution behavior. |
 | `.github/workflows/docs.yml` | `control-repository-ci` | `control-repository-ci` | Keep repository contracts in its validation job. |
+| `.github/workflows/evaluation-pipeline.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Expand the proven aggregation slice into the multi-evaluation Ecosystem Baseline. |
 | `.github/workflows/g0-contract.yml` | `control-repository-ci` | `control-repository-ci` | Require every G0 control and its rejecting fixture before release. |
 | `.github/workflows/manual-ai-code-review.yml` | `control-repository-ci` | `control-repository-ci` | Keep checkout pinned and retain trusted manual scope. |
 | `.github/workflows/sec-actions.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Pin zizmor and its installer resolution through the immutable release graph. |

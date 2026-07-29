@@ -80,6 +80,11 @@ pinned to a full repository commit.
 Source:
 [`.github/workflows/security-pipeline.yml`](../../.github/workflows/security-pipeline.yml)
 
+The separate [evaluation vertical slice](../../.github/workflows/evaluation-pipeline.yml)
+proves normalized artifact handoff, one Evidence Bundle, a readable summary,
+and the stable `Profile Conclusion` check for dependency evaluation. The legacy
+umbrella has not yet migrated all scanners to that aggregate contract.
+
 ### Scanner Toggles
 
 | Input | Default | Event behavior |

@@ -276,7 +276,7 @@ Filecoin-critical Merge Gate, until measured against a maintained corpus.
 ## evidence-interface: Give Humans And Automation One Result Surface
 
 Blocked by: evaluation-contract, profile-taxonomy
-Status: open
+Status: resolved
 Type: Prototype
 
 ### Question
@@ -286,10 +286,13 @@ machine-readable outputs, and how are results aggregated across nested jobs?
 
 ### Answer
 
-Pending. Recommended interface: one profile-level conclusion, a matrix of
-evaluation completion and findings, coverage gaps, stable artifact links, and
-a versioned Evidence Bundle. PR comments should be optional and update one
-sticky summary rather than letting tools compete for attention.
+Emit one versioned Evidence Bundle plus a Markdown job summary and stable
+`Profile Conclusion` check. The bundle retains every validated Evaluation
+Result, missing ids, completion states, coverage, observed findings and
+suppressions, and the selected completeness/finding policy. Duplicate ids and
+invalid results fail aggregation. PR comments remain optional; the authoritative
+automation surface is the bundle and required conclusion job. See the
+[Evidence Bundle contract](reference/evidence-bundle.md).
 
 ## documentation-system: Make Every User Journey Discoverable
 
