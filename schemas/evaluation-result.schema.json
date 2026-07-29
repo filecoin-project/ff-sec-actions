@@ -76,26 +76,8 @@
         "count": { "type": ["integer", "null"], "minimum": 0 },
         "highest_severity": {
           "enum": ["critical", "high", "medium", "low", "info", "none", "unknown"]
-  },
-  "allOf": [
-    {
-      "if": {"properties": {"schema_version": {"const": "1.0.0"}}},
-      "then": {
-        "properties": {
-          "evidence": {"items": {"not": {"required": ["artifact"]}}}
         }
       }
-    },
-    {
-      "if": {"properties": {"schema_version": {"const": "1.1.0"}}},
-      "then": {
-        "properties": {
-          "evidence": {"items": {"required": ["artifact"]}}
-        }
-      }
-    }
-  ]
-}
     },
     "suppressions": {
       "type": "object",
@@ -159,6 +141,22 @@
     }
   },
   "allOf": [
+    {
+      "if": {"properties": {"schema_version": {"const": "1.0.0"}}},
+      "then": {
+        "properties": {
+          "evidence": {"items": {"not": {"required": ["artifact"]}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"schema_version": {"const": "1.1.0"}}},
+      "then": {
+        "properties": {
+          "evidence": {"items": {"required": ["artifact"]}}
+        }
+      }
+    },
     {
       "if": {
         "properties": {

@@ -19,7 +19,11 @@ jq -e '
   and (.workflows | type == "object" and length > 0 and all(.[];
     (.mode | IN("normalized-evaluation", "provider-native", "profile-aggregate", "evaluation-collection"))
     and (.consumer_surface | type == "string" and length > 0)
-    and (.remediation_surface | type == "string" and length > 0)))
+    and (.remediation_surface | type == "string" and length > 0)
+    and (if .mode == "normalized-evaluation"
+      then (.lifecycle_test | type == "string" and length > 0)
+        and (.failure_capture | IN("scanner-output", "continue-on-error"))
+      else true end)))
   and (.actions | type == "object" and length > 0 and all(.[];
     (.mode | IN("consumer-evaluation", "scanner-invocation", "profile-aggregate", "legacy-compatibility"))
     and (.required_outputs | type == "array" and length > 0)
@@ -46,6 +50,8 @@ while IFS= read -r workflow; do
     evaluation_id="$(jq -r --arg workflow "$workflow" '.workflows[$workflow].evaluation_id' "$manifest")"
     raw_artifact="$(jq -r --arg workflow "$workflow" '.workflows[$workflow].raw_artifact' "$manifest")"
     normalized_artifact="$(jq -r --arg workflow "$workflow" '.workflows[$workflow].normalized_artifact' "$manifest")"
+    lifecycle_test="$(jq -r --arg workflow "$workflow" '.workflows[$workflow].lifecycle_test' "$manifest")"
+    failure_capture="$(jq -r --arg workflow "$workflow" '.workflows[$workflow].failure_capture' "$manifest")"
     grep -Fq 'filecoin-project/ff-sec-actions/actions/evaluation-adapter@' "$path" \
       || fail "$workflow does not use the shared consumable Evaluation Adapter"
     grep -Fq "evaluation-id: $evaluation_id" "$path" \
@@ -54,10 +60,25 @@ while IFS= read -r workflow; do
       || fail "$workflow does not map raw evidence to artifact: $raw_artifact"
     grep -Fq 'remediation-guidance:' "$path" \
       || fail "$workflow does not provide remediation-guidance"
+    grep -Fq 'tool-outcome:' "$path" \
+      || fail "$workflow does not map scanner lifecycle into tool-outcome"
+    grep -Fq 'raw-evidence:' "$path" \
+      || fail "$workflow does not map scanner output into raw-evidence"
+    grep -Fq "blocking: \${{ inputs.blocking }}" "$path" \
+      || fail "$workflow does not map its public blocking policy"
+    if [ "$failure_capture" = continue-on-error ]; then
+      grep -Fq 'continue-on-error: true' "$path" \
+        || fail "$workflow does not preserve scanner failure for normalization"
+    else
+      grep -Fq "tool-outcome: \${{ steps.scan.outputs.scanner-outcome || 'failure' }}" "$path" \
+        || fail "$workflow does not default a missing scanner outcome to failure"
+    fi
     grep -Fq "name: $raw_artifact" "$path" \
       || fail "$workflow does not publish raw evidence artifact: $raw_artifact"
     grep -Fq "name: $normalized_artifact" "$path" \
       || fail "$workflow does not publish normalized artifact: $normalized_artifact"
+    [ -f "$repo_root/$lifecycle_test" ] \
+      || fail "$workflow does not name an executable lifecycle contract test"
   else
     marker="$(jq -r --arg workflow "$workflow" '.workflows[$workflow].consumer_marker' "$manifest")"
     grep -Fq "$marker" "$path" \

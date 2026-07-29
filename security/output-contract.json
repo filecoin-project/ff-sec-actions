@@ -34,6 +34,8 @@
       "evaluation_id": "zizmor-actions",
       "raw_artifact": "zizmor-actions-results",
       "normalized_artifact": "evaluation-result-zizmor-actions",
+      "lifecycle_test": "scripts/test-evaluation-adapter.sh",
+      "failure_capture": "scanner-output",
       "consumer_surface": "GitHub job summary, source annotations, normalized result, and Zizmor SARIF artifact",
       "remediation_surface": "Zizmor rule guidance plus workflow-hardening instructions"
     },
@@ -48,6 +50,8 @@
       "evaluation_id": "trivy-dependencies",
       "raw_artifact": "trivy-deps-results",
       "normalized_artifact": "evaluation-result-trivy-dependencies",
+      "lifecycle_test": "scripts/test-evaluation-adapter.sh",
+      "failure_capture": "continue-on-error",
       "consumer_surface": "GitHub job summary, source annotations, normalized result, and Trivy SARIF artifact",
       "remediation_surface": "Fixed-version and time-bounded exception guidance"
     },
@@ -62,6 +66,8 @@
       "evaluation_id": "trivy-iac",
       "raw_artifact": "trivy-iac-results",
       "normalized_artifact": "evaluation-result-trivy-iac",
+      "lifecycle_test": "scripts/test-evaluation-adapter.sh",
+      "failure_capture": "continue-on-error",
       "consumer_surface": "GitHub job summary, source annotations, normalized result, and Trivy SARIF artifact",
       "remediation_surface": "Least-privilege configuration and exception guidance"
     },
@@ -70,6 +76,8 @@
       "evaluation_id": "trivy-licenses",
       "raw_artifact": "trivy-license-results",
       "normalized_artifact": "evaluation-result-trivy-licenses",
+      "lifecycle_test": "scripts/test-evaluation-adapter.sh",
+      "failure_capture": "continue-on-error",
       "consumer_surface": "GitHub job summary, source annotations, normalized result, and Trivy SARIF artifact",
       "remediation_surface": "License replacement, approval, and exception guidance"
     },
@@ -90,6 +98,8 @@
       "evaluation_id": "gitleaks",
       "raw_artifact": "gitleaks-results",
       "normalized_artifact": "evaluation-result-gitleaks",
+      "lifecycle_test": "scripts/test-evaluation-adapter.sh",
+      "failure_capture": "scanner-output",
       "consumer_surface": "GitHub job summary, redacted source annotations, normalized result, and Gitleaks SARIF artifact",
       "remediation_surface": "Credential rotation, history removal, access review, and false-positive guidance"
     },
@@ -98,6 +108,8 @@
       "evaluation_id": "semgrep-baseline",
       "raw_artifact": "semgrep-baseline-results",
       "normalized_artifact": "evaluation-result-semgrep-baseline",
+      "lifecycle_test": "scripts/test-evaluation-adapter.sh",
+      "failure_capture": "continue-on-error",
       "consumer_surface": "GitHub job summary, source annotations, normalized result, and Semgrep SARIF artifact",
       "remediation_surface": "Rule guidance, safe replacement, regression-test, and suppression guidance"
     },

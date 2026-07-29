@@ -41,7 +41,7 @@ jobs:
           evaluation-id: zizmor-actions
           tool-name: zizmor
           tool-version: 1.28.0
-          tool-outcome: ${{ steps.scan.outputs.scanner-outcome }}
+          tool-outcome: ${{ steps.scan.outputs.scanner-outcome || 'failure' }}
           raw-evidence: ${{ steps.scan.outputs.result-file }}
           evidence-artifact: zizmor-actions-results
           remediation-guidance: >-

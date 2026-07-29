@@ -13,10 +13,11 @@ fail() { printf 'output-contract test failure: %s\n' "$*" >&2; exit 1; }
 
 bash "$checker" >/dev/null || fail "the maintained repository violates its output contract"
 
-mkdir -p "$fixture_root/.github/workflows" "$fixture_root/actions" "$fixture_root/security"
+mkdir -p "$fixture_root/.github/workflows" "$fixture_root/actions" "$fixture_root/security" "$fixture_root/scripts"
 cp -R "$repo_root/.github/workflows/." "$fixture_root/.github/workflows/"
 cp -R "$repo_root/actions/." "$fixture_root/actions/"
 cp "$repo_root/security/output-contract.json" "$fixture_root/security/output-contract.json"
+cp "$repo_root/scripts/test-evaluation-adapter.sh" "$fixture_root/scripts/test-evaluation-adapter.sh"
 
 sed '/remediation-guidance:/d' \
   "$fixture_root/.github/workflows/sec-secrets.yml" > "$fixture_root/sec-secrets.tmp"
@@ -28,6 +29,18 @@ if output="$(OUTPUT_CONTRACT_ROOT="$fixture_root" bash "$checker" 2>&1)"; then
 fi
 grep -Fq "remediation-guidance" <<< "$output" \
   || fail "the rejection did not explain the missing remediation surface"
+
+cp "$repo_root/.github/workflows/sec-secrets.yml" \
+  "$fixture_root/.github/workflows/sec-secrets.yml"
+sed '/tool-outcome:/d' \
+  "$fixture_root/.github/workflows/sec-secrets.yml" > "$fixture_root/sec-secrets.tmp"
+mv "$fixture_root/sec-secrets.tmp" "$fixture_root/.github/workflows/sec-secrets.yml"
+output=""
+if output="$(OUTPUT_CONTRACT_ROOT="$fixture_root" bash "$checker" 2>&1)"; then
+  fail "a normalized evaluation without public lifecycle wiring was accepted"
+fi
+grep -Fq "tool-outcome" <<< "$output" \
+  || fail "the rejection did not explain the missing lifecycle mapping"
 
 cp "$repo_root/.github/workflows/sec-secrets.yml" \
   "$fixture_root/.github/workflows/sec-secrets.yml"

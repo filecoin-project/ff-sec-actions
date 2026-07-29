@@ -74,8 +74,9 @@ Before release, a Platform Maintainer must:
    [`security/output-contract.json`](../../security/output-contract.json);
 2. use the shared Evaluation Adapter or document the provider-native surface;
 3. supply remediation guidance and a stable raw-evidence artifact name;
-4. test findings, no findings, malformed evidence, tool failure, advisory
-   policy, and blocking policy through the public interface;
+4. declare the shared lifecycle suite, retain public `tool-outcome`, evidence,
+   and blocking-policy wiring, and add tool-specific invocation fixtures where
+   the shared adapter suite cannot exercise behavior;
 5. run the output contract checks.
 
 ```bash
