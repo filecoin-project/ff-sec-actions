@@ -18,7 +18,7 @@
         "actions/checkout",
         "actions/upload-artifact",
         "aquasecurity/trivy-action",
-        "filecoin-project/ff-sec-actions/actions/scanner-outcome",
+        "filecoin-project/ff-sec-actions/actions/evaluation-adapter",
         "github/codeql-action/upload-sarif"
       ],
       "limitations": [

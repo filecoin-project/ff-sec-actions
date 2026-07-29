@@ -120,8 +120,9 @@ The default scanner suite requires no repository or organization secret.
 Gitleaks uses the checksum-pinned open-source CLI: pull requests inspect the PR
 commit range, while push, schedule, and manual events inspect full history.
 
-Trivy gates use its documented `exit-code`/SARIF behavior while the local
-outcome adapter independently validates results and operational status. See
+The dependency Trivy slice uses the generic v1 Evaluation Adapter; remaining
+Trivy slices retain the compatibility outcome adapter while they migrate. Both
+independently validate results and operational status. See
 the [Trivy Action inputs](https://github.com/aquasecurity/trivy-action#inputs).
 Slither forwards its documented `fail-on` threshold; see the
 [Slither Action fail behavior](https://github.com/crytic/slither-action#action-fail-behavior).
@@ -140,7 +141,7 @@ Current umbrella limitations:
 | `sec-actions.yml` | Zizmor source annotations with exact locations and remediation links | Blocks on medium-or-higher auditor-persona findings and parser/tool failure |
 | `sec-semgrep.yml` | Repository-owned custom-rule SARIF artifact | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-codeql.yml` | GitHub code-scanning analysis | CodeQL analysis controls failure |
-| `sec-dependencies.yml` | Manifest/lockfile Trivy SARIF | Configurable finding gate; malformed output/tool failure always fails |
+| `sec-dependencies.yml` | Manifest/lockfile Trivy SARIF plus v1 Evaluation Result | Generic adapter; configurable finding gate; timeout, malformed output, and tool failure remain distinct |
 | `sec-secrets.yml` | Secretless Gitleaks SARIF; PR range or full history | Blocking; findings and operational failure remain distinct |
 | `sec-iac.yml` | Trivy SARIF | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-licenses.yml` | Trivy SARIF artifact | Configurable finding gate; malformed output/tool failure always fails |

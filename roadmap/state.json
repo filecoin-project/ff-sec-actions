@@ -2,8 +2,8 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-29T01:13:18Z",
-  "current_task_id": "EVAL-02",
+  "updated_at": "2026-07-29T01:18:13Z",
+  "current_task_id": null,
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
   "status_semantics": {
@@ -474,7 +474,7 @@
       "phase": "evaluation-platform",
       "priority": "P0",
       "kind": "implementation",
-      "status": "in_progress",
+      "status": "done",
       "title": "Implement the scanner adapter contract",
       "objective": "Give every evaluation the same lifecycle for immutable invocation, raw evidence, normalization, and exit handling.",
       "blocked_by": [
@@ -495,7 +495,7 @@
         "actions/evaluation-adapter/"
       ],
       "started_at": "2026-07-29T01:13:18Z",
-      "completed_at": null
+      "completed_at": "2026-07-29T01:18:13Z"
     },
     {
       "id": "EVAL-03",

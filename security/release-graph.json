@@ -17,6 +17,11 @@
     ".github/workflows/sec-slither.yml"
   ],
   "expected_assets": {
+    "actions/evaluation-adapter": [
+      "actions/evaluation-adapter/action.yml",
+      "actions/evaluation-adapter/evaluation-adapter.sh",
+      "schemas/evaluation-result.schema.json"
+    ],
     "actions/ai-code-review": [
       "actions/ai-code-review/action.yml",
       "actions/ai-code-review/scripts/review.sh",

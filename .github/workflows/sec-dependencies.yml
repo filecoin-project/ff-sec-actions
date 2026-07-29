@@ -58,12 +58,17 @@ jobs:
 
       - name: Evaluate dependency scan outcome
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@0548d1a4f26c20a6dd62d9793420a8c54b8596f6
+        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@f41c68a67bd2bd3fcfd962086c16d5cc68b3cb47
         with:
-          scanner-name: trivy-dependencies
-          scanner-outcome: ${{ steps.scan.outcome }}
-          result-file: trivy-deps.sarif
+          evaluation-id: trivy-dependencies
+          tool-name: trivy
+          tool-version: 0.70.0
+          tool-outcome: ${{ steps.scan.outcome }}
+          raw-evidence: trivy-deps.sarif
           blocking: ${{ inputs.blocking }}
+          coverage-included: '["dependency manifests and lockfiles"]'
+          coverage-excluded: '["installed dependency state","build-generated manifests"]'
+          coverage-limitations: '["reachability and packages visible only after installation or build are excluded"]'
 
       - name: Upload Trivy dependency results
         if: always() && hashFiles('trivy-deps.sarif') != ''

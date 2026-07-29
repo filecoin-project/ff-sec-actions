@@ -235,7 +235,7 @@ the [fork safety contract](reference/fork-pr-safety.md).
 ## scanner-runtime: Build Profile-Aware Deterministic Evaluation
 
 Blocked by: execution-trust, evaluation-contract, profile-taxonomy
-Status: open
+Status: resolved
 Type: Prototype
 
 ### Question
@@ -246,10 +246,13 @@ noise?
 
 ### Answer
 
-Pending. Implement one vertical slice before generalizing: immutable tool
-version, safe checkout, deterministic configuration, explicit exit semantics,
-normalized Evaluation Result, artifact retention, summary, and fixture-backed
-tests. Use the slice to define the scanner adapter contract.
+Use a thin tool invocation followed by the generic Evaluation Adapter. The
+caller supplies immutable tool identity, raw outcome/evidence, coverage, and
+finding policy. The adapter validates SARIF, hashes raw evidence, emits v1, and
+reserves exit `1` for blocking findings and exit `2` for timeout, cancellation,
+crash, or malformed evidence. The Trivy dependency workflow is the first
+vertical slice; success, findings, timeout, crash, malformed output, and skip
+are fixture-tested. See the [adapter contract](reference/evaluation-adapter.md).
 
 ## ai-assurance: Turn AI Review Into Bounded Evidence
 
