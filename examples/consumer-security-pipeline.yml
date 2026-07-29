@@ -4,7 +4,7 @@
 # Optional per-repo config files (auto-detected, all can be omitted):
 #   .semgrep.yml, .gitleaks.toml, .trivyignore, slither.config.json
 # Optional repo/org variable: ENABLE_GHAS='true' uploads SARIF to the Security tab.
-# Optional secret: GITLEAKS_LICENSE (required for org-owned repos).
+# No repository or organization secret is required for the baseline scanners.
 #
 # Pilot only: the umbrella and its nested workflows still use @main. Do not
 # treat this as a reproducible release until the G0 release work is complete.
@@ -51,13 +51,8 @@ jobs:
       # enable-slither: true           # Solidity/Foundry repos
       # slither-target: contracts
       # slither-fail-on: high
-    secrets:
-      gitleaks-license: ${{ secrets.GITLEAKS_LICENSE }}
-
   # À la carte alternative — call individual scanners as separate jobs:
   # semgrep:
   #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@main
   # secrets-scan:
   #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@main
-  #   secrets:
-  #     gitleaks-license: ${{ secrets.GITLEAKS_LICENSE }}

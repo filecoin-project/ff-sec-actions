@@ -39,7 +39,8 @@ upper cap; each nested job reduces that cap to its reviewed policy.
 GitHub does not pass ordinary repository or organization secrets to fork PR
 workflows, and the token is normally read-only. Therefore:
 
-- secretless scanner jobs can run when repository policy allows;
+- the Gitleaks CLI and other secretless scanner jobs can run when repository
+  policy allows, including PR-diff scanning for forks;
 - AI review cannot use the Anthropic key under a normal fork
   `pull_request` event;
 - a missing secret must be represented as skipped or incomplete, not clean;

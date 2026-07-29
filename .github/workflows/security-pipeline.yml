@@ -143,11 +143,6 @@ on:
         type: string
         required: false
         default: none
-    secrets:
-      gitleaks-license:
-        description: Gitleaks license key (required for org-owned repos).
-        required: false
-
 jobs:
   semgrep:
     if: inputs.enable-semgrep
@@ -185,12 +180,8 @@ jobs:
   secrets-scan:
     if: inputs.enable-secrets
     permissions:
-      actions: read
       contents: read
-      security-events: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@main
-    secrets:
-      gitleaks-license: ${{ secrets.gitleaks-license }}
 
   iac:
     if: inputs.enable-iac

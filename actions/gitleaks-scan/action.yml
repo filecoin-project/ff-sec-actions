@@ -1,0 +1,49 @@
+name: Secretless Gitleaks scan
+description: Run the open-source Gitleaks CLI without a service license or repository secret.
+
+inputs:
+  scan-scope:
+    description: "auto, pr-diff, or full-history. Auto selects pr-diff on pull_request."
+    required: false
+    default: auto
+  base-sha:
+    description: Base commit for pr-diff scope.
+    required: false
+    default: ""
+  head-sha:
+    description: Head commit for pr-diff scope.
+    required: false
+    default: ""
+  config-path:
+    description: Optional Gitleaks configuration path.
+    required: false
+    default: .gitleaks.toml
+  result-file:
+    description: SARIF destination.
+    required: false
+    default: gitleaks-results.sarif
+
+outputs:
+  scanner-outcome:
+    description: success when Gitleaks ran, including when it found leaks; failure for operational errors.
+    value: ${{ steps.scan.outputs.scanner_outcome }}
+  scan-scope:
+    description: Resolved pr-diff or full-history scope.
+    value: ${{ steps.scan.outputs.scan_scope }}
+  result-file:
+    description: SARIF result path.
+    value: ${{ steps.scan.outputs.result_file }}
+
+runs:
+  using: composite
+  steps:
+    - id: scan
+      shell: bash
+      env:
+        SCAN_SCOPE: ${{ inputs.scan-scope }}
+        BASE_SHA: ${{ inputs.base-sha }}
+        HEAD_SHA: ${{ inputs.head-sha }}
+        CONFIG_PATH: ${{ inputs.config-path }}
+        RESULT_FILE: ${{ inputs.result-file }}
+        EVENT_NAME: ${{ github.event_name }}
+      run: bash "${GITHUB_ACTION_PATH}/gitleaks-scan.sh"

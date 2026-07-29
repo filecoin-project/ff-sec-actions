@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-29T00:14:40Z",
+  "updated_at": "2026-07-29T00:21:57Z",
   "current_task_id": null,
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
@@ -267,7 +267,7 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
+      "status": "done",
       "title": "Provide secretless secret scanning",
       "objective": "Run useful secret detection for organization repositories and fork pull requests without a required license secret.",
       "blocked_by": [
@@ -287,8 +287,8 @@
       "artifacts": [
         ".github/workflows/sec-secrets.yml"
       ],
-      "started_at": null,
-      "completed_at": null
+      "started_at": "2026-07-29T00:15:32Z",
+      "completed_at": "2026-07-29T00:21:57Z"
     },
     {
       "id": "G0-07",

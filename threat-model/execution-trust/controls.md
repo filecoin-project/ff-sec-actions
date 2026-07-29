@@ -137,7 +137,7 @@ weaken this tier; they create a new Privileged Analysis design.
 | T5 | Follow-on | G0-09 implements SR2 release graph; critical priority, medium effort |
 | T6 | Follow-on | G0-09 adds SR2 container digests; high priority, low effort |
 | T7 | Follow-on | G0-10/PRIV-01 implement and test SR3; critical priority, medium effort |
-| T8 | Follow-on | G0-06 and SR1/SR4 remove baseline secrets; high priority, medium effort |
+| T8 | Mitigated | G0-06 removes baseline scanner secrets and tests PR-range/full-history detection |
 | T9 | Follow-on | G0-10/EVAL-03 implement SR3/SR5 evidence isolation; high priority, high effort |
 | T10 | Follow-on (partial) | G0-04 separates scanner gates/errors; G0-05/EVAL-01 cover all completion modes |
 | T11 | Follow-on | SR4 private-source egress decision and PRIV-03; high priority, high effort |

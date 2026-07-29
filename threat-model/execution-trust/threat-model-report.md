@@ -177,27 +177,27 @@ control design and threat-disposition matrix.
 - Current workflows use GitHub-hosted rather than self-hosted runners.
 - Scanner findings, tool failure, and malformed SARIF now have independently
   tested outcomes and reviewed umbrella gate forwarding.
+- Secret detection now uses a checksum-pinned open-source CLI with no service
+  license, and fixtures prove PR-range and full-history detection.
 - The documentation CI now executes the classification contract, so new or
   changed surfaces cannot silently bypass inventory.
 
 ### Priority Remediation Order
 
-1. **G0-05/G0-06:** make missing coverage and secret-dependent skips explicit;
-   provide secretless fork-capable secret detection.
-2. **G0-07/G0-09:** evaluate consumer workflow security and make one pin cover
+1. **G0-07/G0-09:** evaluate consumer workflow security and make one pin cover
    the complete action/workflow/container graph.
-3. **G0-10:** prove token, secret, OIDC, cache, artifact, and checkout isolation
+2. **G0-10:** prove token, secret, OIDC, cache, artifact, and checkout isolation
    with an end-to-end fork fixture.
-4. **EVAL/PRIV work:** normalize evidence, validate publishers, and bound
+3. **EVAL/PRIV work:** normalize evidence, validate publishers, and bound
    external/AI data transfer before those results influence critical gates.
 
 ## Risk Posture
 
 | Disposition | Count |
 |---|---:|
-| Mitigated | 3 |
+| Mitigated | 4 |
 | Accepted | 0 |
-| Follow-on/deferred with owner task | 12 |
+| Follow-on/deferred with owner task | 11 |
 | Unaddressed | 0 |
 
 The posture is intentionally conservative: this report provides a complete

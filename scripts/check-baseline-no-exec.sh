@@ -23,7 +23,7 @@ jq -e '
   .schema_version == 1
   and (.workflows | type == "object" and length > 0)
   and all(.workflows[];
-    (.coverage_mode | IN("manifest-and-lockfile", "source-manifest"))
+    (.coverage_mode | IN("manifest-and-lockfile", "source-manifest", "git-history"))
     and (.allowed_actions | type == "array" and length > 0)
     and all(.allowed_actions[]; type == "string" and length > 0)
     and (.limitations | type == "array" and length > 0)

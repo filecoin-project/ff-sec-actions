@@ -84,9 +84,7 @@
     ".github/workflows/sec-secrets.yml": {
       "secrets": {
         "permissions": {
-          "actions": "read",
-          "contents": "read",
-          "security-events": "write"
+          "contents": "read"
         }
       }
     },
@@ -154,9 +152,7 @@
       },
       "secrets-scan": {
         "permissions": {
-          "actions": "read",
-          "contents": "read",
-          "security-events": "write"
+          "contents": "read"
         }
       },
       "semgrep": {

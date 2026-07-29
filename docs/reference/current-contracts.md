@@ -117,7 +117,9 @@ Source:
 | `solc-version` | `0.8.13` | Solidity compiler version |
 | `slither-fail-on` | `none` | `none`, `low`, `medium`, `high`, `all`, or `config` |
 
-Optional secret: `gitleaks-license`.
+The default scanner suite requires no repository or organization secret.
+Gitleaks uses the checksum-pinned open-source CLI: pull requests inspect the PR
+commit range, while push, schedule, and manual events inspect full history.
 
 Trivy gates use its documented `exit-code`/SARIF behavior while the local
 outcome adapter independently validates results and operational status. See
@@ -140,7 +142,7 @@ Current umbrella limitations:
 | `sec-semgrep.yml` | Custom and community SARIF artifacts | Each ruleset has an independent finding gate; malformed output/tool failure always fails |
 | `sec-codeql.yml` | GitHub code-scanning analysis | CodeQL analysis controls failure |
 | `sec-dependencies.yml` | Manifest/lockfile Trivy SARIF | Configurable finding gate; malformed output/tool failure always fails |
-| `sec-secrets.yml` | Gitleaks summary/artifact | Blocking |
+| `sec-secrets.yml` | Secretless Gitleaks SARIF; PR range or full history | Blocking; findings and operational failure remain distinct |
 | `sec-iac.yml` | Trivy SARIF | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-licenses.yml` | Trivy SARIF artifact | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-dependency-review.yml` | PR summary | Blocks at configured severity/license policy |

@@ -26,6 +26,7 @@ on:
       - scripts/test-scanner-outcome.sh
       - scripts/check-evaluation-result.sh
       - scripts/test-evaluation-result.sh
+      - scripts/test-gitleaks-scan.sh
   push:
     branches: [main]
     paths:
@@ -52,6 +53,7 @@ on:
       - scripts/test-scanner-outcome.sh
       - scripts/check-evaluation-result.sh
       - scripts/test-evaluation-result.sh
+      - scripts/test-gitleaks-scan.sh
   workflow_dispatch:
 
 permissions:
@@ -98,6 +100,9 @@ jobs:
 
       - name: Test Evaluation Result completion semantics
         run: bash scripts/test-evaluation-result.sh
+
+      - name: Test secretless fork and history scanning
+        run: bash scripts/test-gitleaks-scan.sh
 
       - name: Validate shell scripts
         run: shellcheck scripts/*.sh actions/*/*.sh actions/*/scripts/*.sh

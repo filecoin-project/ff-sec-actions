@@ -27,6 +27,19 @@
         "Licenses visible only after installation or a project build are excluded."
       ]
     },
+    ".github/workflows/sec-secrets.yml": {
+      "coverage_mode": "git-history",
+      "allowed_actions": [
+        "actions/checkout",
+        "actions/upload-artifact",
+        "filecoin-project/ff-sec-actions/actions/gitleaks-scan",
+        "filecoin-project/ff-sec-actions/actions/scanner-outcome"
+      ],
+      "limitations": [
+        "Pull requests inspect only commits introduced by the pull request.",
+        "Scheduled, push, and manual runs inspect all locally fetched Git history."
+      ]
+    },
     ".github/workflows/sec-sbom.yml": {
       "coverage_mode": "source-manifest",
       "allowed_actions": [

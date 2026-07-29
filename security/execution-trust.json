@@ -290,23 +290,23 @@
     {
       "path": ".github/workflows/sec-secrets.yml",
       "scope": "consumer",
-      "current_tier": "legacy-mixed",
+      "current_tier": "ecosystem-baseline",
       "target_tier": "ecosystem-baseline",
       "observed": {
         "checkout": true,
         "persists_checkout_credentials": false,
         "explicit_permissions": true,
-        "secret_context": true,
-        "write_permissions": ["security-events"],
+        "secret_context": false,
+        "write_permissions": [],
         "execution_markers": [],
-        "mutable_references": false,
+        "mutable_references": true,
         "mutable_container": false,
         "oidc": false,
         "cache": false,
         "self_hosted_runner": false
       },
-      "network": ["github-api", "github-action-download", "gitleaks-license-service"],
-      "migration": ["Replace the required organization license secret with a secretless detector path.", "Use contents:read only and separate evidence publication."]
+      "network": ["github-action-download", "github-release-download"],
+      "migration": ["Pin the nested actions and verified Gitleaks archive through the immutable release graph."]
     },
     {
       "path": ".github/workflows/sec-semgrep.yml",
@@ -359,7 +359,7 @@
         "checkout": false,
         "persists_checkout_credentials": false,
         "explicit_permissions": true,
-        "secret_context": true,
+        "secret_context": false,
         "write_permissions": ["id-token", "pull-requests", "security-events"],
         "execution_markers": [],
         "mutable_references": true,
@@ -422,7 +422,7 @@
         "checkout": false,
         "persists_checkout_credentials": false,
         "explicit_permissions": true,
-        "secret_context": true,
+        "secret_context": false,
         "write_permissions": ["pull-requests", "security-events"],
         "execution_markers": [],
         "mutable_references": true,
@@ -454,6 +454,27 @@
       },
       "network": ["github-api", "anthropic-api"],
       "migration": ["Keep Consumer Project checkout and code execution forbidden.", "Add bounded context, privacy, completion, and result contracts under the AI assurance tasks."]
+    },
+    {
+      "path": "actions/gitleaks-scan/action.yml",
+      "scope": "consumer",
+      "current_tier": "ecosystem-baseline",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": false,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["github-release-download"],
+      "migration": ["Keep the release archive version and checksums immutable and covered by release-graph validation."]
     },
     {
       "path": "actions/scanner-outcome/action.yml",

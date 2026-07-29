@@ -101,7 +101,7 @@ repository configuration as well as this repository's source contract.
 | `.github/workflows/sec-licenses.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep build-dependent evidence in a separate Privileged Build Analysis. |
 | `.github/workflows/sec-sbom.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep build-enhanced SBOM evidence in a separate Privileged Build Analysis. |
 | `.github/workflows/sec-scorecard.yml` | `legacy-mixed` | `ecosystem-baseline` | Separate read-only evaluation from the named OIDC/security-event publisher. |
-| `.github/workflows/sec-secrets.yml` | `legacy-mixed` | `ecosystem-baseline` | Use a secretless detector and separate evidence publication. |
+| `.github/workflows/sec-secrets.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Pin its nested actions and verified scanner archive through the release graph. |
 | `.github/workflows/sec-semgrep.yml` | `legacy-mixed` | `ecosystem-baseline` | Pin the image by digest, inspect read-only, and publish separately. |
 | `.github/workflows/sec-slither.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority from the build, constrain submodules, and publish separately. |
 | `.github/workflows/security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Replace the mixed umbrella with a strict baseline and separate opt-in privileged jobs. |
@@ -109,6 +109,7 @@ repository configuration as well as this repository's source contract.
 | `examples/consumer-manual-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |
 | `examples/consumer-security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Publish a secretless baseline example and show privileged tiers as separate opt-ins. |
 | `actions/ai-code-review/action.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Add bounded context, privacy, completion, and result contracts while preserving no checkout/execution. |
+| `actions/gitleaks-scan/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep the release archive version and checksums immutable and validated. |
 | `actions/scanner-outcome/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Pin every consuming reference through the immutable release graph. |
 
 The detailed observed flags, network destinations, and migration statements
