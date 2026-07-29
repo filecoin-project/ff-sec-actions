@@ -158,7 +158,7 @@ jobs:
     if: inputs.enable-actions-security
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@d1df52741fbe9e12222333263981dc74d21b1671
     with:
       blocking: ${{ inputs.actions-security-blocking }}
 
@@ -168,7 +168,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@d1df52741fbe9e12222333263981dc74d21b1671
     with:
       blocking: ${{ inputs.semgrep-blocking }}
 
@@ -186,7 +186,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@d1df52741fbe9e12222333263981dc74d21b1671
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
       blocking: ${{ inputs.dependency-blocking }}
@@ -218,7 +218,7 @@ jobs:
     if: inputs.enable-secrets
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@d1df52741fbe9e12222333263981dc74d21b1671
     with:
       blocking: ${{ inputs.secrets-blocking }}
 
@@ -228,7 +228,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@d1df52741fbe9e12222333263981dc74d21b1671
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
       blocking: ${{ inputs.iac-blocking }}
@@ -238,7 +238,7 @@ jobs:
     if: inputs.enable-licenses
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-licenses.yml@f651cbf6ee81a1056d84efbccb32722468be2f13
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-licenses.yml@d1df52741fbe9e12222333263981dc74d21b1671
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
       blocking: ${{ inputs.license-blocking }}
