@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # test-consumer-alpha: validate the one-file pilot interface and hosted canary contract.
+# Required environment: none.
+# Optional environment: none.
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

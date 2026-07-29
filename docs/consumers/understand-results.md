@@ -16,8 +16,8 @@ not equivalent to zero findings.
 
 ## Current Behavior
 
-The scanner outcome adapter and AI review action now emit the pre-v1
-[Evaluation Result contract](../reference/evaluation-result.md):
+The Ecosystem Baseline's five scanner adapters and the AI review action emit
+the pre-v1 [Evaluation Result contract](../reference/evaluation-result.md):
 
 - scanner outputs may appear in job logs, SARIF, or artifacts;
 - supported scanner gates keep advisory findings green by policy while
@@ -25,15 +25,17 @@ The scanner outcome adapter and AI review action now emit the pre-v1
 - scanner event/configuration skips are represented as `skipped`;
 - AI refusal and large-diff or response truncation are `incomplete`;
 - a missing Anthropic secret is `skipped`, never zero findings;
-- the umbrella workflow does not aggregate one authoritative completion status.
+- the Ecosystem Baseline aggregates its five required results into one Evidence
+  Bundle and one authoritative `Profile Conclusion` check.
 
-Until evidence aggregation is complete, inspect each action's
-`evaluation-result` output alongside its raw artifact and job conclusion.
+For the Ecosystem Baseline, start with `Profile Conclusion` and the
+`ecosystem-baseline-evidence` artifact. Inspect an individual Evaluation Result
+and its raw evidence when the bundle reports findings or incomplete coverage.
 
-For Trivy and Semgrep, the scanner-outcome adapter validates SARIF and reports
-all four completion states independently from `findings`/`no-findings` and
-`pass`/`fail`/`skip`/`error`. The parent workflow does not yet aggregate those
-values into one authoritative Evidence Bundle.
+The legacy full security pipeline has not migrated every scanner to the
+aggregate contract. In that pipeline, inspect each scanner's result, raw
+artifact, and job conclusion independently; do not infer suite-wide completion
+from a green parent workflow.
 
 ## Target Completion Status
 

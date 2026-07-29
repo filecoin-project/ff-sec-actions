@@ -36,9 +36,9 @@ jobs:
       # installation hooks from repository content.
       skip-dirs: node_modules,contracts/lib,.sst
       publish-sarif: ${{ vars.ENABLE_GHAS == 'true' }}
-      # GitHub Actions security is enabled by default and blocks medium-or-higher
-      # zizmor auditor findings. Keep findings advisory for the first run, then
-      # set actions-security-blocking: true after triage.
+      # GitHub Actions security is enabled by default and reports
+      # medium-or-higher Zizmor auditor findings. Keep them advisory for the
+      # first run, then set actions-security-blocking: true after triage.
       actions-security-blocking: false
       # Finding gates are independent from tool failure; tool failure always
       # fails. Uncomment only after observing the advisory result volume:

@@ -194,6 +194,8 @@ while IFS= read -r path; do
     && execution_markers+=(recursive-submodules)
   grep -Eq '^[[:space:]]+run:[[:space:]]+bash scripts/' "$path" \
     && execution_markers+=(control-script)
+  grep -Eq '^[[:space:]]+docker run([[:space:]\\]|$)' "$path" \
+    && execution_markers+=(container-tool)
   grep -Eq '^[[:space:]-]*uses:[[:space:]]+\./actions/' "$path" \
     && execution_markers+=(local-action)
 

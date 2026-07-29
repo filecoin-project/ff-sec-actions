@@ -63,6 +63,7 @@ required_pages=(
   "docs/reference/evaluation-adapter.md"
   "docs/reference/evidence-bundle.md"
   "docs/reference/ecosystem-baseline-rules.md"
+  "docs/reference/zizmor-scan.md"
   "docs/reference/release-integrity.md"
   "docs/reference/fork-pr-safety.md"
   "docs/DOCUMENTATION-ARCHITECTURE.md"
@@ -159,6 +160,13 @@ if [ -f ".github/workflows/g0-contract.yml" ]; then
   require_text ".github/workflows/g0-contract.yml" "bash scripts/check-fork-pr.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-fork-pr.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-ecosystem-baseline.sh"
+  require_text ".github/workflows/g0-contract.yml" "BASELINE_RUN_DETECTION=true"
+  require_text ".github/workflows/g0-contract.yml" "semgrep/semgrep:1.93.0@sha256:f35c7891e2030110a84a721fdd556ce8f3da6e7e69d7fab1d3660ae1bb334474"
+fi
+
+if [ -f "docs/reference/current-contracts.md" ]; then
+  require_text "docs/reference/current-contracts.md" "actions-security-blocking"
+  require_text "docs/reference/current-contracts.md" "publish-sarif"
 fi
 
 if grep -REq '^[[:space:]-]*uses:.*@v1([[:space:]]|$)' examples; then

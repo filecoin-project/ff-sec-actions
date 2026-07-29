@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # test-zizmor-scan: prove the permission-free adapter emits SARIF and honest outcomes.
+# Required environment: none.
+# Optional environment: ZIZMOR_BIN selects a preinstalled Zizmor executable.
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

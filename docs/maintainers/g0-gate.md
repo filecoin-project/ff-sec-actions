@@ -25,6 +25,7 @@ It runs on every pull request and every push to `main`; it has only
 | Completion is never inferred from green status | Evaluation Result schema check | `test-evaluation-result.sh` covers complete, incomplete, skipped, and error outputs |
 | Secret scanning is secretless and scoped | checksum-pinned Gitleaks adapter | `test-gitleaks-scan.sh` plants credentials and tests PR-range/full-history behavior |
 | Consumer workflow definitions are evaluated | pinned Zizmor workflow | `test-consumer-actions-security.sh` plants unsafe triggers, refs, permissions, interpolation, checkout, OIDC, and invalid YAML |
+| Ecosystem rules detect supported language fixtures | digest-pinned Semgrep image | `test-ecosystem-baseline.sh` requires detections in Go, Rust, JavaScript, Solidity, and Dockerfile fixtures |
 | One pin selects the complete immutable graph | `check-release-graph.sh` | `test-release-graph.sh` mutates refs, image digests, nested workflows, and assets |
 | Fork PRs stay inside read-only, secretless boundaries | `check-fork-pr.sh` | `test-fork-pr.sh` mutates all eight fork boundaries |
 | Consumer examples remain valid contracts | documentation, authority, trust, and syntax checks | any stale permission, mutable pin, unsafe input, or invalid YAML fails G0 |

@@ -11,6 +11,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 - [Evaluation adapter](evaluation-adapter.md)
 - [Evidence Bundle and profile conclusion](evidence-bundle.md)
 - [Ecosystem Baseline static rules](ecosystem-baseline-rules.md)
+- [Permission-free Zizmor adapter](zizmor-scan.md)
 - [Release integrity](release-integrity.md)
 - [Fork pull-request safety](fork-pr-safety.md)
 
@@ -36,6 +37,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 
 - [AI code-review metadata](../../actions/ai-code-review/action.yml)
 - [Secretless Gitleaks adapter](../../actions/gitleaks-scan/action.yml)
+- [Permission-free Zizmor adapter](../../actions/zizmor-scan/action.yml)
 - [AI result schema](../../actions/ai-code-review/scripts/schema.json)
 - [Scanner outcome adapter](../../actions/scanner-outcome/action.yml)
 - [Generic evaluation adapter](../../actions/evaluation-adapter/action.yml)

@@ -33,8 +33,9 @@ license, package installation, build command, or write permission. An unrelated
 4. Confirm the workflow uses ordinary `pull_request`, not
    `pull_request_target`.
 
-The example starts all finding gates advisory while keeping
-`require-complete: true`. Tool failure, missing evidence, a skipped required
+The example starts its configurable workflow, dependency, IaC, and static
+analysis gates advisory while keeping `require-complete: true`. Gitleaks
+findings remain blocking. Tool failure, missing evidence, a skipped required
 evaluation, or malformed output still fails `Profile Conclusion`.
 
 ## Verify The First Run

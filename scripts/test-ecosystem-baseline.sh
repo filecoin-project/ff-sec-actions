@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 # Validate profile composition and optionally execute cross-language Semgrep fixtures.
+# Required environment: none.
+# Optional environment:
+#   BASELINE_RUN_DETECTION=true enables planted-fixture result validation.
+#   BASELINE_RESULT_FILE points to an existing Semgrep JSON result; when empty,
+#   the script runs an installed semgrep executable itself.
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -69,16 +74,20 @@ for expected in "${expected_rules[@]}"; do
 done
 
 if [ "${BASELINE_RUN_DETECTION:-false}" = true ]; then
-  command -v semgrep >/dev/null 2>&1 || fail "Semgrep is required for detection mode"
-  detection_root="$(mktemp -d "${TMPDIR:-/tmp}/ff-sec-baseline-detection.XXXXXX")"
-  result="$detection_root/result.json"
-  trap 'rm -rf "$detection_root"' EXIT
-  mkdir -p "$detection_root/rules" "$detection_root/fixture"
-  cp "$rules" "$detection_root/rules/ecosystem-baseline.yml"
-  cp -R "$fixture/." "$detection_root/fixture/"
-  semgrep scan --metrics=off --disable-version-check \
-    --config "$detection_root/rules/ecosystem-baseline.yml" \
-    --json --output "$result" "$detection_root/fixture"
+  result="${BASELINE_RESULT_FILE:-}"
+  if [ -z "$result" ]; then
+    command -v semgrep >/dev/null 2>&1 || fail "Semgrep is required when BASELINE_RESULT_FILE is not provided"
+    detection_root="$(mktemp -d "${TMPDIR:-/tmp}/ff-sec-baseline-detection.XXXXXX")"
+    result="$detection_root/result.json"
+    trap 'rm -rf "$detection_root"' EXIT
+    mkdir -p "$detection_root/rules" "$detection_root/fixture"
+    cp "$rules" "$detection_root/rules/ecosystem-baseline.yml"
+    cp -R "$fixture/." "$detection_root/fixture/"
+    semgrep scan --metrics=off --disable-version-check \
+      --config "$detection_root/rules/ecosystem-baseline.yml" \
+      --json --output "$result" "$detection_root/fixture"
+  fi
+  [ -s "$result" ] || fail "Semgrep detection result is missing or empty: $result"
   for expected in "${expected_rules[@]}"; do
     jq -e --arg id "$expected" 'any(.results[]; .check_id | endswith($id))' "$result" >/dev/null \
       || fail "Semgrep did not detect planted fixture: $expected"

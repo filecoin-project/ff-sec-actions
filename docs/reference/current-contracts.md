@@ -89,8 +89,8 @@ The [Ecosystem Baseline](../../.github/workflows/ecosystem-baseline.yml) is the
 consumer-testable normalized profile. It composes workflow security,
 dependencies, secrets, IaC, and repository-owned static rules, then emits one
 Evidence Bundle and `Profile Conclusion`. Its inputs are
-`dependency-blocking`, `iac-blocking`, `static-analysis-blocking`,
-`require-complete`, and `skip-dirs`.
+`actions-security-blocking`, `dependency-blocking`, `iac-blocking`,
+`static-analysis-blocking`, `require-complete`, and `skip-dirs`.
 
 ### Scanner Toggles
 
@@ -113,11 +113,13 @@ Evidence Bundle and `Profile Conclusion`. Its inputs are
 | Input | Default | Notes |
 |---|---|---|
 | `skip-dirs` | `node_modules` | Comma-separated Trivy exclusions |
+| `actions-security-blocking` | `false` | Fail on workflow-definition findings; tool failure always fails |
 | `semgrep-blocking` | `false` | Fail on custom-rule findings; tool failure always fails |
 | `codeql-languages` | `["javascript-typescript"]` | JSON array |
 | `dependency-review-fail-on-severity` | `high` | Dependency-review threshold |
 | `dependency-blocking` | `false` | Fail on dependency findings; tool failure always fails |
 | `dependency-severity` | `CRITICAL,HIGH,MEDIUM` | Dependency findings included in the gate |
+| `publish-sarif` | `false` | Publish dependency SARIF using a separate write-authorized job |
 | `iac-blocking` | `false` | Fail on IaC findings; tool failure always fails |
 | `iac-severity` | `CRITICAL,HIGH,MEDIUM` | IaC findings included in the gate |
 | `license-blocking` | `false` | Fail on license findings; tool failure always fails |

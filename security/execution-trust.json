@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-28",
+  "updated_at": "2026-07-29",
   "source": "docs/reference/execution-trust.md",
   "tiers": {
     "ecosystem-baseline": {
@@ -193,14 +193,14 @@
         "explicit_permissions": true,
         "secret_context": false,
         "write_permissions": [],
-        "execution_markers": ["control-script"],
+        "execution_markers": ["container-tool", "control-script"],
         "mutable_references": false,
         "mutable_container": false,
         "oidc": false,
         "cache": false,
         "self_hosted_runner": false
       },
-      "network": ["github-action-download", "go-module-proxy", "github-release-download", "python-package-index"],
+      "network": ["container-registry", "github-action-download", "go-module-proxy", "github-release-download", "python-package-index"],
       "migration": ["Keep every G0 control and its rejecting fixture in the required foundation gate."]
     },
     {

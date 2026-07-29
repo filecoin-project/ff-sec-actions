@@ -41,6 +41,7 @@ policy, exceptions, upgrades, and rollback across projects.
 - [Evaluation adapter](reference/evaluation-adapter.md)
 - [Evidence Bundle and profile conclusion](reference/evidence-bundle.md)
 - [Ecosystem Baseline static rules](reference/ecosystem-baseline-rules.md)
+- [Permission-free Zizmor adapter](reference/zizmor-scan.md)
 - [Release integrity](reference/release-integrity.md)
 - [Fork pull-request safety](reference/fork-pr-safety.md)
 - [Documentation architecture](DOCUMENTATION-ARCHITECTURE.md)
