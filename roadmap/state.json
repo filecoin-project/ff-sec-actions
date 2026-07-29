@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-29T15:30:03Z",
+  "updated_at": "2026-07-29T15:51:54Z",
   "current_task_id": "BASE-01",
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
@@ -547,10 +547,15 @@
         "Unsupported or unavailable coverage is visible in the Evidence Bundle."
       ],
       "verification": [
-        "Cross-language fixtures pass the baseline and detect planted high-confidence defects."
+        "Cross-language fixtures pass the baseline and detect planted high-confidence defects.",
+        "bash scripts/test-consumer-alpha.sh",
+        "The hosted Consumer Alpha Canary completes from the published optimization branch and produces ecosystem-baseline-evidence."
       ],
       "artifacts": [
+        ".github/workflows/consumer-alpha-canary.yml",
         ".github/workflows/ecosystem-baseline.yml",
+        "actions/zizmor-scan/",
+        "docs/consumers/quickstart.md",
         "examples/consumer-ecosystem-baseline.yml"
       ],
       "started_at": "2026-07-29T01:28:10Z",
