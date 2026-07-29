@@ -30,6 +30,9 @@ on:
       - scripts/test-consumer-actions-security.sh
       - scripts/check-release-graph.sh
       - scripts/test-release-graph.sh
+      - scripts/check-fork-pr.sh
+      - scripts/test-fork-pr.sh
+      - test/fixtures/fork-pr/**
       - test/fixtures/actions-security/**
   push:
     branches: [main]
@@ -61,6 +64,9 @@ on:
       - scripts/test-consumer-actions-security.sh
       - scripts/check-release-graph.sh
       - scripts/test-release-graph.sh
+      - scripts/check-fork-pr.sh
+      - scripts/test-fork-pr.sh
+      - test/fixtures/fork-pr/**
       - test/fixtures/actions-security/**
   workflow_dispatch:
 
@@ -121,9 +127,15 @@ jobs:
       - name: Test release graph rejection behavior
         run: bash scripts/test-release-graph.sh
 
+      - name: Validate fork pull-request boundaries
+        run: bash scripts/check-fork-pr.sh
+
+      - name: Test fork boundary rejection behavior
+        run: bash scripts/test-fork-pr.sh
+
       - name: Validate shell scripts
         run: shellcheck scripts/*.sh actions/*/*.sh actions/*/scripts/*.sh
 
       - name: Validate workflow and example syntax
         # actionlint v1.7.12, pinned to the release commit.
-        run: go run github.com/rhysd/actionlint/cmd/actionlint@914e7df21a07ef503a81201c76d2b11c789d3fca .github/workflows/*.yml examples/*.yml
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@914e7df21a07ef503a81201c76d2b11c789d3fca .github/workflows/*.yml examples/*.yml test/fixtures/fork-pr/workflow.yml

@@ -9,6 +9,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 - [Execution trust tiers](execution-trust.md)
 - [Evaluation Result contract](evaluation-result.md)
 - [Release integrity](release-integrity.md)
+- [Fork pull-request safety](fork-pr-safety.md)
 
 ## Reusable Workflows
 

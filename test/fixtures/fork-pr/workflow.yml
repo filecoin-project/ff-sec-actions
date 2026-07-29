@@ -1,0 +1,34 @@
+name: Fork-safe baseline fixture
+
+on:
+  pull_request:
+
+# This caller cap is the maximum authority available to every called workflow.
+permissions:
+  contents: read
+
+jobs:
+  actions-security:
+    permissions:
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-actions.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+
+  dependencies:
+    permissions:
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+
+  licenses:
+    permissions:
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-licenses.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+
+  secrets:
+    permissions:
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+
+  sbom:
+    permissions:
+      contents: read
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-sbom.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750

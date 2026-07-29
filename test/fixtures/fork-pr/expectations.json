@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event": "pull_request",
+  "fork": true,
+  "caller_permissions": {
+    "contents": "read"
+  },
+  "declared_baseline_workflows": [
+    ".github/workflows/sec-actions.yml",
+    ".github/workflows/sec-dependencies.yml",
+    ".github/workflows/sec-licenses.yml",
+    ".github/workflows/sec-sbom.yml",
+    ".github/workflows/sec-secrets.yml"
+  ],
+  "forbidden_boundaries": [
+    "pull_request_target",
+    "secret-context",
+    "write-token",
+    "checkout-credentials",
+    "cache",
+    "oidc",
+    "self-hosted-runner",
+    "consumer-code-execution"
+  ]
+}

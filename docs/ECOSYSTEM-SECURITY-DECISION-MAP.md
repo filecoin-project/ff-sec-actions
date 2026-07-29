@@ -210,7 +210,7 @@ invariants, dependency analysis, build requirements, and profile ownership.
 ## fork-pr-model: Cover External Contributions Safely
 
 Blocked by: distribution-model, execution-trust
-Status: open
+Status: resolved
 Type: Prototype
 
 ### Question
@@ -220,10 +220,14 @@ unavailable, without introducing a `pull_request_target` code-execution path?
 
 ### Answer
 
-Pending. Test a secretless baseline on `pull_request`, then compare a
-no-checkout privileged workflow, maintainer-approved dispatch, and GitHub App
-for AI analysis and comments. Every fork must receive an explicit evaluated,
-skipped, or pending status.
+Run the declared non-executing baseline on ordinary `pull_request` with an
+explicit `contents: read` caller cap and no forwarded secrets. Do not use
+`pull_request_target` for evaluation. The fixture covers every workflow in the
+baseline policy and rejects write tokens, secret forwarding, persisted checkout
+credentials, cache, OIDC, self-hosted runners, and Consumer Project execution.
+Secret-dependent AI remains an explicit `skipped` result on fork PRs; any later
+privileged publishing or GitHub App path must remain a separate trust tier. See
+the [fork safety contract](reference/fork-pr-safety.md).
 
 ## scanner-runtime: Build Profile-Aware Deterministic Evaluation
 

@@ -37,6 +37,7 @@ policy, exceptions, upgrades, and rollback across projects.
 - [Execution trust tiers](reference/execution-trust.md)
 - [Evaluation Result contract](reference/evaluation-result.md)
 - [Release integrity](reference/release-integrity.md)
+- [Fork pull-request safety](reference/fork-pr-safety.md)
 - [Documentation architecture](DOCUMENTATION-ARCHITECTURE.md)
 - [Ecosystem security decision map](ECOSYSTEM-SECURITY-DECISION-MAP.md)
 - [Distribution model decision](decisions/distribution-model.md)

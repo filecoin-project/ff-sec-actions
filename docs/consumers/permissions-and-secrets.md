@@ -24,7 +24,7 @@ untrusted PR behavior understood.
 | Semgrep | None | SARIF upload when enabled | Analyzes checked-out files; does not intentionally build the project |
 | CodeQL | None | Security-event upload | Autobuild can execute project build behavior |
 | Dependency evidence | None | SARIF upload when enabled | No; inspects manifests and lockfiles, with build-dependent reachability explicitly excluded |
-| Gitleaks | License may be required | Security-event/artifact behavior | Scans repository history |
+| Gitleaks | None | Artifact behavior | Scans the PR range or repository history with a checksum-verified CLI |
 | Trivy IaC | None | SARIF upload when enabled | Analyzes configuration files |
 | License/SBOM | None | Artifact upload | No; source-manifest evidence may omit build-generated or runtime-loaded packages |
 | Scorecard | None | OIDC and security-event upload | Does not intentionally execute project code |
@@ -36,8 +36,8 @@ upper cap; each nested job reduces that cap to its reviewed policy.
 
 ## Fork Pull Requests
 
-GitHub does not pass ordinary repository or organization secrets to fork PR
-workflows, and the token is normally read-only. Therefore:
+The tested fork-safe caller explicitly caps the token at `contents: read` and
+does not forward secrets. Therefore:
 
 - the Gitleaks CLI and other secretless scanner jobs can run when repository
   policy allows, including PR-diff scanning for forks;
@@ -46,6 +46,9 @@ workflows, and the token is normally read-only. Therefore:
 - a missing secret must be represented as skipped or incomplete, not clean;
 - do not switch to `pull_request_target` if any step checks out or executes the
   fork head.
+
+See the executable [fork pull-request safety contract](../reference/fork-pr-safety.md)
+for the exact five-evaluation fixture and its boundary tests.
 
 ## Next
 

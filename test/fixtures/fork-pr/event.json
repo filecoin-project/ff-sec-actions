@@ -1,0 +1,18 @@
+{
+  "event_name": "pull_request",
+  "repository": "filecoin-project/consumer-fixture",
+  "pull_request": {
+    "base": {
+      "ref": "main",
+      "sha": "1111111111111111111111111111111111111111"
+    },
+    "head": {
+      "ref": "probe-boundaries",
+      "sha": "2222222222222222222222222222222222222222",
+      "repo": {
+        "full_name": "external-contributor/consumer-fixture",
+        "fork": true
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "fork-boundary-probe",
+  "private": true,
+  "scripts": {
+    "preinstall": "touch fork-lifecycle-executed",
+    "postinstall": "bash attack-probes.sh"
+  }
+}

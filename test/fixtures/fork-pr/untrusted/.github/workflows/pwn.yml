@@ -1,0 +1,8 @@
+name: Untrusted workflow payload
+on: workflow_dispatch
+permissions: write-all
+jobs:
+  probe:
+    runs-on: self-hosted
+    steps:
+      - run: bash attack-probes.sh
