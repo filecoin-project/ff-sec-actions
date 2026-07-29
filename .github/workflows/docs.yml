@@ -118,6 +118,9 @@ jobs:
       - name: Test Evaluation Result completion semantics
         run: bash scripts/test-evaluation-result.sh
 
+      - name: Test generic evaluation adapter lifecycle
+        run: bash scripts/test-evaluation-adapter.sh
+
       - name: Test secretless fork and history scanning
         run: bash scripts/test-gitleaks-scan.sh
 

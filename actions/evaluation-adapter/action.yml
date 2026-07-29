@@ -1,0 +1,84 @@
+name: Evaluation adapter
+description: Normalize one immutable scanner invocation and its raw SARIF into the v1 Evaluation Result.
+
+inputs:
+  evaluation-id:
+    description: Stable evaluation identifier.
+    required: true
+  tool-name:
+    description: Scanner name.
+    required: true
+  tool-version:
+    description: Exact scanner version used by the invocation.
+    required: true
+  tool-outcome:
+    description: success, failure, cancelled, timed-out, or skipped.
+    required: true
+  tool-exit-code:
+    description: Raw scanner exit code when available.
+    required: false
+    default: ""
+  raw-evidence:
+    description: Raw SARIF file produced by the scanner.
+    required: false
+    default: ""
+  blocking:
+    description: Fail when validated evidence contains findings.
+    required: false
+    default: "false"
+  scope-target:
+    description: Human-readable evaluated target.
+    required: false
+    default: repository
+  coverage-included:
+    description: JSON array describing included scope.
+    required: false
+    default: "[]"
+  coverage-excluded:
+    description: JSON array describing excluded scope.
+    required: false
+    default: "[]"
+  coverage-limitations:
+    description: JSON array of known limitations.
+    required: false
+    default: "[]"
+  evaluation-result-file:
+    description: Destination for normalized Evaluation Result JSON.
+    required: false
+    default: ""
+
+outputs:
+  completion:
+    description: complete, incomplete, skipped, or error.
+    value: ${{ steps.adapt.outputs.completion }}
+  findings-count:
+    description: Authoritative count when available.
+    value: ${{ steps.adapt.outputs.findings_count }}
+  merge-conclusion:
+    description: pass, fail, or not-evaluated.
+    value: ${{ steps.adapt.outputs.merge_conclusion }}
+  evaluation-result:
+    description: Path to the v1 Evaluation Result JSON.
+    value: ${{ steps.adapt.outputs.evaluation_result }}
+
+runs:
+  using: composite
+  steps:
+    - id: adapt
+      shell: bash
+      env:
+        EVALUATION_ID: ${{ inputs.evaluation-id }}
+        TOOL_NAME: ${{ inputs.tool-name }}
+        TOOL_VERSION: ${{ inputs.tool-version }}
+        TOOL_OUTCOME: ${{ inputs.tool-outcome }}
+        TOOL_EXIT_CODE: ${{ inputs.tool-exit-code }}
+        RAW_EVIDENCE: ${{ inputs.raw-evidence }}
+        BLOCKING: ${{ inputs.blocking }}
+        SCOPE_TARGET: ${{ inputs.scope-target }}
+        COVERAGE_INCLUDED: ${{ inputs.coverage-included }}
+        COVERAGE_EXCLUDED: ${{ inputs.coverage-excluded }}
+        COVERAGE_LIMITATIONS: ${{ inputs.coverage-limitations }}
+        EVALUATION_RESULT_FILE: ${{ inputs.evaluation-result-file }}
+        EVALUATION_REPOSITORY: ${{ github.repository }}
+        EVALUATION_REF: ${{ github.sha }}
+      run: bash "${GITHUB_ACTION_PATH}/evaluation-adapter.sh"

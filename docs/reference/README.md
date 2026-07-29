@@ -8,6 +8,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 - [Current pre-v1 contracts](current-contracts.md)
 - [Execution trust tiers](execution-trust.md)
 - [Evaluation Result contract](evaluation-result.md)
+- [Evaluation adapter](evaluation-adapter.md)
 - [Release integrity](release-integrity.md)
 - [Fork pull-request safety](fork-pr-safety.md)
 
@@ -33,6 +34,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 - [Secretless Gitleaks adapter](../../actions/gitleaks-scan/action.yml)
 - [AI result schema](../../actions/ai-code-review/scripts/schema.json)
 - [Scanner outcome adapter](../../actions/scanner-outcome/action.yml)
+- [Generic evaluation adapter](../../actions/evaluation-adapter/action.yml)
 
 ## Schemas
 

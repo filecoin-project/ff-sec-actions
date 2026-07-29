@@ -44,6 +44,7 @@ jobs:
           bash scripts/check-scanner-gates.sh
           bash scripts/test-scanner-outcome.sh
           bash scripts/test-evaluation-result.sh
+          bash scripts/test-evaluation-adapter.sh
 
       - name: Prove secretless and workflow-definition detection
         run: |
