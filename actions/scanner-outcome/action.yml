@@ -1,0 +1,43 @@
+name: Normalize scanner outcome
+description: Separate validated SARIF findings from scanner operational failure and gate policy.
+
+inputs:
+  scanner-name:
+    description: Stable scanner identifier.
+    required: true
+  scanner-outcome:
+    description: GitHub step outcome for the scanner step.
+    required: true
+  result-file:
+    description: SARIF result file produced by the scanner.
+    required: true
+  blocking:
+    description: Whether one or more findings fail this evaluation.
+    required: false
+    default: "false"
+
+outputs:
+  completion:
+    description: complete or error.
+    value: ${{ steps.normalize.outputs.completion }}
+  result:
+    description: no-findings, findings, or error.
+    value: ${{ steps.normalize.outputs.result }}
+  conclusion:
+    description: pass, fail, or error.
+    value: ${{ steps.normalize.outputs.conclusion }}
+  findings-count:
+    description: Number of SARIF results when validation completed.
+    value: ${{ steps.normalize.outputs.findings_count }}
+
+runs:
+  using: composite
+  steps:
+    - id: normalize
+      shell: bash
+      env:
+        SCANNER_NAME: ${{ inputs.scanner-name }}
+        SCANNER_OUTCOME: ${{ inputs.scanner-outcome }}
+        RESULT_FILE: ${{ inputs.result-file }}
+        BLOCKING: ${{ inputs.blocking }}
+      run: bash "${GITHUB_ACTION_PATH}/scanner-outcome.sh"

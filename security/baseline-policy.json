@@ -7,6 +7,7 @@
         "actions/checkout",
         "actions/upload-artifact",
         "aquasecurity/trivy-action",
+        "filecoin-project/ff-sec-actions/actions/scanner-outcome",
         "github/codeql-action/upload-sarif"
       ],
       "limitations": [
@@ -18,7 +19,9 @@
       "coverage_mode": "manifest-and-lockfile",
       "allowed_actions": [
         "actions/checkout",
-        "aquasecurity/trivy-action"
+        "actions/upload-artifact",
+        "aquasecurity/trivy-action",
+        "filecoin-project/ff-sec-actions/actions/scanner-outcome"
       ],
       "limitations": [
         "Licenses visible only after installation or a project build are excluded."

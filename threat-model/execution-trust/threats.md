@@ -248,11 +248,13 @@ interpreted as zero findings rather than incomplete/error.
 2. Advisory execution keeps the job green or writes zero findings.
 3. Humans or policy accept the run as completed security evaluation.
 
-**Likelihood:** HIGH — multiple present workflows have this behavior.
+**Likelihood:** MEDIUM — G0-04 now separates scanner findings, malformed
+SARIF, and operational failure; AI refusal, timeout, and aggregate completion
+remain unresolved.
 
 **Impact:** HIGH — broad false assurance and bypass of intended Merge Gates.
 
-**Note:** Fixable; tracked by G0-04/G0-05 and EVAL-01.
+**Note:** Partially mitigated by G0-04; tracked to completion by G0-05 and EVAL-01.
 
 ### T11: Source Or Credentials Leave Through Undeclared Egress
 

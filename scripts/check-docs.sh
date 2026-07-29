@@ -27,6 +27,8 @@ require_text() {
 
 required_pages=(
   "README.md"
+  "actions/scanner-outcome/action.yml"
+  "actions/scanner-outcome/scanner-outcome.sh"
   ".github/workflows/docs.yml"
   "docs/README.md"
   "docs/consumers/quickstart.md"
@@ -45,13 +47,16 @@ required_pages=(
   "roadmap/state.json"
   "security/execution-trust.json"
   "security/baseline-policy.json"
+  "security/scanner-gates.json"
   "security/workflow-policy.json"
   "scripts/check-baseline-no-exec.sh"
+  "scripts/check-scanner-gates.sh"
   "scripts/check-execution-trust.sh"
   "scripts/check-workflow-security.sh"
   "scripts/roadmap.sh"
   "scripts/test-roadmap.sh"
   "scripts/test-baseline-no-exec.sh"
+  "scripts/test-scanner-outcome.sh"
   "scripts/test-workflow-security.sh"
   "threat-model/execution-trust/threat-model-report.md"
 )
@@ -73,6 +78,8 @@ if [ -f ".github/workflows/docs.yml" ]; then
   require_text ".github/workflows/docs.yml" "bash scripts/test-workflow-security.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/check-baseline-no-exec.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/test-baseline-no-exec.sh"
+  require_text ".github/workflows/docs.yml" "bash scripts/check-scanner-gates.sh"
+  require_text ".github/workflows/docs.yml" "bash scripts/test-scanner-outcome.sh"
   require_text ".github/workflows/docs.yml" "github.com/rhysd/actionlint/cmd/actionlint@914e7df21a07ef503a81201c76d2b11c789d3fca"
   require_text ".github/workflows/docs.yml" "contents: read"
   require_text ".github/workflows/docs.yml" "persist-credentials: false"
@@ -155,6 +162,11 @@ fi
 if [ -f "security/baseline-policy.json" ] && [ -f "scripts/check-baseline-no-exec.sh" ]; then
   bash scripts/check-baseline-no-exec.sh \
     || report_error "baseline no-execution policy is invalid or stale"
+fi
+
+if [ -f "security/scanner-gates.json" ] && [ -f "scripts/check-scanner-gates.sh" ]; then
+  bash scripts/check-scanner-gates.sh \
+    || report_error "scanner gate policy is invalid or stale"
 fi
 
 if [ "$failures" -gt 0 ]; then

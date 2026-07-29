@@ -2,7 +2,7 @@
   "schema_version": 1,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-28T23:52:25Z",
+  "updated_at": "2026-07-29T00:03:54Z",
   "current_task_id": null,
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
@@ -203,7 +203,7 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
+      "status": "done",
       "title": "Make scanner exit and gate semantics honest",
       "objective": "Prevent findings and operational failures from being hidden by unconditional advisory execution.",
       "blocked_by": [
@@ -222,10 +222,15 @@
       ],
       "artifacts": [
         ".github/workflows/security-pipeline.yml",
-        ".github/workflows/sec-*.yml"
+        ".github/workflows/sec-*.yml",
+        "actions/scanner-outcome/action.yml",
+        "actions/scanner-outcome/scanner-outcome.sh",
+        "security/scanner-gates.json",
+        "scripts/check-scanner-gates.sh",
+        "scripts/test-scanner-outcome.sh"
       ],
-      "started_at": null,
-      "completed_at": null
+      "started_at": "2026-07-28T23:52:38Z",
+      "completed_at": "2026-07-29T00:03:54Z"
     },
     {
       "id": "G0-05",

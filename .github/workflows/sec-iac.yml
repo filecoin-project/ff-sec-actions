@@ -34,9 +34,8 @@ jobs:
         with:
           persist-credentials: false
 
-      # trivy-action internally uses actions/cache@v4 (Node 20). Monitor:
-      # https://github.com/aquasecurity/trivy-action/releases
       - name: Trivy IaC misconfiguration scan
+        id: scan
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # 0.36.0
         with:
           scan-type: config
@@ -44,8 +43,20 @@ jobs:
           format: sarif
           output: trivy-iac.sarif
           severity: ${{ inputs.severity }}
+          limit-severities-for-sarif: true
+          exit-code: "0"
+          cache: "false"
           skip-dirs: ${{ inputs.skip-dirs }}
-        continue-on-error: ${{ !inputs.blocking }}
+        continue-on-error: true
+
+      - name: Evaluate IaC scan outcome
+        if: always()
+        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@main
+        with:
+          scanner-name: trivy-iac
+          scanner-outcome: ${{ steps.scan.outcome }}
+          result-file: trivy-iac.sarif
+          blocking: ${{ inputs.blocking }}
 
       - name: Upload Trivy IaC results
         if: always() && hashFiles('trivy-iac.sarif') != ''

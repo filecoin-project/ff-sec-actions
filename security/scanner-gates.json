@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "umbrella": ".github/workflows/security-pipeline.yml",
+  "scanners": {
+    "codeql": {
+      "workflow": ".github/workflows/sec-codeql.yml",
+      "gate_mode": "provider-policy",
+      "note": "CodeQL publishes findings; GitHub code-scanning policy owns alert gating. Operational action failures fail the job."
+    },
+    "dependencies": {
+      "workflow": ".github/workflows/sec-dependencies.yml",
+      "gate_mode": "configurable",
+      "workflow_input": "blocking",
+      "umbrella_input": "dependency-blocking",
+      "enforcement_marker": "blocking: ${{ inputs.blocking }}"
+    },
+    "dependencies-severity": {
+      "workflow": ".github/workflows/sec-dependencies.yml",
+      "gate_mode": "configurable",
+      "workflow_input": "severity",
+      "umbrella_input": "dependency-severity",
+      "enforcement_marker": "severity: ${{ inputs.severity }}"
+    },
+    "dependency-review": {
+      "workflow": ".github/workflows/sec-dependency-review.yml",
+      "gate_mode": "configurable",
+      "workflow_input": "fail-on-severity",
+      "umbrella_input": "dependency-review-fail-on-severity",
+      "enforcement_marker": "fail-on-severity: ${{ inputs.fail-on-severity }}"
+    },
+    "iac": {
+      "workflow": ".github/workflows/sec-iac.yml",
+      "gate_mode": "configurable",
+      "workflow_input": "blocking",
+      "umbrella_input": "iac-blocking",
+      "enforcement_marker": "blocking: ${{ inputs.blocking }}"
+    },
+    "iac-severity": {
+      "workflow": ".github/workflows/sec-iac.yml",
+      "gate_mode": "configurable",
+      "workflow_input": "severity",
+      "umbrella_input": "iac-severity",
+      "enforcement_marker": "severity: ${{ inputs.severity }}"
+    },
+    "licenses": {
+      "workflow": ".github/workflows/sec-licenses.yml",
+      "gate_mode": "configurable",
+      "workflow_input": "blocking",
+      "umbrella_input": "license-blocking",
+      "enforcement_marker": "blocking: ${{ inputs.blocking }}"
+    },
+    "licenses-severity": {
+      "workflow": ".github/workflows/sec-licenses.yml",
+      "gate_mode": "configurable",
+      "workflow_input": "severity",
+      "umbrella_input": "license-severity",
+      "enforcement_marker": "severity: ${{ inputs.severity }}"
+    },
+    "scorecard": {
+      "workflow": ".github/workflows/sec-scorecard.yml",
+      "gate_mode": "advisory",
+      "note": "Scorecard findings remain advisory; operational action failures fail the job."
+    },
+    "secrets": {
+      "workflow": ".github/workflows/sec-secrets.yml",
+      "gate_mode": "always-blocking",
+      "note": "Gitleaks findings and operational failures fail; tune high-confidence rules in configuration."
+    },
+    "semgrep-custom": {
+      "workflow": ".github/workflows/sec-semgrep.yml",
+      "gate_mode": "configurable",
+      "workflow_input": "blocking",
+      "umbrella_input": "semgrep-blocking",
+      "enforcement_marker": "blocking: ${{ inputs.blocking }}"
+    },
+    "semgrep-community": {
+      "workflow": ".github/workflows/sec-semgrep.yml",
+      "gate_mode": "configurable",
+      "workflow_input": "community-blocking",
+      "umbrella_input": "semgrep-community-blocking",
+      "enforcement_marker": "blocking: ${{ inputs.community-blocking }}"
+    },
+    "slither": {
+      "workflow": ".github/workflows/sec-slither.yml",
+      "gate_mode": "configurable",
+      "workflow_input": "fail-on",
+      "umbrella_input": "slither-fail-on",
+      "enforcement_marker": "fail-on: ${{ inputs.fail-on }}"
+    }
+  }
+}

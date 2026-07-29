@@ -95,10 +95,10 @@ repository configuration as well as this repository's source contract.
 | `.github/workflows/docs.yml` | `control-repository-ci` | `control-repository-ci` | Keep repository contracts in its validation job. |
 | `.github/workflows/manual-ai-code-review.yml` | `control-repository-ci` | `control-repository-ci` | Pin checkout and keep trusted manual scope. |
 | `.github/workflows/sec-codeql.yml` | `legacy-mixed` | `privileged-build-analysis` | Remove write authority from build; publish separately. |
-| `.github/workflows/sec-dependencies.yml` | `legacy-mixed` | `ecosystem-baseline` | Disable shared cache and move SARIF publication out; keep build-dependent work separate. |
+| `.github/workflows/sec-dependencies.yml` | `legacy-mixed` | `ecosystem-baseline` | Move SARIF publication out; keep build-dependent work separate. |
 | `.github/workflows/sec-dependency-review.yml` | `legacy-mixed` | `ecosystem-baseline` | Separate baseline evaluation from optional commenting. |
-| `.github/workflows/sec-iac.yml` | `legacy-mixed` | `ecosystem-baseline` | Inspect read-only without shared cache; move optional SARIF upload to a publisher. |
-| `.github/workflows/sec-licenses.yml` | `legacy-mixed` | `ecosystem-baseline` | Disable shared cache; keep build-dependent evidence separate. |
+| `.github/workflows/sec-iac.yml` | `legacy-mixed` | `ecosystem-baseline` | Inspect read-only; move optional SARIF upload to a publisher. |
+| `.github/workflows/sec-licenses.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep build-dependent evidence in a separate Privileged Build Analysis. |
 | `.github/workflows/sec-sbom.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Keep build-enhanced SBOM evidence in a separate Privileged Build Analysis. |
 | `.github/workflows/sec-scorecard.yml` | `legacy-mixed` | `ecosystem-baseline` | Separate read-only evaluation from the named OIDC/security-event publisher. |
 | `.github/workflows/sec-secrets.yml` | `legacy-mixed` | `ecosystem-baseline` | Use a secretless detector and separate evidence publication. |
@@ -109,6 +109,7 @@ repository configuration as well as this repository's source contract.
 | `examples/consumer-manual-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |
 | `examples/consumer-security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Publish a secretless baseline example and show privileged tiers as separate opt-ins. |
 | `actions/ai-code-review/action.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Add bounded context, privacy, completion, and result contracts while preserving no checkout/execution. |
+| `actions/scanner-outcome/action.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Pin every consuming reference through the immutable release graph. |
 
 The detailed observed flags, network destinations, and migration statements
 live in the machine-readable inventory so automation can detect drift.
@@ -123,6 +124,8 @@ bash scripts/check-workflow-security.sh
 bash scripts/test-workflow-security.sh
 bash scripts/check-baseline-no-exec.sh
 bash scripts/test-baseline-no-exec.sh
+bash scripts/check-scanner-gates.sh
+bash scripts/test-scanner-outcome.sh
 ```
 
 The command fails when a workflow, example, or action is unclassified; a
@@ -154,6 +157,12 @@ It permits only reviewed manifest-inspection actions and rejects shell steps or
 package-manager inputs. Build-enhanced completeness is not currently provided;
 its limitations are explicit and any future implementation must be a separate,
 opt-in Privileged Build Analysis.
+
+The scanner-gate contract records every supported finding gate and its
+umbrella input in [`security/scanner-gates.json`](../../security/scanner-gates.json).
+The scanner-outcome module validates SARIF and treats `no-findings`, advisory
+`findings`, gated `findings`, operational `error`, and malformed evidence as
+separate observable behaviors.
 
 When adding or changing a surface:
 

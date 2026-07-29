@@ -62,8 +62,8 @@ The initial review established a no-regret remediation lane:
   `persist-credentials: false`;
 - never run package lifecycle scripts merely to inspect dependencies;
 - scope OIDC permission to Scorecard only;
-- make Trivy gates set a non-zero finding exit code and pass every blocking
-  input through the umbrella;
+- make Trivy gates validate SARIF and emit a non-zero gate conclusion without
+  masking tool failure, and pass every gate input through the umbrella;
 - distinguish `complete`, `incomplete`, `skipped`, and `error` from finding
   severity, including AI refusal and truncated coverage;
 - replace mutable or missing self-references with an immutable release graph;

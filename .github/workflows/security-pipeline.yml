@@ -73,6 +73,16 @@ on:
         type: string
         required: false
         default: p/typescript p/jwt p/owasp-top-ten p/secrets p/security-audit
+      semgrep-blocking:
+        description: Fail when custom Semgrep rules produce findings.
+        type: boolean
+        required: false
+        default: false
+      semgrep-community-blocking:
+        description: Fail when community Semgrep rules produce findings.
+        type: boolean
+        required: false
+        default: false
       codeql-languages:
         description: 'JSON array, e.g. ["javascript-typescript","go"].'
         type: string
@@ -82,6 +92,36 @@ on:
         type: string
         required: false
         default: high
+      dependency-blocking:
+        description: Fail when dependency findings match the configured severity.
+        type: boolean
+        required: false
+        default: false
+      dependency-severity:
+        description: Trivy severities included in dependency findings and gates.
+        type: string
+        required: false
+        default: CRITICAL,HIGH,MEDIUM
+      iac-blocking:
+        description: Fail when IaC findings match the configured severity.
+        type: boolean
+        required: false
+        default: false
+      iac-severity:
+        description: Trivy severities included in IaC findings and gates.
+        type: string
+        required: false
+        default: CRITICAL,HIGH,MEDIUM
+      license-blocking:
+        description: Fail when license findings match the configured severity.
+        type: boolean
+        required: false
+        default: false
+      license-severity:
+        description: Trivy severities included in license findings and gates.
+        type: string
+        required: false
+        default: CRITICAL,HIGH
       deny-licenses:
         type: string
         required: false
@@ -98,6 +138,11 @@ on:
         type: string
         required: false
         default: 0.8.13
+      slither-fail-on:
+        description: "Slither finding threshold: none | low | medium | high | all | config."
+        type: string
+        required: false
+        default: none
     secrets:
       gitleaks-license:
         description: Gitleaks license key (required for org-owned repos).
@@ -113,6 +158,8 @@ jobs:
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@main
     with:
       community-configs: ${{ inputs.semgrep-community-configs }}
+      blocking: ${{ inputs.semgrep-blocking }}
+      community-blocking: ${{ inputs.semgrep-community-blocking }}
 
   codeql:
     if: inputs.enable-codeql
@@ -132,6 +179,8 @@ jobs:
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-dependencies.yml@main
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
+      blocking: ${{ inputs.dependency-blocking }}
+      severity: ${{ inputs.dependency-severity }}
 
   secrets-scan:
     if: inputs.enable-secrets
@@ -152,6 +201,8 @@ jobs:
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-iac.yml@main
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
+      blocking: ${{ inputs.iac-blocking }}
+      severity: ${{ inputs.iac-severity }}
 
   licenses:
     if: inputs.enable-licenses
@@ -160,6 +211,8 @@ jobs:
     uses: filecoin-project/ff-sec-actions/.github/workflows/sec-licenses.yml@main
     with:
       skip-dirs: ${{ inputs.skip-dirs }}
+      blocking: ${{ inputs.license-blocking }}
+      severity: ${{ inputs.license-severity }}
 
   dependency-review:
     if: inputs.enable-dependency-review && github.event_name == 'pull_request'
@@ -196,3 +249,4 @@ jobs:
       target: ${{ inputs.slither-target }}
       slither-args: ${{ inputs.slither-args }}
       solc-version: ${{ inputs.solc-version }}
+      fail-on: ${{ inputs.slither-fail-on }}

@@ -99,20 +99,33 @@ Source:
 |---|---|---|
 | `skip-dirs` | `node_modules` | Comma-separated Trivy exclusions |
 | `semgrep-community-configs` | TypeScript/JWT/OWASP/secrets/security-audit sets | Space-separated registry configs |
+| `semgrep-blocking` | `false` | Fail on custom-rule findings; tool failure always fails |
+| `semgrep-community-blocking` | `false` | Fail on community-rule findings; tool failure always fails |
 | `codeql-languages` | `["javascript-typescript"]` | JSON array |
 | `dependency-review-fail-on-severity` | `high` | Dependency-review threshold |
+| `dependency-blocking` | `false` | Fail on dependency findings; tool failure always fails |
+| `dependency-severity` | `CRITICAL,HIGH,MEDIUM` | Dependency findings included in the gate |
+| `iac-blocking` | `false` | Fail on IaC findings; tool failure always fails |
+| `iac-severity` | `CRITICAL,HIGH,MEDIUM` | IaC findings included in the gate |
+| `license-blocking` | `false` | Fail on license findings; tool failure always fails |
+| `license-severity` | `CRITICAL,HIGH` | License findings included in the gate |
 | `deny-licenses` | `GPL-3.0, AGPL-3.0` | Dependency-review deny list |
 | `slither-target` | `.` | Solidity target |
 | `slither-args` | Empty | Additional Slither arguments |
 | `solc-version` | `0.8.13` | Solidity compiler version |
+| `slither-fail-on` | `none` | `none`, `low`, `medium`, `high`, `all`, or `config` |
 
 Optional secret: `gitleaks-license`.
+
+Trivy gates use its documented `exit-code`/SARIF behavior while the local
+outcome adapter independently validates results and operational status. See
+the [Trivy Action inputs](https://github.com/aquasecurity/trivy-action#inputs).
+Slither forwards its documented `fail-on` threshold; see the
+[Slither Action fail behavior](https://github.com/crytic/slither-action#action-fail-behavior).
 
 Current umbrella limitations:
 
 - nested workflows load from mutable `main`;
-- Semgrep, dependency, IaC, license, and Slither blocking controls are not all
-  exposed or forwarded;
 - the parent workflow does not aggregate one Evaluation Result;
 - dependency, license, and SBOM evidence is manifest/lockfile based and can be
   incomplete when packages appear only after installation or a build;
@@ -122,16 +135,16 @@ Current umbrella limitations:
 
 | Workflow | Primary result | Current gate behavior |
 |---|---|---|
-| `sec-semgrep.yml` | Custom and community SARIF artifacts | Custom rules can block à la carte; community rules are advisory |
+| `sec-semgrep.yml` | Custom and community SARIF artifacts | Each ruleset has an independent finding gate; malformed output/tool failure always fails |
 | `sec-codeql.yml` | GitHub code-scanning analysis | CodeQL analysis controls failure |
-| `sec-dependencies.yml` | Manifest/lockfile Trivy SARIF | Advisory; native package-manager reachability is excluded |
+| `sec-dependencies.yml` | Manifest/lockfile Trivy SARIF | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-secrets.yml` | Gitleaks summary/artifact | Blocking |
-| `sec-iac.yml` | Trivy SARIF | `blocking` exists, but Trivy finding exit semantics need G0 correction |
-| `sec-licenses.yml` | Trivy table in logs | Advisory; no artifact is currently uploaded |
+| `sec-iac.yml` | Trivy SARIF | Configurable finding gate; malformed output/tool failure always fails |
+| `sec-licenses.yml` | Trivy SARIF artifact | Configurable finding gate; malformed output/tool failure always fails |
 | `sec-dependency-review.yml` | PR summary | Blocks at configured severity/license policy |
 | `sec-sbom.yml` | CycloneDX artifact | Informational |
-| `sec-scorecard.yml` | Scorecard SARIF/artifact | Advisory |
-| `sec-slither.yml` | Slither SARIF/artifact | Can block à la carte |
+| `sec-scorecard.yml` | Scorecard SARIF/artifact | Findings advisory; operational failure fails |
+| `sec-slither.yml` | Slither SARIF/artifact | Configurable finding gate; operational failure fails |
 
 Source links for each workflow are available in the [reference
 index](README.md).

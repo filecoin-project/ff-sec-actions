@@ -26,11 +26,11 @@ on:
         type: string
         required: false
         default: 0.8.13
-      blocking:
-        description: Fail the job on findings.
-        type: boolean
+      fail-on:
+        description: "Finding threshold: none | low | medium | high | all | config."
+        type: string
         required: false
-        default: false
+        default: none
 
 jobs:
   slither:
@@ -57,7 +57,7 @@ jobs:
           slither-args: ${{ inputs.slither-args }}
           sarif: slither-results.sarif
           solc-version: ${{ inputs.solc-version }}
-        continue-on-error: ${{ !inputs.blocking }}
+          fail-on: ${{ inputs.fail-on }}
 
       - name: Upload Slither results
         if: always() && hashFiles('slither-results.sarif') != ''

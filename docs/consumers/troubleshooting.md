@@ -33,8 +33,9 @@ tool, or result-interpretation failure.
 ## A Scanner Is Green Despite Findings
 
 Several current scanners are advisory. Inspect the step conclusion, logs,
-SARIF, and artifacts. The G0 remediation work will make finding exit codes and
-umbrella blocking inputs consistent.
+SARIF, and artifacts. To gate findings, set the scanner-specific `*-blocking`
+input documented in the [current contract](../reference/current-contracts.md).
+Operational failure and malformed SARIF fail independently of that setting.
 
 ## Results Are Missing From The Security Tab
 

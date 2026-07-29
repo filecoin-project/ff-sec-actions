@@ -139,7 +139,20 @@ while IFS= read -r path; do
   mutable_references="$(boolean_pattern "$path" '^[[:space:]-]*uses:[[:space:]]+[^[:space:]#]+@(main|master|v[0-9]+)([[:space:]#]|$)')"
   mutable_container="$(boolean_pattern "$path" 'default:[[:space:]]+[^[:space:]]+/[^[:space:]]+:[^@[:space:]]+')"
   oidc="$(boolean_pattern "$path" '^[[:space:]]+id-token:[[:space:]]+write([[:space:]#]|$)')"
-  cache="$(boolean_pattern "$path" 'actions/cache@|^[[:space:]]+cache:[[:space:]]')"
+  cache=false
+  if awk '
+    /actions\/cache@/ { enabled = 1 }
+    /^[[:space:]]+cache:[[:space:]]/ {
+      value = $0
+      sub(/^.*cache:[[:space:]]*/, "", value)
+      sub(/[[:space:]#].*$/, "", value)
+      gsub(/["\047]/, "", value)
+      if (value != "false") enabled = 1
+    }
+    END { exit(enabled ? 0 : 1) }
+  ' "$path"; then
+    cache=true
+  fi
   self_hosted_runner="$(boolean_pattern "$path" '^[[:space:]]*runs-on:.*self-hosted')"
 
   persists_checkout_credentials=false

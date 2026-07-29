@@ -72,8 +72,9 @@ Use [Understand Evaluation Results](understand-results.md) to distinguish:
 - **A referenced `v1` cannot be found:** no stable v1 has been published.
 - **A fork PR cannot access AI review:** fork workflows do not receive the
   Anthropic secret.
-- **A scanner is green despite findings:** several current scanners are
-  advisory, and some gate semantics are scheduled for G0 remediation.
+- **A scanner is green despite findings:** advisory is the default. Enable the
+  documented scanner-specific gate only after observing and triaging results;
+  tool failure remains blocking independently.
 - **SARIF is missing:** GitHub Code Security availability and
   `security-events: write` affect upload behavior.
 

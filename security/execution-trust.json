@@ -173,14 +173,14 @@
         "secret_context": false,
         "write_permissions": ["security-events"],
         "execution_markers": [],
-        "mutable_references": false,
+        "mutable_references": true,
         "mutable_container": false,
         "oidc": false,
-        "cache": true,
+        "cache": false,
         "self_hosted_runner": false
       },
       "network": ["github-action-download", "node-package-registry", "vulnerability-database", "github-code-scanning"],
-      "migration": ["Disable tool-internal shared cache.", "Move build-dependent reachability and SARIF publishing into separate privileged tiers."]
+      "migration": ["Move build-dependent reachability and SARIF publishing into separate privileged tiers."]
     },
     {
       "path": ".github/workflows/sec-dependency-review.yml",
@@ -215,19 +215,19 @@
         "secret_context": false,
         "write_permissions": ["security-events"],
         "execution_markers": [],
-        "mutable_references": false,
+        "mutable_references": true,
         "mutable_container": false,
         "oidc": false,
-        "cache": true,
+        "cache": false,
         "self_hosted_runner": false
       },
       "network": ["github-action-download", "vulnerability-and-policy-database", "github-code-scanning"],
-      "migration": ["Run inspection with contents:read only and no shared cache.", "Split optional SARIF upload into a privileged-publisher job."]
+      "migration": ["Run inspection with contents:read only.", "Split optional SARIF upload into a privileged-publisher job."]
     },
     {
       "path": ".github/workflows/sec-licenses.yml",
       "scope": "consumer",
-      "current_tier": "legacy-mixed",
+      "current_tier": "ecosystem-baseline",
       "target_tier": "ecosystem-baseline",
       "observed": {
         "checkout": true,
@@ -236,14 +236,14 @@
         "secret_context": false,
         "write_permissions": [],
         "execution_markers": [],
-        "mutable_references": false,
+        "mutable_references": true,
         "mutable_container": false,
         "oidc": false,
-        "cache": true,
+        "cache": false,
         "self_hosted_runner": false
       },
       "network": ["github-action-download", "node-package-registry", "license-database"],
-      "migration": ["Disable tool-internal shared cache and keep build-dependent evidence separate."]
+      "migration": ["Keep build-dependent license evidence in a separate privileged analysis."]
     },
     {
       "path": ".github/workflows/sec-sbom.yml",
@@ -320,7 +320,7 @@
         "secret_context": false,
         "write_permissions": ["security-events"],
         "execution_markers": [],
-        "mutable_references": false,
+        "mutable_references": true,
         "mutable_container": true,
         "oidc": false,
         "cache": false,
@@ -454,6 +454,27 @@
       },
       "network": ["github-api", "anthropic-api"],
       "migration": ["Keep Consumer Project checkout and code execution forbidden.", "Add bounded context, privacy, completion, and result contracts under the AI assurance tasks."]
+    },
+    {
+      "path": "actions/scanner-outcome/action.yml",
+      "scope": "consumer",
+      "current_tier": "ecosystem-baseline",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": false,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["none"],
+      "migration": ["Pin every consuming workflow reference through the immutable release graph."]
     }
   ]
 }

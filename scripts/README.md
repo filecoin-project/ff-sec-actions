@@ -36,3 +36,10 @@ dependency, license, and SBOM evaluation. It rejects shell steps,
 package-manager inputs, and actions outside the reviewed allowlist in
 [`security/baseline-policy.json`](../security/baseline-policy.json). Run the
 malicious lifecycle-hook fixture with `bash scripts/test-baseline-no-exec.sh`.
+
+`check-scanner-gates.sh` verifies that each configurable scanner gate is
+exposed, enforced, and forwarded through the umbrella according to
+[`security/scanner-gates.json`](../security/scanner-gates.json). The
+`actions/scanner-outcome` module validates SARIF and separates advisory or
+blocking findings from operational failure. Exercise its public interface with
+`bash scripts/test-scanner-outcome.sh`.

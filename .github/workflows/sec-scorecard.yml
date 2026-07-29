@@ -30,7 +30,6 @@ jobs:
           results_file: scorecard-results.sarif
           results_format: sarif
           publish_results: ${{ inputs.publish-results }}
-        continue-on-error: true # Advisory — informational baseline
 
       - name: Upload Scorecard results
         if: always() && hashFiles('scorecard-results.sarif') != ''

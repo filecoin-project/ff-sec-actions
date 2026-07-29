@@ -35,11 +35,22 @@ jobs:
       # Safe baseline: inspect manifests and lockfiles without running package
       # installation hooks from repository content.
       skip-dirs: node_modules,contracts/lib,.sst
+      # Finding gates are independent from tool failure; tool failure always
+      # fails. Uncomment only after observing the advisory result volume:
+      # dependency-blocking: true
+      # iac-blocking: true
+      # license-blocking: true
+      # semgrep-blocking: true
+      # semgrep-community-blocking: true
+      # dependency-severity: CRITICAL,HIGH
+      # iac-severity: CRITICAL,HIGH
+      # license-severity: CRITICAL,HIGH
       # Opt-in scanners:
       # enable-scorecard: true          # also grant id-token: write
       # enable-codeql: true            # requires GHAS
       # enable-slither: true           # Solidity/Foundry repos
       # slither-target: contracts
+      # slither-fail-on: high
     secrets:
       gitleaks-license: ${{ secrets.GITLEAKS_LICENSE }}
 

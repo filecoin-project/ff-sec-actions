@@ -19,7 +19,8 @@ not equivalent to zero findings.
 The current workflows predate the normalized Evaluation Result contract:
 
 - scanner outputs may appear in job logs, SARIF, or artifacts;
-- advisory steps can remain green when findings exist;
+- supported scanner gates keep advisory findings green by policy while
+  malformed SARIF and tool failure fail independently;
 - event conditions can skip jobs;
 - AI refusal is currently represented as zero findings;
 - large AI diffs can be truncated;
@@ -27,6 +28,11 @@ The current workflows predate the normalized Evaluation Result contract:
 
 Until G0 and the `evaluation-contract` ticket are complete, inspect individual
 job conclusions and artifacts.
+
+For Trivy and Semgrep, the scanner-outcome adapter currently validates SARIF
+and reports `complete`/`error`, `findings`/`no-findings`, and
+`pass`/`fail`/`error` at the step seam. The parent workflow does not yet
+aggregate those values into one authoritative Evaluation Result.
 
 ## Target Completion Status
 

@@ -21,6 +21,8 @@ on:
       - scripts/test-workflow-security.sh
       - scripts/check-baseline-no-exec.sh
       - scripts/test-baseline-no-exec.sh
+      - scripts/check-scanner-gates.sh
+      - scripts/test-scanner-outcome.sh
   push:
     branches: [main]
     paths:
@@ -42,6 +44,8 @@ on:
       - scripts/test-workflow-security.sh
       - scripts/check-baseline-no-exec.sh
       - scripts/test-baseline-no-exec.sh
+      - scripts/check-scanner-gates.sh
+      - scripts/test-scanner-outcome.sh
   workflow_dispatch:
 
 permissions:
@@ -79,6 +83,15 @@ jobs:
 
       - name: Test malicious lifecycle-hook fixture
         run: bash scripts/test-baseline-no-exec.sh
+
+      - name: Validate scanner gate forwarding
+        run: bash scripts/check-scanner-gates.sh
+
+      - name: Test scanner outcome semantics
+        run: bash scripts/test-scanner-outcome.sh
+
+      - name: Validate shell scripts
+        run: shellcheck scripts/*.sh actions/*/*.sh actions/*/scripts/*.sh
 
       - name: Validate workflow and example syntax
         # actionlint v1.7.12, pinned to the release commit.

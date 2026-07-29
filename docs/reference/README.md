@@ -27,6 +27,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 
 - [AI code-review metadata](../../actions/ai-code-review/action.yml)
 - [AI result schema](../../actions/ai-code-review/scripts/schema.json)
+- [Scanner outcome adapter](../../actions/scanner-outcome/action.yml)
 
 ## Prompts
 

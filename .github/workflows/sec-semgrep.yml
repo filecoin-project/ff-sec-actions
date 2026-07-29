@@ -26,6 +26,11 @@ on:
         type: boolean
         required: false
         default: false
+      community-blocking:
+        description: Fail the job on community-rule findings.
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   semgrep:
@@ -43,16 +48,26 @@ jobs:
           persist-credentials: false
 
       - name: Run Semgrep (custom rules)
+        id: custom-scan
         if: hashFiles(inputs.custom-config) != ''
         run: |
           semgrep scan \
             --config "${{ inputs.custom-config }}" \
             --sarif --output semgrep-custom.sarif \
-            --error \
             --verbose
-        continue-on-error: ${{ !inputs.blocking }}
+        continue-on-error: true
+
+      - name: Evaluate custom-rule outcome
+        if: always() && hashFiles(inputs.custom-config) != ''
+        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@main
+        with:
+          scanner-name: semgrep-custom
+          scanner-outcome: ${{ steps.custom-scan.outcome }}
+          result-file: semgrep-custom.sarif
+          blocking: ${{ inputs.blocking }}
 
       - name: Run Semgrep (community rules — advisory)
+        id: community-scan
         if: always() && inputs.community-configs != ''
         shell: bash
         env:
@@ -67,7 +82,16 @@ jobs:
             --metrics=off \
             --sarif --output semgrep-community.sarif \
             --verbose
-        continue-on-error: true # Community rules may be noisy
+        continue-on-error: true
+
+      - name: Evaluate community-rule outcome
+        if: always() && inputs.community-configs != ''
+        uses: filecoin-project/ff-sec-actions/actions/scanner-outcome@main
+        with:
+          scanner-name: semgrep-community
+          scanner-outcome: ${{ steps.community-scan.outcome }}
+          result-file: semgrep-community.sarif
+          blocking: ${{ inputs.community-blocking }}
 
       - name: Upload custom-rule results
         if: always() && hashFiles('semgrep-custom.sarif') != ''

@@ -20,7 +20,8 @@ already been remediated.
 | SR4 | T8 | Fork secret-scanning fixture with no configured secrets | Positive | Detection completes and finds the planted secret | UNTESTED |
 | SR4 | T11 | Observe DNS/HTTP destinations for baseline and external-analysis fixtures | Negative | Only declared destinations receive declared data | UNTESTED |
 | SR4 | T12 | Run prompt-injection corpus through AI review | Negative | Injection is reported/contained and findings require independent validation | UNTESTED |
-| SR5 | T10 | Force timeout, malformed SARIF, refusal, max tokens, and missing output | Negative | Each result is incomplete/error, never zero-findings complete | UNTESTED |
+| SR5 | T10 | `bash scripts/test-scanner-outcome.sh` with no findings, findings, tool error, and malformed SARIF | Positive/Negative | Findings obey policy; tool error and malformed evidence are always error | PASS |
+| SR5 | T10 | Force AI timeout, refusal, max tokens, and missing output | Negative | Each result is incomplete/error, never zero-findings complete | UNTESTED |
 | SR5 | T9, T10, T13 | Aggregate mixed result fixtures | Positive | One Evidence Bundle preserves status, findings, limitations, and policy | UNTESTED |
 | SR6 | T15 | Scan released examples/profiles for `self-hosted` and run a negative fixture | Negative | CI rejects self-hosted for baseline/untrusted evaluation | UNTESTED |
 
@@ -44,6 +45,6 @@ already been remediated.
 | SR2: Supply-chain immutability | 3 | 0 | 2 | 1 |
 | SR3: Fork/shared-state isolation | 3 | 0 | 0 | 3 |
 | SR4: Secrets/external transfer | 3 | 0 | 0 | 3 |
-| SR5: Evidence/completion | 2 | 0 | 0 | 2 |
+| SR5: Evidence/completion | 3 | 1 | 0 | 2 |
 | SR6: Runner isolation | 1 | 0 | 0 | 1 |
-| **Total** | **17** | **4** | **2** | **11** |
+| **Total** | **18** | **5** | **2** | **11** |

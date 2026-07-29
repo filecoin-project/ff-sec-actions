@@ -24,7 +24,7 @@ inventory-only: `legacy-mixed` and `control-repository-ci`.
 
 This work identifies 15 threats: 3 critical, 11 high, and 1 medium. None are
 accepted; T1, T3, and T4 are now mitigated. The validation matrix currently has
-4 passing tests, 2 known failures, and 11 untested security tests. Consequently,
+5 passing tests, 2 known failures, and 11 untested security tests. Consequently,
 this repository remains pre-v1 and must not
 claim that its current umbrella is a safe ecosystem baseline.
 
@@ -141,9 +141,9 @@ effectiveness remain necessary.
 | SR2 supply-chain immutability | 3 | 0 | 2 | 1 |
 | SR3 fork/shared-state isolation | 3 | 0 | 0 | 3 |
 | SR4 secrets/external transfer | 3 | 0 | 0 | 3 |
-| SR5 evidence/completion | 2 | 0 | 0 | 2 |
+| SR5 evidence/completion | 3 | 1 | 0 | 2 |
 | SR6 runner isolation | 1 | 0 | 0 | 1 |
-| **Total** | **17** | **4** | **2** | **11** |
+| **Total** | **18** | **5** | **2** | **11** |
 
 The passing contracts are:
 
@@ -152,6 +152,8 @@ bash scripts/check-execution-trust.sh
 bash scripts/check-workflow-security.sh
 bash scripts/test-workflow-security.sh
 bash scripts/test-baseline-no-exec.sh
+bash scripts/check-scanner-gates.sh
+bash scripts/test-scanner-outcome.sh
 ```
 
 It proves that every workflow, example, and action metadata file is classified
@@ -173,13 +175,15 @@ control design and threat-disposition matrix.
 - AI consumer review avoids Consumer Project checkout and project-code
   execution, which provides a viable external-analysis boundary to harden.
 - Current workflows use GitHub-hosted rather than self-hosted runners.
+- Scanner findings, tool failure, and malformed SARIF now have independently
+  tested outcomes and reviewed umbrella gate forwarding.
 - The documentation CI now executes the classification contract, so new or
   changed surfaces cannot silently bypass inventory.
 
 ### Priority Remediation Order
 
-1. **G0-04/G0-05/G0-06:** make findings, operational failure, and missing
-   secrets honest; provide secretless fork-capable secret detection.
+1. **G0-05/G0-06:** make missing coverage and secret-dependent skips explicit;
+   provide secretless fork-capable secret detection.
 2. **G0-07/G0-09:** evaluate consumer workflow security and make one pin cover
    the complete action/workflow/container graph.
 3. **G0-10:** prove token, secret, OIDC, cache, artifact, and checkout isolation
