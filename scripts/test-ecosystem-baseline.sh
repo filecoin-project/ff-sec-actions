@@ -29,6 +29,10 @@ grep -Eq 'uses: filecoin-project/ff-sec-actions/actions/zizmor-scan@[0-9a-f]{40}
   || fail "workflow-definition evaluation does not use the immutable permission-free adapter"
 grep -Fq "tool-outcome: \${{ steps.scan.outputs.scanner-outcome }}" "$actions_workflow" \
   || fail "workflow-definition evaluation does not forward the real scanner outcome"
+grep -Eq '^[[:space:]]+blocking:[[:space:]]*$' "$actions_workflow" \
+  || fail "workflow-definition findings do not expose an advisory-to-blocking input"
+grep -Fq "blocking: \${{ inputs.blocking }}" "$actions_workflow" \
+  || fail "workflow-definition findings do not honor the consumer-selected gate"
 if grep -Eq 'advanced-security:[[:space:]]+true|zizmorcore/zizmor-action@' "$actions_workflow"; then
   fail "workflow-definition evaluation still couples SARIF creation to privileged upload"
 fi
