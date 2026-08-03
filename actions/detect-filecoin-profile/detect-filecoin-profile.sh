@@ -140,6 +140,21 @@ emit_detection() {
     }' >> "$detections_file"
 }
 
+emit_storage_provider_detection_if_matched() {
+  local component_path="$1"
+  local evidence_path="$2"
+  local project_file="$3"
+
+  if ! LC_ALL=C grep -Eiq \
+    '(lotus-miner|boostd?|curio|venus-sealer|FULLNODE_API_INFO|MINER_API_INFO|LOTUS_(API|MINER)|FIL_PROOFS_PARAMETER_CACHE)' \
+    "$project_file"; then
+    return 1
+  fi
+
+  emit_detection "$component_path" "storage-provider-infrastructure" "high" \
+    "$evidence_path" "configures Filecoin storage-provider software or API authority"
+}
+
 while IFS= read -r -d '' project_file; do
   file_name="$(basename "$project_file")"
   file_path="$(relative_path "$project_file")"
@@ -205,23 +220,15 @@ while IFS= read -r -d '' project_file; do
       emit_candidate "$component_path" "$file_path"
       emit_detection "$component_path" "infrastructure" "medium" "$file_path" \
         "contains Terraform infrastructure configuration"
-      if LC_ALL=C grep -Eiq \
-        '(lotus-miner|boostd?|curio|venus-sealer|FULLNODE_API_INFO|MINER_API_INFO|LOTUS_(API|MINER)|FIL_PROOFS_PARAMETER_CACHE)' \
-        "$project_file"; then
-        emit_detection "$component_path" "storage-provider-infrastructure" "high" \
-          "$file_path" "configures Filecoin storage-provider software or API authority"
-      fi
+      emit_storage_provider_detection_if_matched \
+        "$component_path" "$file_path" "$project_file" || true
       ;;
     Dockerfile|Dockerfile.*)
       emit_candidate "$component_path" "$file_path"
       emit_detection "$component_path" "infrastructure" "medium" "$file_path" \
         "contains container build infrastructure"
-      if LC_ALL=C grep -Eiq \
-        '(lotus-miner|boostd?|curio|venus-sealer|FULLNODE_API_INFO|MINER_API_INFO|LOTUS_(API|MINER)|FIL_PROOFS_PARAMETER_CACHE)' \
-        "$project_file"; then
-        emit_detection "$component_path" "storage-provider-infrastructure" "high" \
-          "$file_path" "configures Filecoin storage-provider software or API authority"
-      fi
+      emit_storage_provider_detection_if_matched \
+        "$component_path" "$file_path" "$project_file" || true
       ;;
     *.yml|*.yaml)
       infrastructure_reason=""
@@ -230,12 +237,9 @@ while IFS= read -r -d '' project_file; do
         "$project_file"; then
         infrastructure_reason="contains Kubernetes workload or network configuration"
       fi
-      if LC_ALL=C grep -Eiq \
-        '(lotus-miner|boostd?|curio|venus-sealer|FULLNODE_API_INFO|MINER_API_INFO|LOTUS_(API|MINER)|FIL_PROOFS_PARAMETER_CACHE)' \
-        "$project_file"; then
+      if emit_storage_provider_detection_if_matched \
+        "$component_path" "$file_path" "$project_file"; then
         emit_candidate "$component_path" "$file_path"
-        emit_detection "$component_path" "storage-provider-infrastructure" "high" \
-          "$file_path" "configures Filecoin storage-provider software or API authority"
       elif [ -n "$infrastructure_reason" ]; then
         emit_candidate "$component_path" "$file_path"
       else
