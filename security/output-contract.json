@@ -135,7 +135,7 @@
     },
     "actions/detect-filecoin-profile/action.yml": {
       "mode": "profile-detection",
-      "required_outputs": ["result-file", "summary", "profiles-json", "component-count", "coverage-gaps-count"],
+      "required_outputs": ["completion", "result-file", "summary", "profiles-json", "component-count", "coverage-gaps-count"],
       "consumer_surface": "Path-scoped profile detection JSON, readable component table, job summary, and coverage-gap annotations",
       "remediation_surface": "Unsupported components name their path and direct maintainers to select a profile manually or add a fixture-backed detector rule"
     },

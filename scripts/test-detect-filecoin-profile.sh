@@ -38,7 +38,7 @@ jq -e '
 ' "$profile_catalog" >/dev/null \
   || fail "the profile catalog does not expose the detector's versioned profile contract"
 
-for output in result-file summary profiles-json component-count coverage-gaps-count; do
+for output in completion result-file summary profiles-json component-count coverage-gaps-count; do
   awk '
     /^outputs:[[:space:]]*$/ { in_outputs = 1; next }
     in_outputs && /^[^[:space:]#]/ { in_outputs = 0 }
@@ -83,8 +83,9 @@ jq -e '
 
 grep -Fq 'profiles_json=[{"id":"go-node","paths":["."]}]' "$lotus_outputs" \
   || fail "the selected profile was not exposed through the action interface"
-# shellcheck disable=SC2016 # Markdown backticks are literal table syntax.
-grep -Fq '| `.` | Go node | high |' "$lotus_summary" \
+grep -Fq 'completion=complete' "$lotus_outputs" \
+  || fail "successful detection did not expose an explicit completion status"
+grep -Fq '| <code>.</code> | Go node | high |' "$lotus_summary" \
   || fail "the readable profile table did not describe the selected component"
 cmp -s "$lotus_summary" "$lotus_job_summary" \
   || fail "the readable table was not appended to the GitHub job summary"
@@ -102,7 +103,7 @@ jq -e '
   and (.components[0].profiles | map(.id) == ["fvm-actor"])
   and (.components[0].profiles[0].evidence | any(
     .path == "Cargo.toml"
-    and .reason == "declares an FVM actor SDK or shared runtime dependency"
+    and .reason == "declares an FVM actor SDK or actor runtime dependency"
   ))
 ' "$fvm_result" >/dev/null \
   || fail "an FVM Rust project was not classified with manifest evidence"
@@ -138,7 +139,7 @@ jq -e '
   and (.components[0].profiles | map(.id) == ["service"])
   and (.components[0].profiles[0].evidence | any(
     .path == "package.json"
-    and .reason == "declares a network service runtime or framework"
+    and .reason == "declares a network service framework"
   ))
 ' "$service_result" >/dev/null \
   || fail "a service application was not classified from runtime manifest evidence"
@@ -212,10 +213,92 @@ jq -e '
 ' "$mixed_result" >/dev/null \
   || fail "a mixed repository did not preserve path-scoped profiles and unsupported gaps"
 
-grep -Fq '::warning file=unsupported-tool::No supported Filecoin Security Profile was detected' "$mixed_log" \
+grep -Fq '::warning file=unsupported-tool::Filecoin Security Profile coverage gap: recognized component has no supported Filecoin Security Profile.' "$mixed_log" \
   || fail "the unsupported component did not produce a coverage-gap annotation"
-# shellcheck disable=SC2016 # Markdown backticks are literal table syntax.
-grep -Fq '| `unsupported-tool` | Unsupported | n/a |' "$test_directory/mixed.md" \
+grep -Fq '| <code>unsupported-tool</code> | Unsupported | n/a |' "$test_directory/mixed.md" \
   || fail "the readable table hid the unsupported component"
+
+ambiguous_result="$test_directory/ambiguous.json"
+REPOSITORY_PATH="$fixture_root/ambiguous-go" \
+RESULT_FILE="$ambiguous_result" \
+SUMMARY_FILE="$test_directory/ambiguous.md" \
+GITHUB_OUTPUT="$test_directory/ambiguous.outputs" \
+  bash "$detector" >/dev/null
+
+jq -e '
+  (.components == [{
+    "path": ".",
+    "status": "ambiguous",
+    "profiles": [],
+    "evidence": [{
+      "path": "go.mod",
+      "reason": "go-state-types is used by nodes, libraries, and tooling"
+    }]
+  }])
+  and (.coverage.gaps == [{
+    "path": ".",
+    "reason": "component signals do not identify one supported Filecoin Security Profile",
+    "remediation": "select a profile manually or add a stronger fixture-backed detector rule"
+  }])
+' "$ambiguous_result" >/dev/null \
+  || fail "a weak Filecoin dependency signal was guessed instead of reported as ambiguous"
+
+unknown_result="$test_directory/unknown.json"
+REPOSITORY_PATH="$fixture_root/unknown-repository" \
+RESULT_FILE="$unknown_result" \
+SUMMARY_FILE="$test_directory/unknown.md" \
+GITHUB_OUTPUT="$test_directory/unknown.outputs" \
+  bash "$detector" >/dev/null
+
+jq -e '
+  (.components == [{
+    "path": ".",
+    "status": "unsupported",
+    "profiles": [],
+    "evidence": [{
+      "path": ".",
+      "reason": "no recognized project or infrastructure marker was found"
+    }]
+  }])
+  and (.coverage.gaps | length == 1)
+' "$unknown_result" >/dev/null \
+  || fail "a repository with no recognized markers did not produce an explicit root coverage gap"
+
+solidity_result="$test_directory/generic-solidity.json"
+REPOSITORY_PATH="$fixture_root/generic-solidity" \
+RESULT_FILE="$solidity_result" \
+SUMMARY_FILE="$test_directory/generic-solidity.md" \
+GITHUB_OUTPUT="$test_directory/generic-solidity.outputs" \
+  bash "$detector" >/dev/null
+jq -e '
+  (.components[0].status == "unsupported")
+  and (.components[0].evidence | any(.path == "Token.sol"))
+  and (.coverage.gaps | length == 1)
+' "$solidity_result" >/dev/null \
+  || fail "source-only generic Solidity was silently omitted from unsupported coverage"
+
+catalog_override="$test_directory/profile-catalog.json"
+jq '(.profiles[] | select(.id == "go-node").label) = "Catalog-owned Go node"' \
+  "$profile_catalog" > "$catalog_override"
+PROFILE_CATALOG="$catalog_override" \
+REPOSITORY_PATH="$fixture_root/lotus-node" \
+RESULT_FILE="$test_directory/catalog-result.json" \
+SUMMARY_FILE="$test_directory/catalog-summary.md" \
+GITHUB_OUTPUT="$test_directory/catalog.outputs" \
+  bash "$detector" >/dev/null
+grep -Fq '| Catalog-owned Go node |' "$test_directory/catalog-summary.md" \
+  || fail "profile labels were duplicated in implementation instead of read from the catalog"
+
+unsafe_repository="$test_directory/unsafe-path-repository"
+unsafe_component='component|tick`name'
+mkdir -p "$unsafe_repository/$unsafe_component"
+cp "$fixture_root/lotus-node/go.mod" "$unsafe_repository/$unsafe_component/go.mod"
+REPOSITORY_PATH="$unsafe_repository" \
+RESULT_FILE="$test_directory/unsafe-path.json" \
+SUMMARY_FILE="$test_directory/unsafe-path.md" \
+GITHUB_OUTPUT="$test_directory/unsafe-path.outputs" \
+  bash "$detector" >/dev/null
+grep -Fq '<code>component&#124;tick&#96;name</code>' "$test_directory/unsafe-path.md" \
+  || fail "an untrusted component path was not escaped in the Markdown summary"
 
 printf 'profile detection tests passed.\n'

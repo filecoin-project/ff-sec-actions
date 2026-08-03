@@ -16,6 +16,9 @@ inputs:
     default: ""
 
 outputs:
+  completion:
+    description: complete when detection and result rendering finish; operational failures fail the action.
+    value: ${{ steps.detect.outputs.completion }}
   result-file:
     description: Path to the machine-readable profile detection result.
     value: ${{ steps.detect.outputs.result_file }}

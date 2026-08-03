@@ -13,14 +13,14 @@
       "id": "fvm-actor",
       "label": "FVM actor",
       "description": "Rust crates that implement or depend on Filecoin Virtual Machine actor interfaces.",
-      "confidence_basis": "The Cargo manifest declares an FVM SDK, shared runtime, or actor runtime dependency.",
+      "confidence_basis": "The Cargo manifest declares an FVM SDK or actor runtime dependency; fvm_shared alone is ambiguous.",
       "planned_evaluations": ["sec-filecoin-secrets", "sec-filecoin-protocol", "sec-fvm-actors"]
     },
     {
       "id": "go-node",
       "label": "Go node",
-      "description": "Lotus-, Venus-, or Filecoin-state-aware Go node software.",
-      "confidence_basis": "The Go module declares a Lotus, Venus, or Filecoin state-types dependency.",
+      "description": "Lotus- or Venus-based Go node software.",
+      "confidence_basis": "The Go module declares a Lotus or Venus dependency; go-state-types alone is ambiguous.",
       "planned_evaluations": ["sec-filecoin-secrets", "sec-filecoin-rpc", "sec-filecoin-protocol"]
     },
     {
@@ -34,7 +34,7 @@
       "id": "service",
       "label": "Service application",
       "description": "Network-facing service applications and APIs in the Filecoin ecosystem.",
-      "confidence_basis": "A package manifest declares a recognized network service framework or runtime entry point.",
+      "confidence_basis": "A package manifest declares a recognized network service framework; a start script alone is ambiguous.",
       "planned_evaluations": ["sec-filecoin-secrets", "sec-filecoin-rpc", "sec-filecoin-protocol"]
     },
     {
