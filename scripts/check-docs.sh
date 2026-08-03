@@ -71,6 +71,7 @@ required_pages=(
   "docs/reference/release-integrity.md"
   "docs/reference/fork-pr-safety.md"
   "docs/reference/profile-detection.md"
+  "docs/workflows/README.md"
   "docs/DOCUMENTATION-ARCHITECTURE.md"
   "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md"
   "docs/decisions/distribution-model.md"
@@ -94,6 +95,7 @@ required_pages=(
   "scripts/check-release-graph.sh"
   "scripts/check-fork-pr.sh"
   "scripts/check-workflow-security.sh"
+  "scripts/check-workflow-docs.sh"
   "scripts/roadmap.sh"
   "scripts/test-roadmap.sh"
   "scripts/test-baseline-no-exec.sh"
@@ -111,6 +113,7 @@ required_pages=(
   "scripts/test-scanner-outcome.sh"
   "scripts/test-output-contract.sh"
   "scripts/test-workflow-security.sh"
+  "scripts/test-workflow-docs.sh"
   "test/fixtures/evaluation-result/valid/complete.json"
   "test/fixtures/evaluation-result/invalid/unknown-field.json"
   "threat-model/execution-trust/threat-model-report.md"
@@ -125,12 +128,15 @@ if [ -f "README.md" ]; then
   require_text "README.md" "(docs/maintainers/README.md)"
   require_text "README.md" "(docs/operators/README.md)"
   require_text "README.md" "(docs/README.md)"
+  require_text "README.md" "(docs/workflows/README.md)"
 fi
 
 if [ -f ".github/workflows/docs.yml" ]; then
   require_text ".github/workflows/docs.yml" "bash scripts/check-docs.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/check-workflow-security.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/test-workflow-security.sh"
+  require_text ".github/workflows/docs.yml" "bash scripts/check-workflow-docs.sh"
+  require_text ".github/workflows/docs.yml" "bash scripts/test-workflow-docs.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/check-baseline-no-exec.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/test-baseline-no-exec.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/check-scanner-gates.sh"
@@ -157,6 +163,8 @@ fi
 if [ -f ".github/workflows/g0-contract.yml" ]; then
   require_text ".github/workflows/g0-contract.yml" "bash scripts/check-workflow-security.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-workflow-security.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/check-workflow-docs.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-workflow-docs.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/check-baseline-no-exec.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-baseline-no-exec.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/check-scanner-gates.sh"

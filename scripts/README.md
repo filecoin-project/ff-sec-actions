@@ -50,3 +50,9 @@ action to declare a consumer and remediation surface in
 evaluations must expose a readable summary, source annotations, actionable
 remediation, a stable Evaluation Result artifact, and a named raw-evidence
 artifact. Its negative suite is `bash scripts/test-output-contract.sh`.
+
+`check-workflow-docs.sh` requires exactly one reviewable Markdown contract in
+[`docs/workflows/`](../docs/workflows/README.md) for every reusable
+`workflow_call` entrypoint. It checks lifecycle metadata, required consumer
+sections, source/index links, and every declared workflow input and output. Run
+its rejecting fixture suite with `bash scripts/test-workflow-docs.sh`.

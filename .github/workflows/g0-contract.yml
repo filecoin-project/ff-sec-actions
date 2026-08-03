@@ -23,7 +23,10 @@ jobs:
           persist-credentials: false
 
       - name: Validate documentation contract
-        run: bash scripts/check-docs.sh
+        run: |
+          bash scripts/check-docs.sh
+          bash scripts/check-workflow-docs.sh
+          bash scripts/test-workflow-docs.sh
 
       - name: Validate roadmap contract
         run: bash scripts/test-roadmap.sh

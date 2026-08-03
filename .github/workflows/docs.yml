@@ -21,6 +21,8 @@ on:
       - scripts/check-execution-trust.sh
       - scripts/check-workflow-security.sh
       - scripts/test-workflow-security.sh
+      - scripts/check-workflow-docs.sh
+      - scripts/test-workflow-docs.sh
       - scripts/check-baseline-no-exec.sh
       - scripts/test-baseline-no-exec.sh
       - scripts/check-scanner-gates.sh
@@ -64,6 +66,8 @@ on:
       - scripts/check-execution-trust.sh
       - scripts/check-workflow-security.sh
       - scripts/test-workflow-security.sh
+      - scripts/check-workflow-docs.sh
+      - scripts/test-workflow-docs.sh
       - scripts/check-baseline-no-exec.sh
       - scripts/test-baseline-no-exec.sh
       - scripts/check-scanner-gates.sh
@@ -106,6 +110,11 @@ jobs:
 
       - name: Validate documentation navigation and local links
         run: bash scripts/check-docs.sh
+
+      - name: Validate reusable workflow documentation
+        run: |
+          bash scripts/check-workflow-docs.sh
+          bash scripts/test-workflow-docs.sh
 
       - name: Test machine-readable roadmap state
         run: bash scripts/test-roadmap.sh

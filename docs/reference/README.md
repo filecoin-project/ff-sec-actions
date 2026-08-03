@@ -19,21 +19,22 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 
 ## Reusable Workflows
 
-- [AI code review](../../.github/workflows/ai-code-review.yml)
-- [Security pipeline](../../.github/workflows/security-pipeline.yml)
-- [Evaluation pipeline vertical slice](../../.github/workflows/evaluation-pipeline.yml)
-- [Ecosystem Baseline](../../.github/workflows/ecosystem-baseline.yml)
-- [GitHub Actions security](../../.github/workflows/sec-actions.yml)
-- [CodeQL](../../.github/workflows/sec-codeql.yml)
-- [Dependency scan](../../.github/workflows/sec-dependencies.yml)
-- [Dependency review](../../.github/workflows/sec-dependency-review.yml)
-- [IaC scan](../../.github/workflows/sec-iac.yml)
-- [License scan](../../.github/workflows/sec-licenses.yml)
-- [SBOM](../../.github/workflows/sec-sbom.yml)
-- [Scorecard](../../.github/workflows/sec-scorecard.yml)
-- [Secret scan](../../.github/workflows/sec-secrets.yml)
-- [Semgrep](../../.github/workflows/sec-semgrep.yml)
-- [Slither](../../.github/workflows/sec-slither.yml)
+- [Consumable Workflow Catalog](../workflows/README.md)
+- [AI code review](../workflows/ai-code-review.md)
+- [Security pipeline](../workflows/security-pipeline.md)
+- [Evaluation pipeline vertical slice](../workflows/evaluation-pipeline.md)
+- [Ecosystem Baseline](../workflows/ecosystem-baseline.md)
+- [GitHub Actions security](../workflows/sec-actions.md)
+- [CodeQL](../workflows/sec-codeql.md)
+- [Dependency scan](../workflows/sec-dependencies.md)
+- [Dependency review](../workflows/sec-dependency-review.md)
+- [IaC scan](../workflows/sec-iac.md)
+- [License scan](../workflows/sec-licenses.md)
+- [SBOM](../workflows/sec-sbom.md)
+- [Scorecard](../workflows/sec-scorecard.md)
+- [Secret scan](../workflows/sec-secrets.md)
+- [Semgrep](../workflows/sec-semgrep.md)
+- [Slither](../workflows/sec-slither.md)
 
 ## Composite Actions
 

@@ -17,6 +17,28 @@ Consumer Project:
 - [Troubleshooting](consumers/troubleshooting.md)
 - [Legacy consumer-documentation entry point](CONSUMING.md)
 
+## Consumable Workflows
+
+Use the [Consumable Workflow Catalog](workflows/README.md) to compare authority,
+configuration, evidence, completion, gating, and limitations before adopting a
+reusable workflow.
+
+- [AI Code Review](workflows/ai-code-review.md)
+- [Ecosystem Baseline](workflows/ecosystem-baseline.md)
+- [Evaluation Pipeline](workflows/evaluation-pipeline.md)
+- [GitHub Actions Security](workflows/sec-actions.md)
+- [CodeQL](workflows/sec-codeql.md)
+- [Dependency Scan](workflows/sec-dependencies.md)
+- [Dependency Review](workflows/sec-dependency-review.md)
+- [IaC Scan](workflows/sec-iac.md)
+- [License Compliance](workflows/sec-licenses.md)
+- [SBOM Generation](workflows/sec-sbom.md)
+- [OpenSSF Scorecard](workflows/sec-scorecard.md)
+- [Secret Scan](workflows/sec-secrets.md)
+- [Semgrep SAST](workflows/sec-semgrep.md)
+- [Slither](workflows/sec-slither.md)
+- [Security Pipeline](workflows/security-pipeline.md)
+
 ## Platform Maintainers
 
 Use the [Platform Maintainer guide](maintainers/README.md) when changing or

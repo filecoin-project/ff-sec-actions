@@ -23,6 +23,7 @@ Start with the [Consumer quickstart](docs/consumers/quickstart.md) to choose a
 workflow, understand its authority, and interpret the first result.
 
 - [Copy the read-only Ecosystem Baseline](examples/consumer-ecosystem-baseline.yml)
+- [Review every consumable workflow contract](docs/workflows/README.md)
 - [Choose a security profile](docs/consumers/choose-a-profile.md)
 - [Understand results and merge gates](docs/consumers/understand-results.md)
 - [Configure permissions and secrets](docs/consumers/permissions-and-secrets.md)
