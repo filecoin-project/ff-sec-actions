@@ -237,6 +237,13 @@
         }
       }
     },
+    "examples/consumer-profile-detection.yml": {
+      "detect-profiles": {
+        "permissions": {
+          "contents": "read"
+        }
+      }
+    },
     "examples/consumer-manual-ai-code-review.yml": {
       "review": {
         "permissions": {

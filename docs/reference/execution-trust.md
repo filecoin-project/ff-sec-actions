@@ -112,6 +112,7 @@ repository configuration as well as this repository's source contract.
 | `.github/workflows/security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Keep nested pins immutable; replace the mixed umbrella with a strict baseline and separate opt-in privileged jobs. |
 | `examples/consumer-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |
 | `examples/consumer-ecosystem-baseline.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Advance the profile commit only after release qualification and pilot evidence. |
+| `examples/consumer-profile-detection.yml` | `ecosystem-baseline` | `ecosystem-baseline` | Advance the detector commit only after fixtures, output contracts, and consumer evidence pass review. |
 | `examples/consumer-manual-ai-code-review.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Replace the pilot SHA only with a reviewed release SHA. |
 | `examples/consumer-security-pipeline.yml` | `legacy-mixed` | `ecosystem-baseline` | Keep the graph pin immutable; publish a secretless baseline and separate privileged opt-ins. |
 | `actions/ai-code-review/action.yml` | `privileged-external-analysis` | `privileged-external-analysis` | Add bounded context, privacy, completion, and result contracts while preserving no checkout/execution. |

@@ -2,46 +2,38 @@
 
 **Stability:** pre-v1 composite-action contract
 
-**Trust tier:** `ecosystem-baseline`; local, secretless, and non-executing
+**Introduced:** detector and result schema `0.1.0`
 
-The detector inspects repository structure, manifests, declared dependencies,
-Filecoin imports, and infrastructure configuration. It does not install
-dependencies, invoke compilers, load repository configuration, or execute
-Consumer Project code.
+**Owner:** Filecoin ecosystem security platform maintainers; a formal
+`CODEOWNERS` path remains required before public v1.
 
-## Consumer Usage
+The detector classifies path-scoped project components and records uncertainty
+without executing Consumer Project code.
 
-Check out the Consumer Project without persisted credentials, then invoke the
-detector at a reviewed full commit SHA:
+## Authority And Prerequisites
 
-```yaml
-permissions:
-  contents: read
+| Concern | Contract |
+|---|---|
+| Caller permission | `contents: read` for checkout |
+| Secrets | None read or accepted |
+| Network | None from the detector; GitHub downloads the pinned action and optional artifact action |
+| Consumer code execution | Forbidden; no install, build, compiler, repository configuration, or project command |
+| Runner and cache | GitHub-hosted runner; no cache |
+| Required runner tools | Bash, `find`, `grep`, and `jq`, all present on GitHub-hosted Ubuntu runners |
 
-steps:
-  - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-    with:
-      persist-credentials: false
+Checkout credentials must not persist. Repository files, paths, manifests, and
+configuration are treated as untrusted data.
 
-  - name: Detect Filecoin Security Profiles
-    id: profiles
-    uses: filecoin-project/ff-sec-actions/actions/detect-filecoin-profile@<reviewed-full-commit-sha>
-    with:
-      result-file: ${{ runner.temp }}/profile-detection.json
-      summary-file: ${{ runner.temp }}/profile-detection-summary.md
+## Immutable Consumption
 
-  - name: Upload profile evidence
-    uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-    with:
-      name: filecoin-profile-detection
-      path: |
-        ${{ steps.profiles.outputs.result-file }}
-        ${{ steps.profiles.outputs.summary }}
-      if-no-files-found: error
-```
+Copy the complete
+[`consumer-profile-detection.yml`](../../examples/consumer-profile-detection.yml)
+example. It selects the reviewed detector implementation at
+`d4bd966bc0b5e29d0d23dc51112bcf1e67398957`, pins every external action, grants
+read-only contents access, and uploads the result and summary.
 
-Replace the placeholder only with a reviewed commit that contains this action.
-The Control Repository remains pre-v1 and does not publish a moving `v1` tag.
+The Control Repository remains pre-v1. Do not replace the full commit with a
+moving branch or an unpublished `v1` tag.
 
 ## Inputs
 
@@ -51,53 +43,77 @@ The Control Repository remains pre-v1 and does not publish a moving `v1` tag.
 | `result-file` | Runner temporary directory | Machine-readable result destination |
 | `summary-file` | Runner temporary directory | Readable component/profile table destination |
 
+Empty result destinations resolve inside `runner.temp`, outside the untrusted
+checkout. Callers that override them own the safety of those paths.
+
 ## Outputs
 
 | Output | Meaning |
 |---|---|
+| `completion` | `complete` after discovery, classification, result rendering, and summary rendering finish |
 | `result-file` | Path to the complete JSON result |
 | `summary` | Path to the Markdown component/profile table |
 | `profiles-json` | Compact array of selected profile IDs and path scopes |
-| `component-count` | Number of recognized components, including unsupported ones |
-| `coverage-gaps-count` | Number of recognized components with no supported profile |
+| `component-count` | Number of recognized components, including ambiguous and unsupported components |
+| `coverage-gaps-count` | Number of ambiguous or unsupported components requiring review |
 
-The action also appends the table to the GitHub job summary and emits one
-warning annotation per unsupported component.
+The action appends the escaped table to the GitHub job summary and emits one
+warning annotation per coverage gap. Profile labels come from the versioned
+catalog; the detector fails if implementation references an unknown profile.
 
-## Detection Result
+## Completion And Failure Behavior
 
-The version `1` document contains:
+A successful invocation emits `completion=complete`, even when coverage gaps
+exist. Gaps describe classification coverage and must not be confused with an
+operationally incomplete run. Consumers decide whether a nonzero
+`coverage-gaps-count` is advisory or requires manual review before merge.
 
-- detector name and version;
-- explicit completion status and target;
-- components with path, classification status, selected profiles, confidence,
-  evidence paths, and selection reasons;
-- selected profiles grouped by their component paths;
-- included paths, coverage gaps, and known limitations.
+An invalid repository path, missing/invalid catalog, missing `jq`, filesystem
+failure, or rendering error exits nonzero. The action does not emit a clean or
+complete result after such an operational failure. It has no `skipped` mode and
+does not convert ambiguity into success without a visible gap.
 
-Consumers should route later evaluations from `profiles-json`, but preserve and
-upload `result-file` as the authoritative evidence. A zero
-`coverage-gaps-count` does not prove every directory was understood: the result
-always records that directories without recognized project or infrastructure
-markers may require manual selection.
+## Result Model
 
-## Supported Profiles
+The version `1` JSON document contains:
 
-| Profile | Current high-value signals |
-|---|---|
-| `go-node` | Lotus, Venus, or Filecoin state dependencies in `go.mod` |
-| `fvm-actor` | FVM SDK, shared runtime, or actor runtime dependencies in `Cargo.toml` |
-| `fevm-contract` | Filecoin Solidity libraries, actor APIs, or precompile addresses |
-| `service` | Recognized network service frameworks or runtime entry points |
-| `infrastructure` | Terraform, Kubernetes workload, or container configuration |
-| `storage-application` | Recognized Filecoin or IPFS storage client dependencies |
-| `storage-provider-infrastructure` | Lotus Miner, Boost, Curio, Venus Sealer, privileged API, or proof-cache configuration |
+- detector name/version, target, and completion;
+- components with `classified`, `ambiguous`, or `unsupported` status;
+- selected profiles with confidence, path-scoped evidence, and reasons;
+- ambiguity evidence for weak signals shared by several project types;
+- selected profiles grouped by component path; and
+- included paths, coverage gaps, remediation, and limitations.
 
-The machine-readable source is
-[`profiles/filecoin-project-profiles.json`](../../profiles/filecoin-project-profiles.json).
-Signals are intentionally conservative. A recognized manifest without a
-supported match becomes an `unsupported` component rather than a guessed
-profile.
+Strong signals currently cover Lotus/Venus nodes, FVM actor SDK/runtime crates,
+Filecoin-aware Solidity, recognized network service frameworks, infrastructure,
+storage applications, and storage-provider infrastructure. Weak signals such
+as `go-state-types`, `fvm_shared`, or a package `start` script produce ambiguity
+instead of a guessed profile.
+
+The catalog at
+[`profiles/filecoin-project-profiles.json`](../../profiles/filecoin-project-profiles.json)
+is the source of truth for profile IDs, labels, descriptions, confidence basis,
+and planned evaluations. Detection patterns remain implementation logic covered
+by planted fixtures; narrative documentation does not duplicate them.
+
+## Events, Forks, And Artifacts
+
+The action supports pull requests, fork pull requests, pushes, schedules, and
+manual dispatches. Forks are safe because detection requires no secret, write
+permission, external request, or project execution.
+
+The action creates runner-local JSON and Markdown files. The executable example
+uploads both as `filecoin-profile-detection`. Artifact retention follows the
+Consumer Project repository's GitHub Actions retention setting unless the
+caller explicitly supplies `retention-days` to its upload step.
+
+## Compatibility And Deprecation
+
+The output names, result schema, profile IDs, and catalog version are pre-v1
+contracts. Removing or renaming them requires migration guidance and an
+immutable example-pin advance. There are no deprecated inputs or profile IDs in
+`0.1.0`. Additive detection signals still require fixtures because a new match
+can change a component from unsupported or ambiguous to classified.
 
 ## Maintainer Verification
 
@@ -105,11 +121,8 @@ profile.
 bash scripts/test-detect-filecoin-profile.sh
 bash scripts/check-output-contract.sh
 bash scripts/check-execution-trust.sh
+bash scripts/check-release-graph.sh
 ```
-
-New signals require a planted fixture, a stable reason string, a profile
-catalog update when applicable, and proof that unsupported components remain
-visible.
 
 ## Next
 

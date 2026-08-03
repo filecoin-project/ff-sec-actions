@@ -1,0 +1,38 @@
+# Profile: Filecoin Security Profile detection (pre-v1 pilot)
+# Expected: completion=complete; every unsupported or ambiguous component remains a visible coverage gap.
+name: Detect Filecoin Security Profiles
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  detect-profiles:
+    name: Detect Filecoin Security Profiles
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository without persisted credentials
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Detect path-scoped profiles and coverage gaps
+        id: profiles
+        uses: filecoin-project/ff-sec-actions/actions/detect-filecoin-profile@d4bd966bc0b5e29d0d23dc51112bcf1e67398957
+
+      - name: Upload durable profile-detection evidence
+        if: always() && steps.profiles.outputs.result-file != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: filecoin-profile-detection
+          path: |
+            ${{ steps.profiles.outputs.result-file }}
+            ${{ steps.profiles.outputs.summary }}
+          if-no-files-found: error

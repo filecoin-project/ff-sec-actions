@@ -51,6 +51,7 @@ required_pages=(
   "docs/consumers/quickstart.md"
   "docs/consumers/ecosystem-baseline.md"
   "examples/consumer-ecosystem-baseline.yml"
+  "examples/consumer-profile-detection.yml"
   "docs/consumers/choose-a-profile.md"
   "docs/consumers/understand-results.md"
   "docs/consumers/permissions-and-secrets.md"
@@ -193,6 +194,9 @@ fi
 if grep -REq '^[[:space:]-]*uses:.*@v1([[:space:]]|$)' examples; then
   report_error "consumer examples reference @v1, but the repository is explicitly pre-v1"
 fi
+
+require_text "examples/consumer-profile-detection.yml" \
+  "filecoin-project/ff-sec-actions/actions/detect-filecoin-profile@d4bd966bc0b5e29d0d23dc51112bcf1e67398957"
 
 if grep -REq '^[[:space:]-]*uses:.*ai-code-review@main([[:space:]]|$)' examples; then
   report_error "AI consumer examples must use a reviewed immutable pilot commit"

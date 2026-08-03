@@ -157,16 +157,18 @@ Source:
 [`actions/detect-filecoin-profile/action.yml`](../../actions/detect-filecoin-profile/action.yml)
 
 The secretless detector inspects repository files without executing Consumer
-Project code. It emits `result-file`, `summary`, `profiles-json`,
+Project code. It emits `completion`, `result-file`, `summary`, `profiles-json`,
 `component-count`, and `coverage-gaps-count`. Selected profiles are path-scoped
-and carry confidence, evidence, and reasons. Recognized components without a
-supported profile remain visible as coverage gaps and warning annotations.
+and carry confidence, evidence, and reasons. Ambiguous and unsupported
+components remain visible as coverage gaps and warning annotations.
 
 The current catalog covers Go nodes, FVM actors, FEVM contracts, services,
 general infrastructure, storage applications, and storage-provider
-infrastructure. The detector does not prove that unrecognized directories are
-covered; consumers must review the limitation in the JSON result and may select
-a profile manually. See the [full detector contract](profile-detection.md).
+infrastructure. Weak signals shared by several project classes become
+`ambiguous`, not guessed coverage. The detector does not prove that every
+unrecognized directory is a component; consumers must review the JSON
+limitations and may select a profile manually. See the
+[full detector contract](profile-detection.md).
 
 ## Individual Scanner Workflows
 

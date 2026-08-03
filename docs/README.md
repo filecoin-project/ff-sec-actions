@@ -54,6 +54,7 @@ policy, exceptions, upgrades, and rollback across projects.
 ## Executable Examples
 
 - [Secretless Ecosystem Baseline](../examples/consumer-ecosystem-baseline.yml)
+- [Filecoin Security Profile detection](../examples/consumer-profile-detection.yml)
 - [AI review on pull requests](../examples/consumer-ai-code-review.yml)
 - [AI review on demand](../examples/consumer-manual-ai-code-review.yml)
 - [Security scanner pipeline](../examples/consumer-security-pipeline.yml)

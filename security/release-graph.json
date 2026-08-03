@@ -2,6 +2,7 @@
   "schema_version": 1,
   "repository": "filecoin-project/ff-sec-actions",
   "entrypoints": [
+    "examples/consumer-profile-detection.yml",
     ".github/workflows/consumer-alpha-canary.yml",
     ".github/workflows/security-pipeline.yml",
     ".github/workflows/evaluation-pipeline.yml",
@@ -20,6 +21,11 @@
     ".github/workflows/sec-slither.yml"
   ],
   "expected_assets": {
+    "actions/detect-filecoin-profile": [
+      "actions/detect-filecoin-profile/action.yml",
+      "actions/detect-filecoin-profile/detect-filecoin-profile.sh",
+      "profiles/filecoin-project-profiles.json"
+    ],
     "actions/aggregate-results": [
       "actions/aggregate-results/action.yml",
       "actions/aggregate-results/aggregate-results.sh",
