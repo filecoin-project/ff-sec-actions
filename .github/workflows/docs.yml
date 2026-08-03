@@ -23,6 +23,7 @@ on:
       - scripts/test-workflow-security.sh
       - scripts/check-workflow-docs.sh
       - scripts/test-workflow-docs.sh
+      - scripts/extract-workflow-doc-examples.sh
       - scripts/check-baseline-no-exec.sh
       - scripts/test-baseline-no-exec.sh
       - scripts/check-scanner-gates.sh
@@ -68,6 +69,7 @@ on:
       - scripts/test-workflow-security.sh
       - scripts/check-workflow-docs.sh
       - scripts/test-workflow-docs.sh
+      - scripts/extract-workflow-doc-examples.sh
       - scripts/check-baseline-no-exec.sh
       - scripts/test-baseline-no-exec.sh
       - scripts/check-scanner-gates.sh
@@ -186,4 +188,9 @@ jobs:
 
       - name: Validate workflow and example syntax
         # actionlint v1.7.12, pinned to the release commit.
-        run: go run github.com/rhysd/actionlint/cmd/actionlint@914e7df21a07ef503a81201c76d2b11c789d3fca .github/workflows/*.yml examples/*.yml test/fixtures/fork-pr/workflow.yml
+        run: |
+          WORKFLOW_DOC_EXAMPLE_DIR="${RUNNER_TEMP}/workflow-doc-examples" \
+            bash scripts/extract-workflow-doc-examples.sh
+          go run github.com/rhysd/actionlint/cmd/actionlint@914e7df21a07ef503a81201c76d2b11c789d3fca \
+            .github/workflows/*.yml examples/*.yml test/fixtures/fork-pr/workflow.yml \
+            "${RUNNER_TEMP}"/workflow-doc-examples/*.yml

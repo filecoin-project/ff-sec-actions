@@ -88,5 +88,8 @@ jobs:
       - name: Validate shell, workflow, example, and fork-fixture syntax
         run: |
           shellcheck scripts/*.sh actions/*/*.sh actions/*/scripts/*.sh
+          WORKFLOW_DOC_EXAMPLE_DIR="${RUNNER_TEMP}/workflow-doc-examples" \
+            bash scripts/extract-workflow-doc-examples.sh
           go run github.com/rhysd/actionlint/cmd/actionlint@914e7df21a07ef503a81201c76d2b11c789d3fca \
-            .github/workflows/*.yml examples/*.yml test/fixtures/fork-pr/workflow.yml
+            .github/workflows/*.yml examples/*.yml test/fixtures/fork-pr/workflow.yml \
+            "${RUNNER_TEMP}"/workflow-doc-examples/*.yml

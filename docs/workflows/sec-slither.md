@@ -1,9 +1,9 @@
 # Slither
 
-**Workflow:** `sec-slither.yml`  
-**Status:** pre-v1 privileged build analysis  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `sec-slither.yml`<br>
+**Status:** pre-v1 `legacy-mixed`; target is separated privileged build analysis and publication<br>
+**Introduced:** commit `f816e783c0230a4c0f9d74c8e925f04e5a4a7c7c`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** a Solidity or Foundry project needs Slither detectors and accepts compiler/submodule execution risk.
 
 ## Authority And Execution
@@ -15,8 +15,11 @@
 | Consumer code execution | Possible through compiler, framework configuration, and recursively checked-out submodules |
 | Network | GitHub actions, submodule origins, Foundry/solc downloads, and Code Scanning |
 | Events and forks | Caller-controlled contexts; untrusted PRs and forks are not recommended until build execution and publication authority are separated |
+| Current trust tier | `legacy-mixed`; not release eligible until build analysis and publication are separated |
 
 ## Inputs
+
+**Declared secrets:** none
 
 | Input | Default | Purpose |
 |---|---|---|
@@ -28,6 +31,8 @@
 
 ## Outputs And Evidence
 
+**Declared workflow outputs:** none
+
 There are no `workflow_call` outputs. `slither-results` contains SARIF. When `ENABLE_GHAS='true'`, SARIF is also uploaded to GitHub Code Scanning. Artifact retention follows the Consumer Project's Actions setting; uploaded alerts follow its GitHub Code Security settings.
 
 ## Completion And Gating
@@ -37,6 +42,11 @@ There are no `workflow_call` outputs. `slither-results` contains SARIF. When `EN
 ## Immutable Usage
 
 ```yaml
+name: Slither privileged analysis
+
+on:
+  workflow_dispatch:
+
 jobs:
   slither:
     permissions:

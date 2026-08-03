@@ -1,9 +1,9 @@
 # AI Code Review
 
-**Workflow:** `ai-code-review.yml`  
-**Status:** pre-v1  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `ai-code-review.yml`<br>
+**Status:** pre-v1<br>
+**Introduced:** commit `ae7c3f8abd607f11648a13469a5f28eda6ef5f59`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** a pull request needs Filecoin-aware, diff-focused review with structured findings and optional sticky commenting.
 
 ## Authority And Execution
@@ -17,6 +17,8 @@
 | Events | Primarily pull requests; caller supplies the event context |
 
 ## Inputs
+
+**Declared secrets:** `anthropic-api-key` (optional)
 
 | Input | Default | Purpose |
 |---|---|---|
@@ -33,7 +35,17 @@ Secret: `anthropic-api-key` is optional at dispatch but required for a complete 
 
 ## Outputs And Evidence
 
-Workflow outputs are `findings-count`, `highest-severity`, `completion-status`, `evaluation-result`, and `evidence-artifact-url`. The durable artifact is `evaluation-result-ai-code-review`; the PR comment and job summary provide the readable surface. The workflow's `artifact-retention-days` input controls artifact retention.
+**Declared workflow outputs:** `findings-count`, `highest-severity`, `completion-status`, `evaluation-result`, `evidence-artifact-url`
+
+| Output | Consumer meaning |
+|---|---|
+| `findings-count` | Number of structured findings; use for reporting, not completion |
+| `highest-severity` | Highest reported finding severity, or `none` |
+| `completion-status` | `complete`, `incomplete`, `skipped`, or `error`; check this before findings |
+| `evaluation-result` | Callee-local result path; it is not readable from a later caller job |
+| `evidence-artifact-url` | Durable artifact URL; use this to retrieve the Evaluation Result and findings |
+
+The durable artifact is `evaluation-result-ai-code-review`; the PR comment and job summary provide the readable surface. The artifact uses the Consumer Project's configured GitHub Actions retention.
 
 ## Completion And Gating
 
@@ -42,6 +54,11 @@ Missing credentials produce `skipped`; refusal or truncation can produce `incomp
 ## Immutable Usage
 
 ```yaml
+name: AI security review
+
+on:
+  pull_request:
+
 jobs:
   ai-review:
     permissions:
@@ -50,6 +67,19 @@ jobs:
     uses: filecoin-project/ff-sec-actions/.github/workflows/ai-code-review.yml@c95d54087ff3a4783aea814776243990d9778c93
     secrets:
       anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  require-complete-review:
+    needs: ai-review
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require a completed provider review
+        env:
+          COMPLETION_STATUS: ${{ needs.ai-review.outputs.completion-status }}
+          EVIDENCE_URL: ${{ needs.ai-review.outputs.evidence-artifact-url }}
+        run: |
+          echo "Evidence: ${EVIDENCE_URL}"
+          test "${COMPLETION_STATUS}" = complete
 ```
 
 ## Limitations

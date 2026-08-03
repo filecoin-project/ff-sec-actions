@@ -54,5 +54,11 @@ artifact. Its negative suite is `bash scripts/test-output-contract.sh`.
 `check-workflow-docs.sh` requires exactly one reviewable Markdown contract in
 [`docs/workflows/`](../docs/workflows/README.md) for every reusable
 `workflow_call` entrypoint. It checks lifecycle metadata, required consumer
-sections, source/index links, and every declared workflow input and output. Run
-its rejecting fixture suite with `bash scripts/test-workflow-docs.sh`.
+sections, source/index links, exact input/default, secret, permission, and
+output sets, and the workflow's historical first-add commit. Run its rejecting
+fixture suite with `bash scripts/test-workflow-docs.sh`.
+
+`extract-workflow-doc-examples.sh` writes every `Immutable Usage` YAML block to
+the required `WORKFLOW_DOC_EXAMPLE_DIR`. Documentation CI sends those complete
+consumer workflows through the same pinned Actionlint validation as maintained
+workflow and example files.

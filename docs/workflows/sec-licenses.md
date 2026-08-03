@@ -1,9 +1,9 @@
 # License Compliance
 
-**Workflow:** `sec-licenses.yml`  
-**Status:** pre-v1 reusable evaluation  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `sec-licenses.yml`<br>
+**Status:** pre-v1 reusable evaluation<br>
+**Introduced:** commit `f816e783c0230a4c0f9d74c8e925f04e5a4a7c7c`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** a project needs policy evidence for licenses visible in dependency manifests and lockfiles.
 
 ## Authority And Execution
@@ -18,6 +18,8 @@
 
 ## Inputs
 
+**Declared secrets:** none
+
 | Input | Default | Purpose |
 |---|---|---|
 | `severity` | `CRITICAL,HIGH` | License severities included in findings and gate |
@@ -25,6 +27,8 @@
 | `skip-dirs` | Empty | Comma-separated excluded directories |
 
 ## Outputs And Evidence
+
+**Declared workflow outputs:** none
 
 There are no `workflow_call` outputs. `evaluation-result-trivy-licenses` contains the normalized result and `trivy-license-results` contains SARIF. Findings appear in the summary and annotations. Artifacts use the Consumer Project's configured GitHub Actions retention.
 
@@ -35,6 +39,11 @@ There are no `workflow_call` outputs. `evaluation-result-trivy-licenses` contain
 ## Immutable Usage
 
 ```yaml
+name: License compliance
+
+on:
+  pull_request:
+
 jobs:
   licenses:
     permissions:

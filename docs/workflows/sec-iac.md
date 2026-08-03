@@ -1,9 +1,9 @@
 # Trivy IaC Scan
 
-**Workflow:** `sec-iac.yml`  
-**Status:** pre-v1 reusable evaluation  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `sec-iac.yml`<br>
+**Status:** pre-v1 reusable evaluation<br>
+**Introduced:** commit `f816e783c0230a4c0f9d74c8e925f04e5a4a7c7c`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** Terraform, Kubernetes, container, or other supported infrastructure configuration needs static misconfiguration analysis.
 
 ## Authority And Execution
@@ -18,6 +18,8 @@
 
 ## Inputs
 
+**Declared secrets:** none
+
 | Input | Default | Purpose |
 |---|---|---|
 | `severity` | `CRITICAL,HIGH,MEDIUM` | Severities included in findings and gate |
@@ -25,6 +27,8 @@
 | `blocking` | `false` | Fail on validated findings |
 
 ## Outputs And Evidence
+
+**Declared workflow outputs:** none
 
 There are no `workflow_call` outputs. `evaluation-result-trivy-iac` contains the normalized result; `trivy-iac-results` contains SARIF. The job summary and annotations provide remediation context. Artifacts use the Consumer Project's configured GitHub Actions retention.
 
@@ -35,6 +39,11 @@ There are no `workflow_call` outputs. `evaluation-result-trivy-iac` contains the
 ## Immutable Usage
 
 ```yaml
+name: Infrastructure security
+
+on:
+  pull_request:
+
 jobs:
   iac:
     permissions:

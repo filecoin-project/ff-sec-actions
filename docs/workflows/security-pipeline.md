@@ -1,14 +1,14 @@
 # Security Pipeline
 
-**Workflow:** `security-pipeline.yml`  
-**Status:** pre-v1 legacy mixed-authority umbrella  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `security-pipeline.yml`<br>
+**Status:** pre-v1 legacy mixed-authority umbrella<br>
+**Introduced:** commit `f816e783c0230a4c0f9d74c8e925f04e5a4a7c7c`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** an existing consumer needs compatibility with the full configurable scanner suite and has reviewed the combined authority; new baseline adoption should use `ecosystem-baseline.yml`.
 
 ## Authority And Execution
 
-The required caller cap depends on enabled jobs. The default suite needs `actions: read`, `contents: read`, `pull-requests: write`, and `security-events: write`; Scorecard additionally needs `id-token: write`. CodeQL and Slither may execute project-controlled build behavior. AI is not part of this umbrella.
+The required caller cap depends on enabled jobs. A manual or non-PR default run needs `actions: read` and `contents: read`. Add `pull-requests: write` when Dependency Review runs on pull requests. Add `security-events: write` only for `publish-sarif`, CodeQL, Scorecard, or Slither publication; Scorecard additionally needs `id-token: write`. CodeQL and Slither may execute project-controlled build behavior. AI is not part of this umbrella.
 
 The workflow combines read-only scanners, PR publication, Security-tab publication, OIDC publication, and opt-in build analysis. It is therefore classified `legacy-mixed`, not a single release-eligible trust tier.
 
@@ -18,6 +18,8 @@ behavior vary by enabled child, so fork PRs should use the Ecosystem Baseline
 instead of this combined authority surface.
 
 ## Inputs
+
+**Declared secrets:** none
 
 ### Evaluation Selection
 
@@ -60,6 +62,8 @@ instead of this combined authority surface.
 
 ## Outputs And Evidence
 
+**Declared workflow outputs:** none
+
 There are no umbrella `workflow_call` outputs and no single Profile Conclusion. Each enabled child workflow owns its summary, annotations, provider alerts, and artifacts. `publish-sarif` adds dependency SARIF publication when the caller grants `security-events: write`.
 
 ## Completion And Gating
@@ -69,17 +73,20 @@ Each child job applies its own completion and finding-gate semantics. Event cond
 ## Immutable Usage
 
 ```yaml
+name: Legacy security pipeline
+
+on:
+  workflow_dispatch:
+
 jobs:
   security:
     permissions:
       actions: read
       contents: read
-      pull-requests: write
-      security-events: write
     uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@c95d54087ff3a4783aea814776243990d9778c93
 ```
 
-Add `id-token: write` only when enabling Scorecard publication. Enabling CodeQL or Slither opts into build-analysis risk and should be reviewed separately.
+For pull-request use, add `pull-requests: write` for Dependency Review. Add `security-events: write` only when enabling a Security-tab publisher, and add `id-token: write` only for Scorecard publication. Enabling CodeQL or Slither opts into build-analysis risk and should be reviewed separately.
 
 ## Limitations
 

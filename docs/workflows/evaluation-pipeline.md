@@ -1,9 +1,9 @@
 # Evaluation Pipeline
 
-**Workflow:** `evaluation-pipeline.yml`  
-**Status:** pre-v1 vertical slice  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `evaluation-pipeline.yml`<br>
+**Status:** pre-v1 vertical slice<br>
+**Introduced:** commit `c0b61023e4c24d417503450cbc6d174c69bb47df`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** a reviewer needs the smallest working example of normalized evaluation, artifact handoff, aggregation, and Profile Conclusion.
 
 ## Authority And Execution
@@ -18,12 +18,16 @@
 
 ## Inputs
 
+**Declared secrets:** none
+
 | Input | Default | Purpose |
 |---|---:|---|
 | `dependency-blocking` | `false` | Gate dependency findings |
 | `require-complete` | `true` | Require the dependency evaluation to complete |
 
 ## Outputs And Evidence
+
+**Declared workflow outputs:** none
 
 There are no `workflow_call` outputs. The dependency job publishes normalized and raw Trivy evidence. The aggregator publishes the `evidence-bundle` artifact with `evidence-bundle.json` and `evidence-summary.md`. Artifacts use the Consumer Project's configured GitHub Actions retention.
 
@@ -34,6 +38,11 @@ The Profile Conclusion requires `trivy-dependencies`. Findings fail only when `d
 ## Immutable Usage
 
 ```yaml
+name: Dependency evaluation contract
+
+on:
+  pull_request:
+
 jobs:
   evaluation:
     permissions:

@@ -1,9 +1,9 @@
 # Dependency Review
 
-**Workflow:** `sec-dependency-review.yml`  
-**Status:** pre-v1 provider-native evaluation  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `sec-dependency-review.yml`<br>
+**Status:** pre-v1 provider-native evaluation<br>
+**Introduced:** commit `f816e783c0230a4c0f9d74c8e925f04e5a4a7c7c`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** a pull request should be checked for newly introduced vulnerable or disallowed dependencies.
 
 ## Authority And Execution
@@ -18,12 +18,16 @@
 
 ## Inputs
 
+**Declared secrets:** none
+
 | Input | Default | Purpose |
 |---|---|---|
 | `fail-on-severity` | `high` | Minimum advisory severity that fails the check |
 | `deny-licenses` | `GPL-3.0, AGPL-3.0` | Comma-separated prohibited licenses |
 
 ## Outputs And Evidence
+
+**Declared workflow outputs:** none
 
 There are no `workflow_call` outputs or standalone artifact. The provider-native surface is the Dependency Review job summary, source annotations, and an always-published PR comment. Retention follows the Consumer Project's pull-request and Actions log retention settings.
 
@@ -34,6 +38,11 @@ The GitHub Dependency Review action gates at `fail-on-severity` and the denied-l
 ## Immutable Usage
 
 ```yaml
+name: Pull request dependency review
+
+on:
+  pull_request:
+
 jobs:
   dependency-review:
     permissions:

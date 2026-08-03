@@ -1,9 +1,9 @@
 # Dependency Scan
 
-**Workflow:** `sec-dependencies.yml`  
-**Status:** pre-v1 reusable evaluation  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `sec-dependencies.yml`<br>
+**Status:** pre-v1 reusable evaluation<br>
+**Introduced:** commit `f816e783c0230a4c0f9d74c8e925f04e5a4a7c7c`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** a project needs secretless vulnerability analysis of source-visible dependency manifests and lockfiles.
 
 ## Authority And Execution
@@ -18,6 +18,8 @@
 
 ## Inputs
 
+**Declared secrets:** none
+
 | Input | Default | Purpose |
 |---|---|---|
 | `severity` | `CRITICAL,HIGH,MEDIUM` | Severities included in findings and gates |
@@ -26,6 +28,8 @@
 | `trivyignore-file` | `.trivyignore` | Exception file used only when present |
 
 ## Outputs And Evidence
+
+**Declared workflow outputs:** none
 
 There are no `workflow_call` outputs. `evaluation-result-trivy-dependencies` contains the normalized result; `trivy-deps-results` contains SARIF. The job summary and annotations show actionable findings. Artifacts use the Consumer Project's configured GitHub Actions retention.
 
@@ -36,6 +40,11 @@ Trivy findings are normalized even though the scanner step uses `continue-on-err
 ## Immutable Usage
 
 ```yaml
+name: Dependency security
+
+on:
+  pull_request:
+
 jobs:
   dependencies:
     permissions:

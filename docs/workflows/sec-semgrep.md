@@ -1,9 +1,9 @@
 # Semgrep SAST
 
-**Workflow:** `sec-semgrep.yml`  
-**Status:** pre-v1 reusable evaluation  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `sec-semgrep.yml`<br>
+**Status:** pre-v1 reusable evaluation<br>
+**Introduced:** commit `f816e783c0230a4c0f9d74c8e925f04e5a4a7c7c`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** supported source languages need repository-owned Ecosystem Baseline pattern checks without project execution.
 
 ## Authority And Execution
@@ -18,11 +18,15 @@
 
 ## Inputs
 
+**Declared secrets:** none
+
 | Input | Default | Purpose |
 |---|---:|---|
 | `blocking` | `false` | Fail on validated Ecosystem Baseline findings |
 
 ## Outputs And Evidence
+
+**Declared workflow outputs:** none
 
 There are no `workflow_call` outputs. `evaluation-result-semgrep-baseline` contains the normalized result and `semgrep-baseline-results` contains SARIF. The summary and annotations include source locations and remediation guidance. Artifacts use the Consumer Project's configured GitHub Actions retention.
 
@@ -33,6 +37,11 @@ The scanner step preserves its exit status for normalization. `blocking` control
 ## Immutable Usage
 
 ```yaml
+name: Semgrep ecosystem checks
+
+on:
+  pull_request:
+
 jobs:
   semgrep:
     permissions:

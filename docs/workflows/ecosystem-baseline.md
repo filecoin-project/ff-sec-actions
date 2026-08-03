@@ -1,9 +1,9 @@
 # Ecosystem Baseline
 
-**Workflow:** `ecosystem-baseline.yml`  
-**Status:** consumer-testable pre-v1 alpha  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `ecosystem-baseline.yml`<br>
+**Status:** consumer-testable pre-v1 alpha<br>
+**Introduced:** commit `35cf1a2133cbff03d9cc3039b532f0f4737af9ae`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** a project needs the recommended secretless starting point with normalized evidence and one Profile Conclusion.
 
 ## Authority And Execution
@@ -18,6 +18,8 @@
 
 ## Inputs
 
+**Declared secrets:** none
+
 | Input | Default | Purpose |
 |---|---:|---|
 | `actions-security-blocking` | `false` | Gate Zizmor findings |
@@ -30,6 +32,8 @@
 
 ## Outputs And Evidence
 
+**Declared workflow outputs:** none
+
 The workflow exposes no `workflow_call` outputs. Each evaluation publishes its normalized result and raw evidence. `ecosystem-baseline-evidence` contains `evidence-bundle.json` and `evidence-summary.md`; the job summary renders the Profile Conclusion. Artifacts use the Consumer Project's configured GitHub Actions retention unless a child workflow documents an override.
 
 ## Completion And Gating
@@ -39,6 +43,11 @@ Five required evaluations—`zizmor-actions`, `trivy-dependencies`, `gitleaks`, 
 ## Immutable Usage
 
 ```yaml
+name: Filecoin ecosystem security baseline
+
+on:
+  pull_request:
+
 jobs:
   baseline:
     permissions:

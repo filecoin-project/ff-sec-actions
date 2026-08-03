@@ -1,9 +1,9 @@
 # Secretless Gitleaks Scan
 
-**Workflow:** `sec-secrets.yml`  
-**Status:** pre-v1 reusable evaluation  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `sec-secrets.yml`<br>
+**Status:** pre-v1 reusable evaluation<br>
+**Introduced:** commit `f816e783c0230a4c0f9d74c8e925f04e5a4a7c7c`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** a project needs fully redacted secret detection over a pull-request commit range or complete Git history.
 
 ## Authority And Execution
@@ -19,6 +19,8 @@
 
 ## Inputs
 
+**Declared secrets:** none
+
 | Input | Default | Purpose |
 |---|---|---|
 | `config-path` | `.gitleaks.toml` | Repository configuration used only when present |
@@ -26,6 +28,8 @@
 | `blocking` | `true` | Fail on validated secret findings |
 
 ## Outputs And Evidence
+
+**Declared workflow outputs:** none
 
 There are no `workflow_call` outputs. `evaluation-result-gitleaks` contains the redacted normalized result. `gitleaks-results` contains redacted SARIF and is retained for 14 days. The summary and annotations never include secret values.
 
@@ -36,6 +40,11 @@ Findings are a successful scanner invocation and fail only when `blocking=true`.
 ## Immutable Usage
 
 ```yaml
+name: Secret detection
+
+on:
+  pull_request:
+
 jobs:
   secrets:
     permissions:

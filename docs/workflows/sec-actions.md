@@ -1,9 +1,9 @@
 # GitHub Actions Security
 
-**Workflow:** `sec-actions.yml`  
-**Status:** pre-v1 reusable evaluation  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `sec-actions.yml`<br>
+**Status:** pre-v1 reusable evaluation<br>
+**Introduced:** commit `18f2285f8b0d3129350ae02a15ff8160032875d9`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** a project needs static security analysis of workflow and action definitions without GitHub Code Security authority.
 
 ## Authority And Execution
@@ -18,12 +18,16 @@
 
 ## Inputs
 
+**Declared secrets:** none
+
 | Input | Default | Purpose |
 |---|---|---|
 | `config-path` | Empty | Explicit Zizmor configuration; empty disables discovery |
 | `blocking` | `false` | Fail when validated findings exist |
 
 ## Outputs And Evidence
+
+**Declared workflow outputs:** none
 
 There are no `workflow_call` outputs. `evaluation-result-zizmor-actions` contains the normalized result and `zizmor-actions-results` contains SARIF. Findings also appear in the job summary and source annotations. Artifacts use the Consumer Project's configured GitHub Actions retention.
 
@@ -34,6 +38,11 @@ Findings are operational success and gate only when `blocking=true`. Missing too
 ## Immutable Usage
 
 ```yaml
+name: GitHub Actions security
+
+on:
+  pull_request:
+
 jobs:
   actions-security:
     permissions:

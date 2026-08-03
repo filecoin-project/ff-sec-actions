@@ -1,9 +1,9 @@
 # OpenSSF Scorecard
 
-**Workflow:** `sec-scorecard.yml`  
-**Status:** pre-v1 provider-native evaluation  
-**Introduced:** pre-v1; no stable release tag  
-**Owner:** Filecoin ecosystem security platform maintainers  
+**Workflow:** `sec-scorecard.yml`<br>
+**Status:** pre-v1 provider-native evaluation<br>
+**Introduced:** commit `f816e783c0230a4c0f9d74c8e925f04e5a4a7c7c`<br>
+**Owner:** Filecoin ecosystem security platform maintainers<br>
 **Use when:** a public repository needs OpenSSF supply-chain posture checks and accepts the publication authority.
 
 ## Authority And Execution
@@ -18,11 +18,15 @@
 
 ## Inputs
 
+**Declared secrets:** none
+
 | Input | Default | Purpose |
 |---|---:|---|
 | `publish-results` | `true` | Publish results to OpenSSF for public repositories |
 
 ## Outputs And Evidence
+
+**Declared workflow outputs:** none
 
 There are no `workflow_call` outputs. `scorecard-results` contains SARIF. When `ENABLE_GHAS='true'`, results are also uploaded to GitHub Code Scanning. Artifact retention follows the Consumer Project's Actions setting; uploaded alerts follow its GitHub Code Security settings.
 
@@ -33,6 +37,11 @@ Scorecard findings are advisory in this workflow. Action or evidence-generation 
 ## Immutable Usage
 
 ```yaml
+name: OpenSSF Scorecard
+
+on:
+  workflow_dispatch:
+
 jobs:
   scorecard:
     permissions:
