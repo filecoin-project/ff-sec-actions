@@ -4,10 +4,10 @@
 
 **Outcome:** a documented profile choice with known coverage gaps.
 
-The secretless [Ecosystem Baseline](ecosystem-baseline.md) is the first
-consumer-testable pre-v1 profile and is the default pilot starting point for
-every project class below. Specialized profiles and Filecoin-specific invariant
-packs remain planned.
+The secretless [Ecosystem Baseline](ecosystem-baseline.md) is the default pilot
+starting point. The path-scoped detector can now identify candidate specialized
+profiles and explicit gaps; the Filecoin-specific evaluations attached to those
+profiles remain under implementation.
 
 | Project signals | Candidate profile | Current useful evaluations | Important gap |
 |---|---|---|---|
@@ -16,7 +16,24 @@ packs remain planned.
 | Solidity contracts targeting FEVM | Solidity/FEVM | Workflow security, Slither, dependency, secret scanning | Slither is opt-in and build-dependent |
 | TypeScript/JavaScript service or tooling | Service application | Workflow security, Semgrep, CodeQL, dependency review, IaC | Current defaults are closest to this class |
 | Terraform, Kubernetes, deployment repositories | Infrastructure | Workflow security, Trivy IaC, secrets, Scorecard | Runtime and cloud-policy coverage is project-specific |
-| Several of the above in one repository | Ecosystem Baseline plus planned composed profiles | Baseline scans recursively across supported source, manifests, lockfiles, workflows, and IaC | Path-aware specialized profile composition is not yet implemented |
+| Several of the above in one repository | Composed path-scoped profiles | Detector emits one or more profiles per recognized component | Specialized evaluations are not all released yet |
+
+## Detect Profiles Automatically
+
+After checking out the repository, invoke
+`filecoin-project/ff-sec-actions/actions/detect-filecoin-profile` at a reviewed
+full commit SHA. The action reads repository files without executing project
+code and exposes:
+
+- `profiles-json` for path-aware evaluation routing;
+- `result-file` for the complete evidence and selection reasons;
+- `summary` for the readable component table; and
+- `coverage-gaps-count` for recognized but unsupported components.
+
+Every selected profile includes its component path, confidence, evidence file,
+and reason. Unsupported components produce a warning and remain in the result
+with no guessed profile. See the complete [profile-detection contract](../reference/profile-detection.md)
+for copyable workflow YAML, inputs, outputs, supported signals, and limitations.
 
 ## Selection Rules
 
@@ -28,6 +45,8 @@ packs remain planned.
    even when automated evaluation completes.
 5. Do not enable build-dependent analysis on untrusted PRs until its execution
    boundary is documented.
+6. Review every coverage gap and the detector limitation before treating the
+   selected profile set as complete.
 
 ## Next
 

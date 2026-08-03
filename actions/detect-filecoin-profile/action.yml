@@ -1,0 +1,44 @@
+name: Detect Filecoin Security Profiles
+description: Classify path-scoped Filecoin project components without executing Consumer Project code.
+
+inputs:
+  repository-path:
+    description: Checked-out repository path to inspect as untrusted data.
+    required: false
+    default: .
+  result-file:
+    description: Destination for the machine-readable result; empty uses runner-controlled temporary storage.
+    required: false
+    default: ""
+  summary-file:
+    description: Destination for the readable table; empty uses runner-controlled temporary storage.
+    required: false
+    default: ""
+
+outputs:
+  result-file:
+    description: Path to the machine-readable profile detection result.
+    value: ${{ steps.detect.outputs.result_file }}
+  summary:
+    description: Path to the readable component and profile table.
+    value: ${{ steps.detect.outputs.summary }}
+  profiles-json:
+    description: Compact JSON array of selected profile IDs and their component paths.
+    value: ${{ steps.detect.outputs.profiles_json }}
+  component-count:
+    description: Number of recognized project components.
+    value: ${{ steps.detect.outputs.component_count }}
+  coverage-gaps-count:
+    description: Number of recognized components without a supported profile.
+    value: ${{ steps.detect.outputs.coverage_gaps_count }}
+
+runs:
+  using: composite
+  steps:
+    - id: detect
+      shell: bash
+      env:
+        REPOSITORY_PATH: ${{ inputs.repository-path }}
+        RESULT_FILE: ${{ inputs.result-file || format('{0}/profile-detection.json', runner.temp) }}
+        SUMMARY_FILE: ${{ inputs.summary-file || format('{0}/profile-detection-summary.md', runner.temp) }}
+      run: bash "${GITHUB_ACTION_PATH}/detect-filecoin-profile.sh"

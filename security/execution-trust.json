@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-07-29",
+  "updated_at": "2026-08-03",
   "source": "docs/reference/execution-trust.md",
   "tiers": {
     "ecosystem-baseline": {
@@ -601,6 +601,27 @@
       },
       "network": ["none"],
       "migration": ["Keep aggregation deterministic, local, and fail-closed for ambiguous evidence."]
+    },
+    {
+      "path": "actions/detect-filecoin-profile/action.yml",
+      "scope": "consumer",
+      "current_tier": "ecosystem-baseline",
+      "target_tier": "ecosystem-baseline",
+      "observed": {
+        "checkout": false,
+        "persists_checkout_credentials": false,
+        "explicit_permissions": false,
+        "secret_context": false,
+        "write_permissions": [],
+        "execution_markers": [],
+        "mutable_references": false,
+        "mutable_container": false,
+        "oidc": false,
+        "cache": false,
+        "self_hosted_runner": false
+      },
+      "network": ["none"],
+      "migration": ["Keep detection local, secretless, non-executing, path-scoped, and explicit about unsupported components."]
     },
     {
       "path": "actions/evaluation-adapter/action.yml",

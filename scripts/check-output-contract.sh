@@ -25,7 +25,7 @@ jq -e '
         and (.failure_capture | IN("scanner-output", "continue-on-error"))
       else true end)))
   and (.actions | type == "object" and length > 0 and all(.[];
-    (.mode | IN("consumer-evaluation", "scanner-invocation", "profile-aggregate", "legacy-compatibility"))
+    (.mode | IN("consumer-evaluation", "scanner-invocation", "profile-aggregate", "profile-detection", "legacy-compatibility"))
     and (.required_outputs | type == "array" and length > 0)
     and (.consumer_surface | type == "string" and length > 0)
     and (.remediation_surface | type == "string" and length > 0)
@@ -130,6 +130,11 @@ while IFS= read -r action; do
   elif [ "$mode" = profile-aggregate ]; then
     grep -Fxq summary <<< "$outputs" \
       || fail "$action profile aggregate does not expose summary"
+  elif [ "$mode" = profile-detection ]; then
+    grep -Fxq profiles-json <<< "$outputs" \
+      || fail "$action profile detection does not expose selected profiles"
+    grep -Fxq coverage-gaps-count <<< "$outputs" \
+      || fail "$action profile detection does not expose coverage gaps"
   elif [ "$mode" = legacy-compatibility ] && [ "$action" != actions/scanner-outcome/action.yml ]; then
     fail "$action introduces a new legacy compatibility surface"
   fi

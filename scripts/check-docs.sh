@@ -39,6 +39,8 @@ required_pages=(
   "actions/evaluation-adapter/evaluation-adapter.sh"
   "actions/aggregate-results/action.yml"
   "actions/aggregate-results/aggregate-results.sh"
+  "actions/detect-filecoin-profile/action.yml"
+  "actions/detect-filecoin-profile/detect-filecoin-profile.sh"
   ".github/workflows/docs.yml"
   ".github/workflows/evaluation-pipeline.yml"
   ".github/workflows/ecosystem-baseline.yml"
@@ -67,6 +69,7 @@ required_pages=(
   "docs/reference/zizmor-scan.md"
   "docs/reference/release-integrity.md"
   "docs/reference/fork-pr-safety.md"
+  "docs/reference/profile-detection.md"
   "docs/DOCUMENTATION-ARCHITECTURE.md"
   "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md"
   "docs/decisions/distribution-model.md"
@@ -79,6 +82,7 @@ required_pages=(
   "security/scanner-gates.json"
   "security/output-contract.json"
   "security/release-graph.json"
+  "profiles/filecoin-project-profiles.json"
   "rules/ecosystem-baseline.yml"
   "security/workflow-policy.json"
   "scripts/check-baseline-no-exec.sh"
@@ -98,6 +102,7 @@ required_pages=(
   "scripts/test-ecosystem-baseline.sh"
   "scripts/test-gitleaks-scan.sh"
   "scripts/test-zizmor-scan.sh"
+  "scripts/test-detect-filecoin-profile.sh"
   "scripts/test-consumer-actions-security.sh"
   "scripts/test-consumer-alpha.sh"
   "scripts/test-release-graph.sh"
@@ -136,6 +141,7 @@ if [ -f ".github/workflows/docs.yml" ]; then
   require_text ".github/workflows/docs.yml" "bash scripts/test-aggregate-results.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/test-ecosystem-baseline.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/test-gitleaks-scan.sh"
+  require_text ".github/workflows/docs.yml" "bash scripts/test-detect-filecoin-profile.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/test-consumer-alpha.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/test-consumer-actions-security.sh"
   require_text ".github/workflows/docs.yml" "bash scripts/check-release-graph.sh"
@@ -161,6 +167,7 @@ if [ -f ".github/workflows/g0-contract.yml" ]; then
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-aggregate-results.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-gitleaks-scan.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-zizmor-scan.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-detect-filecoin-profile.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-consumer-alpha.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-consumer-actions-security.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/check-release-graph.sh"
@@ -175,6 +182,12 @@ fi
 if [ -f "docs/reference/current-contracts.md" ]; then
   require_text "docs/reference/current-contracts.md" "actions-security-blocking"
   require_text "docs/reference/current-contracts.md" "publish-sarif"
+  require_text "docs/reference/current-contracts.md" "profiles-json"
+fi
+
+if [ -f "docs/consumers/choose-a-profile.md" ]; then
+  require_text "docs/consumers/choose-a-profile.md" "actions/detect-filecoin-profile"
+  require_text "docs/consumers/choose-a-profile.md" "coverage-gaps-count"
 fi
 
 if grep -REq '^[[:space:]-]*uses:.*@v1([[:space:]]|$)' examples; then

@@ -55,6 +55,9 @@ jobs:
           bash scripts/test-zizmor-scan.sh
           bash scripts/test-consumer-actions-security.sh
 
+      - name: Prove non-executing Filecoin Security Profile detection
+        run: bash scripts/test-detect-filecoin-profile.sh
+
       - name: Prove immutable release graph
         run: |
           bash scripts/check-release-graph.sh

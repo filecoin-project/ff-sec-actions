@@ -45,6 +45,7 @@ policy, exceptions, upgrades, and rollback across projects.
 - [Permission-free Zizmor adapter](reference/zizmor-scan.md)
 - [Release integrity](reference/release-integrity.md)
 - [Fork pull-request safety](reference/fork-pr-safety.md)
+- [Filecoin Security Profile detection](reference/profile-detection.md)
 - [Documentation architecture](DOCUMENTATION-ARCHITECTURE.md)
 - [Ecosystem security decision map](ECOSYSTEM-SECURITY-DECISION-MAP.md)
 - [Distribution model decision](decisions/distribution-model.md)

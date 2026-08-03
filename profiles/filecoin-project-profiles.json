@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "catalog_version": "0.1.0",
+  "profiles": [
+    {
+      "id": "fevm-contract",
+      "label": "FEVM contract",
+      "description": "Solidity contracts that use Filecoin actor APIs, precompiles, or FEVM-specific libraries.",
+      "confidence_basis": "Filecoin Solidity imports, API symbols, or reserved precompile addresses are present in contract source.",
+      "planned_evaluations": ["sec-filecoin-secrets", "sec-filecoin-protocol", "sec-fevm"]
+    },
+    {
+      "id": "fvm-actor",
+      "label": "FVM actor",
+      "description": "Rust crates that implement or depend on Filecoin Virtual Machine actor interfaces.",
+      "confidence_basis": "The Cargo manifest declares an FVM SDK, shared runtime, or actor runtime dependency.",
+      "planned_evaluations": ["sec-filecoin-secrets", "sec-filecoin-protocol", "sec-fvm-actors"]
+    },
+    {
+      "id": "go-node",
+      "label": "Go node",
+      "description": "Lotus-, Venus-, or Filecoin-state-aware Go node software.",
+      "confidence_basis": "The Go module declares a Lotus, Venus, or Filecoin state-types dependency.",
+      "planned_evaluations": ["sec-filecoin-secrets", "sec-filecoin-rpc", "sec-filecoin-protocol"]
+    },
+    {
+      "id": "infrastructure",
+      "label": "Infrastructure",
+      "description": "Terraform, Kubernetes, or container configuration that defines deployable infrastructure.",
+      "confidence_basis": "A recognized infrastructure file contains Terraform, Kubernetes workload, or container-build configuration.",
+      "planned_evaluations": ["sec-filecoin-secrets", "sec-filecoin-rpc"]
+    },
+    {
+      "id": "service",
+      "label": "Service application",
+      "description": "Network-facing service applications and APIs in the Filecoin ecosystem.",
+      "confidence_basis": "A package manifest declares a recognized network service framework or runtime entry point.",
+      "planned_evaluations": ["sec-filecoin-secrets", "sec-filecoin-rpc", "sec-filecoin-protocol"]
+    },
+    {
+      "id": "storage-application",
+      "label": "Storage application",
+      "description": "Applications integrating Filecoin or IPFS storage service libraries.",
+      "confidence_basis": "A package manifest declares a recognized Filecoin or IPFS storage client dependency.",
+      "planned_evaluations": ["sec-filecoin-secrets", "sec-filecoin-protocol", "sec-filecoin-content"]
+    },
+    {
+      "id": "storage-provider-infrastructure",
+      "label": "Storage-provider infrastructure",
+      "description": "Infrastructure that deploys or authorizes Lotus Miner, Boost, Curio, Venus Sealer, or related storage-provider software.",
+      "confidence_basis": "Infrastructure configuration names storage-provider software, privileged API variables, or proof-parameter storage.",
+      "planned_evaluations": ["sec-filecoin-secrets", "sec-filecoin-rpc", "sec-storage-provider"]
+    }
+  ]
+}

@@ -55,6 +55,17 @@ Operational failure and malformed SARIF fail independently of that setting.
 - If complete evidence requires installation or a build, record the baseline
   limitation and use a separately isolated Privileged Build Analysis.
 
+## Profile Detection Reports A Coverage Gap
+
+- Open the job summary or `profile-detection.json` and inspect the component
+  path, recognized marker, and current limitations.
+- Select the closest Security Profile manually when the component is supported
+  but its signal is intentionally indirect.
+- If the signal is reusable across Consumer Projects, add a minimal fixture and
+  detector rule to the Control Repository; do not suppress the gap without
+  recording the manual selection.
+- Do not interpret zero gaps as proof that every directory was classified.
+
 ## Escalation Information
 
 When asking a Platform Maintainer for help, include:

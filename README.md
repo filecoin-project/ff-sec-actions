@@ -53,6 +53,7 @@ dependency-ordered work queue and the commands used to claim and complete work.
 | Combined scanner suite | Umbrella reusable workflow | Pilot; transitively immutable at the example commit |
 | Filecoin review invariants | Versioned prompts | Available to AI review |
 | Ecosystem Security Profiles | Secretless Ecosystem Baseline | Consumer-testable alpha with one immutable pin |
+| Path-scoped Filecoin project classification | Composite detector action and versioned profile catalog | Implemented pre-v1; immutable consumer pin pending release |
 | Normalized Evaluation Result and Evidence Bundle | Five baseline evaluations plus `Profile Conclusion` | Evaluation Result `1.1.0`; Evidence Bundle `1.0.0` in the alpha baseline |
 
 See the [decision map](docs/ECOSYSTEM-SECURITY-DECISION-MAP.md) for release
@@ -65,6 +66,7 @@ gates and active design work.
 actions/                 composite actions and their implementation
 docs/                    consumer, maintainer, operator, and reference guides
 examples/                executable consumer workflow examples
+profiles/                versioned Filecoin Security Profile catalog
 prompts/                 shared and Filecoin-specific AI review guidance
 scripts/                 local tooling and documentation checks
 roadmap/                 canonical machine-readable implementation state

@@ -1,0 +1,11 @@
+{
+  "name": "storage-api",
+  "private": true,
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "@web3-storage/w3up-client": "17.3.0",
+    "fastify": "5.2.1"
+  }
+}

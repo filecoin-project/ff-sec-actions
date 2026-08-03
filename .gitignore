@@ -2,3 +2,6 @@
 # reviewed code excerpts), and secrets. Never commit these.
 scripts/dev/fixtures/
 scripts/dev/.env
+
+# Local implementation planning state and implementor claims.
+.plan/

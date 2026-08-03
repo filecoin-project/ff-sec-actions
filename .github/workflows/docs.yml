@@ -10,6 +10,7 @@ on:
       - actions/**
       - schemas/**
       - prompts/**
+      - profiles/**
       - roadmap/**
       - security/**
       - threat-model/**
@@ -30,6 +31,7 @@ on:
       - scripts/test-evaluation-result.sh
       - scripts/test-gitleaks-scan.sh
       - scripts/test-zizmor-scan.sh
+      - scripts/test-detect-filecoin-profile.sh
       - scripts/test-consumer-actions-security.sh
       - scripts/test-consumer-alpha.sh
       - scripts/check-release-graph.sh
@@ -40,6 +42,7 @@ on:
       - test/fixtures/evaluation-result/**
       - test/fixtures/ecosystem-baseline/**
       - test/fixtures/actions-security/**
+      - test/fixtures/profile-detection/**
   push:
     branches: [main]
     paths:
@@ -50,6 +53,7 @@ on:
       - actions/**
       - schemas/**
       - prompts/**
+      - profiles/**
       - roadmap/**
       - security/**
       - threat-model/**
@@ -70,6 +74,7 @@ on:
       - scripts/test-evaluation-result.sh
       - scripts/test-gitleaks-scan.sh
       - scripts/test-zizmor-scan.sh
+      - scripts/test-detect-filecoin-profile.sh
       - scripts/test-consumer-actions-security.sh
       - scripts/test-consumer-alpha.sh
       - scripts/check-release-graph.sh
@@ -80,6 +85,7 @@ on:
       - test/fixtures/evaluation-result/**
       - test/fixtures/ecosystem-baseline/**
       - test/fixtures/actions-security/**
+      - test/fixtures/profile-detection/**
   workflow_dispatch:
 
 permissions:
@@ -144,6 +150,9 @@ jobs:
 
       - name: Test secretless fork and history scanning
         run: bash scripts/test-gitleaks-scan.sh
+
+      - name: Test path-scoped Filecoin Security Profile detection
+        run: bash scripts/test-detect-filecoin-profile.sh
 
       - name: Test consumer GitHub Actions security evaluation
         run: bash scripts/test-consumer-actions-security.sh

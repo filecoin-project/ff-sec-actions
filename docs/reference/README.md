@@ -15,6 +15,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 - [Permission-free Zizmor adapter](zizmor-scan.md)
 - [Release integrity](release-integrity.md)
 - [Fork pull-request safety](fork-pr-safety.md)
+- [Filecoin Security Profile detection](profile-detection.md)
 
 ## Reusable Workflows
 
@@ -44,11 +45,16 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 - [Generic evaluation adapter](../../actions/evaluation-adapter/action.yml)
 - [Ecosystem Baseline Semgrep adapter](../../actions/semgrep-scan/action.yml)
 - [Evidence Bundle aggregator](../../actions/aggregate-results/action.yml)
+- [Filecoin Security Profile detector](../../actions/detect-filecoin-profile/action.yml)
 
 ## Schemas
 
 - [Evaluation Result](../../schemas/evaluation-result.schema.json)
 - [Evidence Bundle](../../schemas/evidence-bundle.schema.json)
+
+## Security Profiles
+
+- [Filecoin project profile catalog](../../profiles/filecoin-project-profiles.json)
 
 ## Prompts
 

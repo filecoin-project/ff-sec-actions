@@ -151,6 +151,23 @@ Current full-suite umbrella limitations:
   incomplete when packages appear only after installation or a build;
 - callers must currently grant the cap required by all enabled nested jobs.
 
+## Filecoin Security Profile Detector
+
+Source:
+[`actions/detect-filecoin-profile/action.yml`](../../actions/detect-filecoin-profile/action.yml)
+
+The secretless detector inspects repository files without executing Consumer
+Project code. It emits `result-file`, `summary`, `profiles-json`,
+`component-count`, and `coverage-gaps-count`. Selected profiles are path-scoped
+and carry confidence, evidence, and reasons. Recognized components without a
+supported profile remain visible as coverage gaps and warning annotations.
+
+The current catalog covers Go nodes, FVM actors, FEVM contracts, services,
+general infrastructure, storage applications, and storage-provider
+infrastructure. The detector does not prove that unrecognized directories are
+covered; consumers must review the limitation in the JSON result and may select
+a profile manually. See the [full detector contract](profile-detection.md).
+
 ## Individual Scanner Workflows
 
 | Workflow | Primary result | Current gate behavior |

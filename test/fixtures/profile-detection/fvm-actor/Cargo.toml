@@ -1,0 +1,8 @@
+[package]
+name = "example-actor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+fvm_sdk = "4.6.0"
+fvm_shared = "4.6.0"
