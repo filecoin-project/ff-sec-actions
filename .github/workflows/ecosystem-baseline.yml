@@ -93,7 +93,7 @@ jobs:
 
       - name: Aggregate Ecosystem Baseline evidence and enforce conclusion
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/aggregate-results@f651cbf6ee81a1056d84efbccb32722468be2f13
+        uses: filecoin-project/ff-sec-actions/actions/aggregate-results@167b840db25a7c50288f5dec39090c28935491b4
         with:
           results-directory: evaluation-results
           profile-id: ecosystem-baseline
