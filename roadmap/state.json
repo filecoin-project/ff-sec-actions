@@ -1,17 +1,16 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-07-29T15:51:54Z",
-  "current_task_id": "BASE-01",
+  "updated_at": "2026-11-06T02:00:07Z",
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
   "status_semantics": {
-    "pending": "Not started; dependencies may or may not be complete.",
-    "in_progress": "Claimed as the single active task.",
-    "blocked": "Work began but cannot continue without an external decision or state change.",
-    "done": "Acceptance criteria and verification are complete.",
-    "cancelled": "Intentionally removed from the active roadmap with rationale recorded in the decision map."
+    "pending": "Unclaimed and every blocked_by dependency is done.",
+    "blocked": "Unclaimed and at least one blocked_by dependency is not done.",
+    "in_progress": "Linked to an active OpenSpec change under openspec/changes/.",
+    "done": "Linked to an archived OpenSpec change under openspec/changes/archive/.",
+    "cancelled": "Marked cancelled: true, with rationale recorded in the claiming change or the decision map."
   },
   "release_gates": [
     {
@@ -47,7 +46,6 @@
       "phase": "foundation",
       "priority": "P0",
       "kind": "implementation",
-      "status": "done",
       "title": "Establish navigable documentation foundation",
       "objective": "Give consumers, maintainers, and rollout operators tested paths into the platform.",
       "blocked_by": [],
@@ -67,8 +65,7 @@
         "docs/README.md",
         "docs/DOCUMENTATION-ARCHITECTURE.md"
       ],
-      "started_at": "2026-07-24T00:00:00Z",
-      "completed_at": "2026-07-24T00:00:00Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "STATE-01",
@@ -76,7 +73,6 @@
       "phase": "foundation",
       "priority": "P0",
       "kind": "implementation",
-      "status": "done",
       "title": "Create canonical machine-readable roadmap state",
       "objective": "Make roadmap order, dependencies, status, acceptance criteria, and verification queryable by people and automation.",
       "blocked_by": [
@@ -97,8 +93,7 @@
         "roadmap/state.json",
         "scripts/roadmap.sh"
       ],
-      "started_at": "2026-07-28T00:00:00Z",
-      "completed_at": "2026-07-28T00:00:00Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "G0-01",
@@ -106,7 +101,6 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "decision",
-      "status": "done",
       "title": "Define execution trust tiers",
       "objective": "Classify every evaluation as inspection-only or code-executing and define its token, secret, network, runner, cache, and OIDC boundary.",
       "blocked_by": [
@@ -128,8 +122,7 @@
         "scripts/check-execution-trust.sh",
         "threat-model/execution-trust/threat-model-report.md"
       ],
-      "started_at": "2026-07-28T20:37:46Z",
-      "completed_at": "2026-07-28T20:57:58Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "G0-02",
@@ -137,7 +130,6 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "done",
       "title": "Enforce least privilege and safe checkout",
       "objective": "Give each workflow only its documented permissions and prevent checkout credentials from persisting.",
       "blocked_by": [
@@ -160,8 +152,7 @@
         "scripts/check-workflow-security.sh",
         "scripts/test-workflow-security.sh"
       ],
-      "started_at": "2026-07-28T23:33:31Z",
-      "completed_at": "2026-07-28T23:45:51Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "G0-03",
@@ -169,7 +160,6 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "done",
       "title": "Remove package lifecycle execution from inspection workflows",
       "objective": "Inspect manifests, lockfiles, licenses, and SBOM inputs without running consumer installation hooks.",
       "blocked_by": [
@@ -194,8 +184,7 @@
         "scripts/check-baseline-no-exec.sh",
         "scripts/test-baseline-no-exec.sh"
       ],
-      "started_at": "2026-07-28T23:46:57Z",
-      "completed_at": "2026-07-28T23:52:25Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "G0-04",
@@ -203,7 +192,6 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "done",
       "title": "Make scanner exit and gate semantics honest",
       "objective": "Prevent findings and operational failures from being hidden by unconditional advisory execution.",
       "blocked_by": [
@@ -229,8 +217,7 @@
         "scripts/check-scanner-gates.sh",
         "scripts/test-scanner-outcome.sh"
       ],
-      "started_at": "2026-07-28T23:52:38Z",
-      "completed_at": "2026-07-29T00:03:54Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "G0-05",
@@ -238,7 +225,6 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "done",
       "title": "Add completion status to existing evaluations",
       "objective": "Represent complete, incomplete, skipped, and error independently from finding severity.",
       "blocked_by": [
@@ -258,8 +244,7 @@
       "artifacts": [
         "schemas/evaluation-result.schema.json"
       ],
-      "started_at": "2026-07-29T00:04:59Z",
-      "completed_at": "2026-07-29T00:14:40Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "G0-06",
@@ -267,7 +252,6 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "done",
       "title": "Provide secretless secret scanning",
       "objective": "Run useful secret detection for organization repositories and fork pull requests without a required license secret.",
       "blocked_by": [
@@ -287,8 +271,7 @@
       "artifacts": [
         ".github/workflows/sec-secrets.yml"
       ],
-      "started_at": "2026-07-29T00:15:32Z",
-      "completed_at": "2026-07-29T00:21:57Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "G0-07",
@@ -296,7 +279,6 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "done",
       "title": "Add consumer GitHub Actions security evaluation",
       "objective": "Detect mutable references, excessive permissions, dangerous triggers, expression injection, persisted credentials, and OIDC exposure in consumer workflows.",
       "blocked_by": [
@@ -316,8 +298,7 @@
       "artifacts": [
         ".github/workflows/sec-actions.yml"
       ],
-      "started_at": "2026-07-29T00:22:22Z",
-      "completed_at": "2026-07-29T00:28:29Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "G0-08",
@@ -325,7 +306,6 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "decision",
-      "status": "done",
       "title": "Choose the cross-organization distribution model",
       "objective": "Confirm whether immutable public reusable workflows are sufficient for initial self-service delivery and define when a GitHub App becomes justified.",
       "blocked_by": [
@@ -344,8 +324,7 @@
       "artifacts": [
         "docs/decisions/distribution-model.md"
       ],
-      "started_at": "2026-07-29T00:28:56Z",
-      "completed_at": "2026-07-29T00:31:23Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "G0-09",
@@ -353,7 +332,6 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "implementation",
-      "status": "done",
       "title": "Make consumer pins cover the complete execution graph",
       "objective": "Ensure one reviewed consumer SHA immutably selects nested workflows, actions, containers, prompts, rules, and third-party dependencies.",
       "blocked_by": [
@@ -373,8 +351,7 @@
         "scripts/check-release-graph.sh",
         ".github/workflows/security-pipeline.yml"
       ],
-      "started_at": "2026-07-29T00:31:57Z",
-      "completed_at": "2026-07-29T00:48:03Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "G0-10",
@@ -382,7 +359,6 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "verification",
-      "status": "done",
       "title": "Prove fork-safe baseline behavior",
       "objective": "Give external contributions deterministic baseline evaluation without secrets or privileged triggers.",
       "blocked_by": [
@@ -406,8 +382,7 @@
       "artifacts": [
         "test/fixtures/fork-pr/"
       ],
-      "started_at": "2026-07-29T00:50:21Z",
-      "completed_at": "2026-07-29T00:58:59Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "G0-11",
@@ -415,7 +390,6 @@
       "phase": "g0-trust",
       "priority": "P0",
       "kind": "verification",
-      "status": "done",
       "title": "Enforce the G0 trustworthy-foundation gate",
       "objective": "Turn every G0 trust claim into a required regression test and block release when one fails.",
       "blocked_by": [
@@ -436,8 +410,7 @@
       "artifacts": [
         ".github/workflows/g0-contract.yml"
       ],
-      "started_at": "2026-07-29T01:00:07Z",
-      "completed_at": "2026-07-29T01:03:11Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "EVAL-01",
@@ -445,7 +418,6 @@
       "phase": "evaluation-platform",
       "priority": "P0",
       "kind": "decision",
-      "status": "done",
       "title": "Finalize the Evaluation Result contract",
       "objective": "Version one schema for tool identity, scope, completion, coverage, findings, suppressions, timing, and evidence.",
       "blocked_by": [
@@ -465,8 +437,7 @@
         "schemas/evaluation-result.schema.json",
         "docs/reference/evaluation-result.md"
       ],
-      "started_at": "2026-07-29T01:05:37Z",
-      "completed_at": "2026-07-29T01:11:58Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "EVAL-02",
@@ -474,7 +445,6 @@
       "phase": "evaluation-platform",
       "priority": "P0",
       "kind": "implementation",
-      "status": "done",
       "title": "Implement the scanner adapter contract",
       "objective": "Give every evaluation the same lifecycle for immutable invocation, raw evidence, normalization, and exit handling.",
       "blocked_by": [
@@ -494,8 +464,7 @@
       "artifacts": [
         "actions/evaluation-adapter/"
       ],
-      "started_at": "2026-07-29T01:13:18Z",
-      "completed_at": "2026-07-29T01:18:13Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "EVAL-03",
@@ -503,7 +472,6 @@
       "phase": "evaluation-platform",
       "priority": "P0",
       "kind": "implementation",
-      "status": "done",
       "title": "Aggregate one Evidence Bundle and profile conclusion",
       "objective": "Present humans and automation with one authoritative completion, findings, coverage, and policy surface.",
       "blocked_by": [
@@ -523,8 +491,7 @@
         "schemas/evidence-bundle.schema.json",
         "actions/aggregate-results/"
       ],
-      "started_at": "2026-07-29T01:19:41Z",
-      "completed_at": "2026-07-29T01:26:14Z"
+      "change": "bootstrap-security-gate-specs"
     },
     {
       "id": "BASE-01",
@@ -532,7 +499,6 @@
       "phase": "ecosystem-baseline",
       "priority": "P0",
       "kind": "implementation",
-      "status": "in_progress",
       "title": "Release the secretless Ecosystem Baseline",
       "objective": "Combine workflow security, secret detection, recursive lockfile vulnerabilities, IaC, and conservative static analysis without executing project code.",
       "blocked_by": [
@@ -545,7 +511,8 @@
       "acceptance_criteria": [
         "The baseline is useful for supported Go, Rust, JavaScript, Solidity, infrastructure, and monorepo repositories without secrets.",
         "Unsupported or unavailable coverage is visible in the Evidence Bundle.",
-        "Every evaluation maps findings to source locations, remediation guidance, gate reasons, and durable evidence through the Consumable Output Contract."
+        "Every evaluation maps findings to source locations, remediation guidance, gate reasons, and durable evidence through the Consumable Output Contract.",
+        "A Consumer Project .semgrepignore file or inline nosemgrep comment cannot remove baseline static-analysis coverage without the exclusion being reported."
       ],
       "verification": [
         "Cross-language fixtures pass the baseline and detect planted high-confidence defects.",
@@ -560,8 +527,7 @@
         "docs/consumers/quickstart.md",
         "examples/consumer-ecosystem-baseline.yml"
       ],
-      "started_at": "2026-07-29T01:28:10Z",
-      "completed_at": null
+      "change": "complete-ecosystem-baseline"
     },
     {
       "id": "BASE-02",
@@ -569,7 +535,6 @@
       "phase": "ecosystem-baseline",
       "priority": "P1",
       "kind": "implementation",
-      "status": "pending",
       "title": "Split fast PR and deep scheduled evaluation lanes",
       "objective": "Keep pull-request feedback timely while retaining full-history and whole-repository coverage on trusted events.",
       "blocked_by": [
@@ -589,8 +554,7 @@
       "artifacts": [
         ".github/workflows/ecosystem-baseline.yml"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "PROF-01",
@@ -598,7 +562,6 @@
       "phase": "security-profiles",
       "priority": "P0",
       "kind": "decision",
-      "status": "pending",
       "title": "Finalize the supported Security Profile taxonomy",
       "objective": "Define required, optional, unsupported, and privileged evaluations for real Filecoin project classes.",
       "blocked_by": [
@@ -617,8 +580,7 @@
       "artifacts": [
         "profiles/"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "PROF-02",
@@ -626,9 +588,8 @@
       "phase": "security-profiles",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
-      "title": "Implement profile detection and composition",
-      "objective": "Select profiles from repository signals and compose them by path for monorepos without hiding ambiguity.",
+      "title": "Compose Security Profile evaluations from detection",
+      "objective": "Run the evaluations of each detected Security Profile by component path, so monorepos receive composed coverage without hiding ambiguity.",
       "blocked_by": [
         "PROF-01"
       ],
@@ -637,17 +598,16 @@
         "scanner-runtime"
       ],
       "acceptance_criteria": [
-        "Detection recognizes supported manifests, build files, infrastructure, and Filecoin-specific signals.",
-        "Ambiguous and unsupported components produce explicit coverage gaps rather than guesses."
+        "Detected profiles select their evaluations by component path, including polyglot and nested layouts.",
+        "Ambiguous and unsupported components remain explicit coverage gaps in the composed Evidence Bundle."
       ],
       "verification": [
-        "Repository-shape fixtures cover single-language, polyglot, nested, and ambiguous layouts."
+        "Repository-shape fixtures cover single-language, polyglot, nested, and ambiguous layouts through composition."
       ],
       "artifacts": [
         "actions/detect-profiles/"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "PROF-03",
@@ -655,7 +615,6 @@
       "phase": "security-profiles",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
       "title": "Ship the Go node and service profile",
       "objective": "Add low-noise Go dependency reachability, static analysis, and a separately trusted build tier suitable for node and service repositories.",
       "blocked_by": [
@@ -677,8 +636,7 @@
         "profiles/go.yml",
         "examples/consumer-go-profile.yml"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "BASE-03",
@@ -686,7 +644,6 @@
       "phase": "ecosystem-baseline",
       "priority": "P0",
       "kind": "verification",
-      "status": "pending",
       "title": "Pass the G1 internal-alpha gate",
       "objective": "Prove the immutable baseline and one vertical profile can be adopted end to end by a new consumer.",
       "blocked_by": [
@@ -707,8 +664,7 @@
       "artifacts": [
         "test/acceptance/g1/"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "PROF-04",
@@ -716,7 +672,6 @@
       "phase": "security-profiles",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
       "title": "Ship the Rust and FVM actor profile",
       "objective": "Add RustSec or OSV dependency analysis, dependency policy, no-build static analysis, and actor-aware controls.",
       "blocked_by": [
@@ -738,8 +693,7 @@
         "profiles/rust-fvm.yml",
         "examples/consumer-rust-fvm-profile.yml"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "PROF-05",
@@ -747,7 +701,6 @@
       "phase": "security-profiles",
       "priority": "P1",
       "kind": "implementation",
-      "status": "pending",
       "title": "Ship the JavaScript and TypeScript service profile",
       "objective": "Turn the current strongest generic coverage into a deterministic service profile with no-install and trusted-build tiers.",
       "blocked_by": [
@@ -769,8 +722,7 @@
         "profiles/service.yml",
         "examples/consumer-service-profile.yml"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "PROF-06",
@@ -778,7 +730,6 @@
       "phase": "security-profiles",
       "priority": "P1",
       "kind": "implementation",
-      "status": "pending",
       "title": "Ship the Solidity and FEVM profile",
       "objective": "Combine safe source inspection with an explicit trusted Foundry, Slither, fuzz, and invariant-testing tier.",
       "blocked_by": [
@@ -800,8 +751,7 @@
         "profiles/solidity-fevm.yml",
         "examples/consumer-solidity-fevm-profile.yml"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "PROF-07",
@@ -809,7 +759,6 @@
       "phase": "security-profiles",
       "priority": "P1",
       "kind": "implementation",
-      "status": "pending",
       "title": "Ship the infrastructure and container profile",
       "objective": "Evaluate IaC, Kubernetes, Dockerfiles, container images, and build provenance with deployable policy defaults.",
       "blocked_by": [
@@ -831,8 +780,7 @@
         "profiles/infrastructure.yml",
         "examples/consumer-infrastructure-profile.yml"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "PROF-08",
@@ -840,7 +788,6 @@
       "phase": "security-profiles",
       "priority": "P1",
       "kind": "implementation",
-      "status": "pending",
       "title": "Support composed monorepo evaluation",
       "objective": "Run multiple profiles by path while preserving scope, deduplication, runtime limits, and a single repository conclusion.",
       "blocked_by": [
@@ -864,8 +811,7 @@
       "artifacts": [
         "profiles/monorepo.yml"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "FILE-01",
@@ -873,7 +819,6 @@
       "phase": "filecoin-assurance",
       "priority": "P0",
       "kind": "implementation",
-      "status": "pending",
       "title": "Convert Filecoin invariants into deterministic controls",
       "objective": "Move high-confidence consensus, actor, FEVM, node-liveness, RPC, and storage-provider checks from prompt guidance into testable rules and invariants.",
       "blocked_by": [
@@ -896,8 +841,7 @@
         "rules/filecoin/",
         "test/corpus/filecoin/"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "VERIFY-01",
@@ -905,7 +849,6 @@
       "phase": "verification",
       "priority": "P0",
       "kind": "verification",
-      "status": "pending",
       "title": "Pass the multi-profile effectiveness gate",
       "objective": "Demonstrate safety, portability, completion reliability, useful detection, and acceptable noise across representative profiles.",
       "blocked_by": [
@@ -927,8 +870,7 @@
         "test/corpus/",
         "docs/reports/g2-effectiveness.md"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "PRIV-01",
@@ -936,7 +878,6 @@
       "phase": "privileged-analysis",
       "priority": "P1",
       "kind": "decision",
-      "status": "pending",
       "title": "Choose safe privileged-analysis behavior for forks",
       "objective": "Define no-checkout, maintainer-approved, or app-mediated paths for analyses requiring secrets or write access.",
       "blocked_by": [
@@ -957,8 +898,7 @@
       "artifacts": [
         "docs/decisions/privileged-fork-model.md"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "PRIV-02",
@@ -966,7 +906,6 @@
       "phase": "privileged-analysis",
       "priority": "P1",
       "kind": "implementation",
-      "status": "pending",
       "title": "Make AI review bounded and completion-aware",
       "objective": "Partition large diffs, collect deterministic context, handle refusal and truncation honestly, and emit the Evaluation Result contract.",
       "blocked_by": [
@@ -987,8 +926,7 @@
       "artifacts": [
         "actions/ai-code-review/"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "PRIV-03",
@@ -996,7 +934,6 @@
       "phase": "privileged-analysis",
       "priority": "P1",
       "kind": "verification",
-      "status": "pending",
       "title": "Validate AI findings, privacy, and cost",
       "objective": "Measure AI review as attributable evidence rather than treating model output or availability as correctness.",
       "blocked_by": [
@@ -1017,8 +954,7 @@
       "artifacts": [
         "docs/reports/ai-assurance.md"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "GOV-01",
@@ -1026,7 +962,6 @@
       "phase": "governance-release",
       "priority": "P0",
       "kind": "governance",
-      "status": "pending",
       "title": "Establish ownership and vulnerability response",
       "objective": "Protect the control repository with explicit owners, review rules, private reporting, support, and emergency response.",
       "blocked_by": [
@@ -1048,8 +983,7 @@
         "SECURITY.md",
         "SUPPORT.md"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "GOV-02",
@@ -1057,7 +991,6 @@
       "phase": "governance-release",
       "priority": "P0",
       "kind": "governance",
-      "status": "pending",
       "title": "Automate signed releases, compatibility, and revocation",
       "objective": "Publish immutable, reviewable versions with changelogs, compatibility guarantees, dependency updates, rollback, and emergency revocation.",
       "blocked_by": [
@@ -1081,8 +1014,7 @@
         "CHANGELOG.md",
         "docs/maintainers/releases.md"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "DOC-01",
@@ -1090,7 +1022,6 @@
       "phase": "governance-release",
       "priority": "P1",
       "kind": "implementation",
-      "status": "pending",
       "title": "Generate reference documentation from released metadata",
       "objective": "Keep workflow inputs, outputs, permissions, secrets, profiles, schemas, and versions synchronized with implementation.",
       "blocked_by": [
@@ -1109,8 +1040,7 @@
       "artifacts": [
         "docs/reference/"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "MIG-01",
@@ -1118,7 +1048,6 @@
       "phase": "adoption",
       "priority": "P1",
       "kind": "implementation",
-      "status": "pending",
       "title": "Build profile selection and migration tooling",
       "objective": "Generate a minimal pinned consumer workflow and compatibility report without copying platform implementation.",
       "blocked_by": [
@@ -1138,8 +1067,7 @@
       "artifacts": [
         "tools/ff-sec/"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "ROLL-01",
@@ -1147,7 +1075,6 @@
       "phase": "adoption",
       "priority": "P0",
       "kind": "rollout",
-      "status": "pending",
       "title": "Pilot representative Filecoin projects",
       "objective": "Exercise self-service adoption across low-, medium-, and consensus-critical repositories in independent organizations.",
       "blocked_by": [
@@ -1166,8 +1093,7 @@
       "artifacts": [
         "docs/reports/pilots/"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "ROLL-02",
@@ -1175,7 +1101,6 @@
       "phase": "adoption",
       "priority": "P1",
       "kind": "rollout",
-      "status": "pending",
       "title": "Operationalize staged Merge Gates and support",
       "objective": "Move projects from observation to critical-only and profile policy without surprise blocking or permanent exceptions.",
       "blocked_by": [
@@ -1195,8 +1120,7 @@
       "artifacts": [
         "docs/operators/merge-gate-rollout.md"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "REL-01",
@@ -1204,7 +1128,6 @@
       "phase": "public-v1",
       "priority": "P0",
       "kind": "governance",
-      "status": "pending",
       "title": "Pass the public-v1 release gate",
       "objective": "Publish v1 only after trust, effectiveness, profiles, governance, migration, documentation, and support evidence is reviewed.",
       "blocked_by": [
@@ -1225,8 +1148,7 @@
       "artifacts": [
         "docs/releases/v1-readiness.md"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     },
     {
       "id": "SCALE-01",
@@ -1234,7 +1156,6 @@
       "phase": "ecosystem-scale",
       "priority": "P1",
       "kind": "rollout",
-      "status": "pending",
       "title": "Operate ecosystem health and effectiveness continuously",
       "objective": "Measure whether adoption improves security outcomes rather than merely increasing workflow count.",
       "blocked_by": [
@@ -1253,8 +1174,7 @@
       "artifacts": [
         "docs/operators/ecosystem-health.md"
       ],
-      "started_at": null,
-      "completed_at": null
+      "change": null
     }
   ]
 }

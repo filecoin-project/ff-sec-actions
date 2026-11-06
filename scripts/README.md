@@ -15,10 +15,11 @@ action under `actions/`.
 
 ## Roadmap State
 
-`roadmap.sh` validates, queries, and deliberately updates the canonical
-implementation queue in [`roadmap/state.json`](../roadmap/state.json). Run
-`bash scripts/roadmap.sh help` for its command contract. Mutations require
-`ROADMAP_ALLOW_WRITE=true`; reads and validation are the default. The isolated
+`roadmap.sh` validates, queries, and claims tasks in the implementation queue
+in [`roadmap/state.json`](../roadmap/state.json). Task status is derived from
+each task's linked OpenSpec change. Run `bash scripts/roadmap.sh help` for its
+command contract. `claim` requires `ROADMAP_ALLOW_WRITE=true`; reads and
+validation are the default. The isolated
 contract suite is `bash scripts/test-roadmap.sh`.
 
 ## Workflow Security

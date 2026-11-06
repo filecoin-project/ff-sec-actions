@@ -19,7 +19,9 @@ findings and suppressions, and the final merge conclusion.
 2. rejects duplicate evaluation ids as ambiguous evidence;
 3. reports missing, incomplete, skipped, and error results separately;
 4. sums observed findings and suppressions without calling a partial sum
-   authoritative;
+   authoritative: neither total is authoritative when a required evaluation is
+   missing or no result was received, and the findings total is also
+   non-authoritative when any received result is not `complete`;
 5. fails if any child merge gate fails;
 6. fails incomplete profile coverage when `require-complete` is true;
 7. emits `evidence-bundle.json` and a Markdown job summary before returning the

@@ -29,7 +29,7 @@ run_case() {
   PROFILE_ID=fixture-profile \
   PROFILE_VERSION=1.0.0 \
   REQUIRED_EVALUATIONS='["fixture-scan","fixture-second"]' \
-  REQUIRE_COMPLETE=true \
+  REQUIRE_COMPLETE="${CASE_REQUIRE_COMPLETE:-true}" \
   RESULTS_DIRECTORY="$results" \
   BUNDLE_FILE="$bundle" \
   SUMMARY_FILE="$summary" \
@@ -68,6 +68,21 @@ jq '.completion = {status: "skipped", reason: "fixture skip"} | .coverage.status
 mv "$test_root/skipped/results/two.tmp" "$test_root/skipped/results/two.json"
 run_case skipped 1 incomplete fail
 
+# A consumer that relaxes completeness still sees the skip in the bundle.
+make_clean_pair "$test_root/skipped-relaxed/results"
+cp "$test_root/skipped/results/two.json" "$test_root/skipped-relaxed/results/two.json"
+CASE_REQUIRE_COMPLETE=false run_case skipped-relaxed 0 incomplete pass
+jq -e '.summary.skipped == 1 and .merge_gate.require_complete == false' \
+  "$test_root/skipped-relaxed/bundle.json" >/dev/null \
+  || { printf 'aggregate-results test failure: relaxed completeness hid the skipped evaluation\n' >&2; exit 1; }
+
+# Receiving no results fails the profile even when completeness is relaxed.
+mkdir -p "$test_root/no-results/results"
+CASE_REQUIRE_COMPLETE=false run_case no-results 1 incomplete fail
+jq -e '.merge_gate.reasons | index("no Evaluation Results were received") != null' \
+  "$test_root/no-results/bundle.json" >/dev/null \
+  || { printf 'aggregate-results test failure: empty input did not record its gate reason\n' >&2; exit 1; }
+
 make_clean_pair "$test_root/error/results"
 jq '.completion = {status: "error", reason: "fixture crash"} | .coverage.status = "unknown" | .findings = {count: null, highest_severity: "unknown"} | .merge_gate = {mode: "advisory", conclusion: "fail", reason: "fixture crash"}' \
   "$test_root/error/results/two.json" > "$test_root/error/results/two.tmp"
@@ -93,5 +108,36 @@ SUMMARY_FILE="$test_root/duplicate/summary.md" EVALUATION_VALIDATOR="$validator"
   bash "$aggregator" >/dev/null 2>&1 || duplicate_exit="$?"
 [ "$duplicate_exit" -eq 2 ] \
   || { printf 'aggregate-results test failure: duplicate ids were not rejected\n' >&2; exit 1; }
+
+# Totals are never authoritative over missing or partial coverage.
+make_clean_pair "$test_root/one-missing/results"
+rm "$test_root/one-missing/results/two.json"
+run_case one-missing 1 incomplete fail
+for case_name in one-missing no-results; do
+  jq -e '.summary.findings_authoritative == false and .summary.suppressions_authoritative == false' \
+    "$test_root/$case_name/bundle.json" >/dev/null \
+    || { printf 'aggregate-results test failure: %s presented an authoritative total over missing coverage\n' "$case_name" >&2; exit 1; }
+done
+jq -e '.summary.findings_authoritative == false' "$test_root/skipped-relaxed/bundle.json" >/dev/null \
+  || { printf 'aggregate-results test failure: a skipped evaluation produced an authoritative findings total\n' >&2; exit 1; }
+jq -e '.summary.findings_authoritative == true' "$test_root/clean/bundle.json" >/dev/null \
+  || { printf 'aggregate-results test failure: complete coverage lost its authoritative total\n' >&2; exit 1; }
+
+# A missing required evaluation is listed, not omitted.
+jq -e '.completion.missing_evaluations == ["fixture-scan", "fixture-second"]' \
+  "$test_root/no-results/bundle.json" >/dev/null \
+  || { printf 'aggregate-results test failure: missing required evaluations were not listed\n' >&2; exit 1; }
+
+# A result that fails Evaluation Result validation is an operational failure.
+make_clean_pair "$test_root/malformed/results"
+jq 'del(.coverage)' "$test_root/malformed/results/two.json" > "$test_root/malformed/results/two.tmp"
+mv "$test_root/malformed/results/two.tmp" "$test_root/malformed/results/two.json"
+malformed_exit=0
+PROFILE_ID=fixture PROFILE_VERSION=1 REQUIRED_EVALUATIONS='["fixture-scan","fixture-second"]' \
+RESULTS_DIRECTORY="$test_root/malformed/results" BUNDLE_FILE="$test_root/malformed/bundle.json" \
+SUMMARY_FILE="$test_root/malformed/summary.md" EVALUATION_VALIDATOR="$validator" \
+  bash "$aggregator" >/dev/null 2>&1 || malformed_exit="$?"
+[ "$malformed_exit" -eq 2 ] \
+  || { printf 'aggregate-results test failure: an invalid input result exited %s, expected 2\n' "$malformed_exit" >&2; exit 1; }
 
 printf 'Evidence Bundle aggregation contract tests passed.\n'

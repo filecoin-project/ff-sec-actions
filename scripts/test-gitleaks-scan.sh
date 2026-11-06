@@ -63,6 +63,13 @@ run_scan() {
 
 run_scan fork-pr auto pull_request "$base_sha" "$head_sha"
 
+# Secret values never reach the SARIF the adapter renders from.
+for planted_value in AKIA7QWERTY8ZXCVBNM2 7xQwErTyUiOpAsDfGhJkLzXcVbNm1234567890ab; do
+  if grep -Fq "$planted_value" "$test_directory/fork-pr.sarif"; then
+    fail "SARIF contains an unredacted secret value"
+  fi
+done
+
 git -C "$fixture_repo" rm -q planted.env
 git -C "$fixture_repo" -c commit.gpgsign=false commit -qm "remove fixture secret"
 run_scan scheduled-history auto schedule "" ""

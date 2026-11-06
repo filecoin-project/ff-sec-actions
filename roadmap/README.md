@@ -1,17 +1,39 @@
 # Implementation Roadmap State
 
-[`state.json`](state.json) is the canonical machine-readable implementation
-queue. The prose [decision map](../docs/ECOSYSTEM-SECURITY-DECISION-MAP.md)
-records why decisions exist; the state file records what to do next, in what
-order, and how completion is proven.
+[`state.json`](state.json) is the canonical machine-readable record of task
+**order, dependencies, and release gates**. It does not store task status.
+Behavior lives in [OpenSpec specs](../openspec/) (`openspec/specs/`) and
+in-flight work lives in OpenSpec changes (`openspec/changes/`). Each task links to the change that
+delivers it, and the change lifecycle decides the task's status. The
+[decision map](../docs/ECOSYSTEM-SECURITY-DECISION-MAP.md) is frozen history.
 
-Each task contains:
+Each task (schema version 2) contains:
 
 - a stable `id` and topological `order`;
-- `phase`, `priority`, `kind`, and `status`;
+- `phase`, `priority`, and `kind`;
+- `change`: the linked OpenSpec change name, or `null` when unclaimed;
+- optional `cancelled: true`;
 - dependency ids in `blocked_by`;
-- the task objective, acceptance criteria, verification, and expected artifacts;
-- optional start and completion timestamps.
+- the task objective, acceptance criteria, verification, and expected artifacts.
+
+## Derived Status
+
+| Condition | Status |
+|---|---|
+| `cancelled: true` | `cancelled` |
+| `openspec/changes/archive/YYYY-MM-DD-<change>/` exists | `done` |
+| `openspec/changes/<change>/` exists | `in_progress` |
+| Unclaimed, and a `blocked_by` dependency is not `done` | `blocked` |
+| Unclaimed, and every dependency is `done` | `pending` |
+
+Only one task may be `in_progress`. A task cannot be claimed until all its
+dependencies are `done`, and a `done` task cannot depend on unfinished work.
+A link to a change that does not exist fails validation.
+
+Migration exemption: tasks finished before OpenSpec link to
+`bootstrap-security-gate-specs`. Until that change is archived they read
+`in_progress`, count as `done` for dependency checks, and do not occupy the
+single in-progress slot.
 
 ## Read The Queue
 
@@ -21,7 +43,7 @@ Validate the complete state contract:
 bash scripts/roadmap.sh validate
 ```
 
-Run its isolated mutation and dependency tests:
+Run its isolated derivation, claim, and invariant tests:
 
 ```bash
 bash scripts/test-roadmap.sh
@@ -33,33 +55,37 @@ Print the next actionable task as JSON:
 bash scripts/roadmap.sh next
 ```
 
-List the whole queue or one status:
+List the whole queue with derived status, or only one status:
 
 ```bash
 bash scripts/roadmap.sh list
 bash scripts/roadmap.sh list pending
 ```
 
-Query directly with `jq`:
+Query order, dependencies, and gates directly with `jq`:
 
 ```bash
-jq '.tasks[] | select(.priority == "P0" and .status == "pending")' roadmap/state.json
+jq '.tasks[] | select(.priority == "P0" and .change == null)' roadmap/state.json
 jq '.release_gates' roadmap/state.json
 ```
 
-## Update State Deliberately
+## Claim And Complete A Task
 
-State changes are refused unless write mode is explicit:
+1. Take the task from `bash scripts/roadmap.sh next`.
+2. Create its change: `openspec new change "<change-name>"`.
+3. Link the task to it. State changes are refused unless write mode is explicit:
 
-```bash
-ROADMAP_ALLOW_WRITE=true bash scripts/roadmap.sh set-status G0-01 in_progress
-ROADMAP_ALLOW_WRITE=true bash scripts/roadmap.sh set-status G0-01 done
-```
+   ```bash
+   ROADMAP_ALLOW_WRITE=true bash scripts/roadmap.sh claim <TASK-ID> <change-name>
+   ```
 
-Only one task may be `in_progress`. A task cannot be claimed until all its
-dependencies are `done`, and a completed task cannot depend on incomplete work.
-Commit state changes together with the evidence that satisfies the task's
-acceptance criteria.
+4. Plan and implement through the change. Settle any open decision ticket the
+   task references in `decision_refs` in that change's `design.md`.
+5. Archive the change with `openspec archive "<change-name>"`. The task then
+   derives `done`.
+
+Commit the state link together with the change, and commit the archive
+together with the evidence that satisfies the task's acceptance criteria.
 
 ## Ordered Phases
 

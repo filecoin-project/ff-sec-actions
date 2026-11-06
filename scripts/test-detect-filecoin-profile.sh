@@ -301,4 +301,32 @@ GITHUB_OUTPUT="$test_directory/unsafe-path.outputs" \
 grep -Fq '<code>component&#124;tick&#96;name</code>' "$test_directory/unsafe-path.md" \
   || fail "an untrusted component path was not escaped in the Markdown summary"
 
+# Operational failures exit nonzero and never emit a complete result.
+missing_catalog_result="$test_directory/missing-catalog.json"
+if PROFILE_CATALOG="$test_directory/no-such-catalog.json" \
+  REPOSITORY_PATH="$fixture_root/lotus-node" \
+  RESULT_FILE="$missing_catalog_result" \
+  SUMMARY_FILE="$test_directory/missing-catalog.md" \
+  GITHUB_OUTPUT="$test_directory/missing-catalog.outputs" \
+  bash "$detector" >/dev/null 2>&1; then
+  fail "a missing profile catalog did not fail detection"
+fi
+if [ -f "$missing_catalog_result" ] && jq -e '.completion == "complete"' "$missing_catalog_result" >/dev/null 2>&1; then
+  fail "a missing profile catalog emitted a complete result"
+fi
+
+jq '.profiles |= map(select(.id != "go-node"))' "$profile_catalog" > "$test_directory/no-go-node.json"
+unknown_profile_result="$test_directory/unknown-profile.json"
+if PROFILE_CATALOG="$test_directory/no-go-node.json" \
+  REPOSITORY_PATH="$fixture_root/lotus-node" \
+  RESULT_FILE="$unknown_profile_result" \
+  SUMMARY_FILE="$test_directory/unknown-profile.md" \
+  GITHUB_OUTPUT="$test_directory/unknown-profile.outputs" \
+  bash "$detector" >/dev/null 2>&1; then
+  fail "detection succeeded while referencing a profile absent from the catalog"
+fi
+if [ -f "$unknown_profile_result" ] && jq -e '.completion == "complete"' "$unknown_profile_result" >/dev/null 2>&1; then
+  fail "an unknown profile reference emitted a complete result"
+fi
+
 printf 'profile detection tests passed.\n'

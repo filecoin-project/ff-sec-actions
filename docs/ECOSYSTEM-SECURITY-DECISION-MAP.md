@@ -4,11 +4,16 @@ Goal: make `ff-sec-actions` a robust, reusable security-evaluation platform for
 independent Filecoin ecosystem projects without turning a green check into a
 false claim of safety.
 
-This map is the canonical decision artifact. The
-[machine-readable roadmap](../roadmap/README.md) is the canonical implementation
-queue for task order, dependencies, acceptance criteria, verification, and
-status. Resolve open decision tickets when their corresponding roadmap task is
-claimed.
+> **Frozen history.** This map is no longer edited. Behavior the platform
+> provides is specified in [OpenSpec specs](../openspec/) (`openspec/specs/`),
+> and in-flight work lives in OpenSpec changes (`openspec/changes/`). The
+> [machine-readable roadmap](../roadmap/README.md) owns task order,
+> dependencies, and release gates. Each open ticket below is settled in the
+> `design.md` of the change whose roadmap task references it through
+> `decision_refs`. Links into this page remain stable.
+
+This map was the canonical decision artifact before the platform adopted
+OpenSpec.
 
 ## Target Architecture
 

@@ -75,6 +75,32 @@ for expected in "${expected_rules[@]}"; do
   grep -R -Fq "ruleid: $expected" "$fixture" || fail "fixture is missing $expected"
 done
 
+# Each finding gate is an independent consumer input that defaults to advisory,
+# completeness defaults to required, and the profile conclusion always runs.
+for gate in actions-security dependency secrets iac static-analysis; do
+  sed -n "/^      ${gate}-blocking:/,/default:/p" "$workflow" | grep -Eq 'default:[[:space:]]+false' \
+    || fail "${gate}-blocking is not an advisory-by-default input"
+  grep -Fq "blocking: \${{ inputs.${gate}-blocking }}" "$workflow" \
+    || fail "${gate}-blocking is not wired to its evaluation"
+done
+sed -n '/^      require-complete:/,/default:/p' "$workflow" | grep -Eq 'default:[[:space:]]+true' \
+  || fail "require-complete does not default to true"
+sed -n '/^  profile-conclusion:/,/^    steps:/p' "$workflow" | grep -Fq 'if: always()' \
+  || fail "Profile Conclusion does not run when an evaluation job fails"
+
+# Static analysis never reads Consumer Project Semgrep configuration: the scan
+# always passes an explicit repository-owned rules file and the baseline
+# workflow never forwards a consumer-supplied config.
+semgrep_script="$repo_root/actions/semgrep-scan/semgrep-scan.sh"
+# shellcheck disable=SC2016 # match the literal variable reference in the script
+grep -Fq -- '--config "$SEMGREP_CONFIG"' "$semgrep_script" \
+  || fail "semgrep-scan does not pass an explicit rules file"
+grep -Fq 'rules/ecosystem-baseline.yml' "$semgrep_script" \
+  || fail "semgrep-scan does not default to the versioned baseline rules"
+if sed -n '/actions\/semgrep-scan@/,/^      - /p' "$repo_root/.github/workflows/sec-semgrep.yml" | grep -Eq '^[[:space:]]+config:'; then
+  fail "the baseline Semgrep workflow forwards a rules config"
+fi
+
 if [ "${BASELINE_RUN_DETECTION:-false}" = true ]; then
   result="${BASELINE_RESULT_FILE:-}"
   if [ -z "$result" ]; then
@@ -88,6 +114,22 @@ if [ "${BASELINE_RUN_DETECTION:-false}" = true ]; then
     semgrep scan --metrics=off --disable-version-check \
       --config "$detection_root/rules/ecosystem-baseline.yml" \
       --json --output "$result" "$detection_root/fixture"
+    # A planted consumer .semgrep.yml must not add or replace rules.
+    cat > "$detection_root/fixture/.semgrep.yml" <<'YAML'
+rules:
+  - id: consumer-planted-rule
+    pattern: tx.origin
+    message: consumer-planted rule
+    languages: [solidity]
+    severity: ERROR
+YAML
+    consumer_result="$detection_root/consumer.json"
+    (cd "$detection_root/fixture" && semgrep scan --metrics=off --disable-version-check \
+      --config "$detection_root/rules/ecosystem-baseline.yml" \
+      --json --output "$consumer_result" .)
+    if jq -e 'any(.results[]; .check_id | endswith("consumer-planted-rule"))' "$consumer_result" >/dev/null; then
+      fail "a consumer .semgrep.yml rule ran inside the baseline"
+    fi
   fi
   [ -s "$result" ] || fail "Semgrep detection result is missing or empty: $result"
   for expected in "${expected_rules[@]}"; do

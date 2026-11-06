@@ -1,0 +1,21 @@
+schema: spec-driven
+
+context: |
+  Scope is security gates for Filecoin ecosystem Consumer Projects only. Code
+  quality evaluations (lint, coverage, fuzzing, builds) are out of scope.
+  Use the vocabulary defined in CONTEXT.md and avoid the terms it lists under
+  "Avoid".
+  The Ecosystem Baseline never executes Consumer Project code and never holds
+  secrets, write permissions, or OIDC. Any evaluation that needs more belongs
+  in a separate, opt-in tier defined in docs/reference/execution-trust.md.
+  Specs describe behavior that exists and is proven by a check, test, or
+  fixture. Planned behavior belongs in a change, not in a main spec.
+  roadmap/state.json owns task order, dependencies, and release gates. Claim a
+  roadmap task by linking it to its change with scripts/roadmap.sh claim.
+
+rules:
+  specs:
+    - Every new or modified scenario names its proving check, test, or fixture in the change's design.md, or adds one in tasks.md.
+    - Do not claim protection from Consumer Project-controlled input unless a rejecting fixture proves it.
+  design:
+    - Settle any decision ticket referenced by the claimed roadmap task's decision_refs.
