@@ -142,23 +142,14 @@ fixture="$(fresh_fixture missing-change)"
 mutate "$fixture" '(.tasks[] | select(.id == "G0-01") | .change) = "no-such-change"'
 expect_invalid "$fixture" "a link to a nonexistent change passed validation"
 
-# Bootstrap exemption: pre-OpenSpec tasks linked to the active bootstrap change
-# satisfy dependencies and do not occupy the in-progress slot.
-fixture="$(fresh_fixture bootstrap)"
-mkdir -p "$fixture/changes/bootstrap-security-gate-specs" "$fixture/changes/next-work"
-mutate "$fixture" '.tasks |= map(
-    if .id == "G0-02" then .change = "next-work"
-    elif (.id | IN("FOUND-01", "STATE-01", "G0-01")) then .change = "bootstrap-security-gate-specs"
-    else . end)'
-run "$fixture" validate
-[ "$(status_of "$fixture" G0-01)" = in_progress ] || fail "a bootstrap-linked task should read in_progress before archive"
-[ "$(status_of "$fixture" G0-02)" = in_progress ] || fail "work depending on bootstrap-linked tasks should be claimable"
-
-fixture="$(fresh_fixture bootstrap-only)"
-mkdir -p "$fixture/changes/other-change"
-mutate "$fixture" '(.tasks[] | select(.id == "G0-01") | .change) = "other-change"
-  | (.tasks[] | select(.id == "G0-02") | .change) = "other-change"'
-expect_invalid "$fixture" "the exemption applied to a change other than the bootstrap change"
+# The bootstrap migration exemption is gone: an active change with that name
+# gets no special treatment.
+fixture="$(fresh_fixture no-exemption)"
+mkdir -p "$fixture/changes/bootstrap-security-gate-specs"
+mutate "$fixture" '(.tasks[] | select(.id == "G0-01") | .change) = "foundation"
+  | (.tasks[] | select(.id == "G0-02" or .id == "G0-03") | .change)
+    = "bootstrap-security-gate-specs"'
+expect_invalid "$fixture" "tasks linked to an active bootstrap change bypassed the single in-progress rule"
 
 # Structural invariants.
 fixture="$(fresh_fixture forward-dependency)"
