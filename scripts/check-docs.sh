@@ -27,6 +27,8 @@ require_text() {
 
 required_pages=(
   "README.md"
+  "CONTEXT.md"
+  "openspec/config.yaml"
   "actions/scanner-outcome/action.yml"
   "actions/scanner-outcome/scanner-outcome.sh"
   "actions/semgrep-scan/action.yml"
@@ -130,6 +132,12 @@ if [ -f "README.md" ]; then
   require_text "README.md" "(docs/operators/README.md)"
   require_text "README.md" "(docs/README.md)"
   require_text "README.md" "(docs/workflows/README.md)"
+  require_text "README.md" "(openspec/)"
+fi
+
+[ -d "openspec/changes" ] || report_error "required OpenSpec changes directory is missing: openspec/changes"
+if [ -f "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md" ]; then
+  require_text "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md" "**Frozen history.**"
 fi
 
 if [ -f ".github/workflows/docs.yml" ]; then

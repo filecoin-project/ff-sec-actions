@@ -137,7 +137,7 @@
         "cache": false,
         "self_hosted_runner": false
       },
-      "network": ["github-action-download", "go-module-proxy"],
+      "network": ["github-action-download", "go-module-proxy", "npm-registry"],
       "migration": ["Add execution-trust and workflow-security contracts to this job."]
     },
     {

@@ -9,7 +9,9 @@ and documentation contracts.
 ## Start Here
 
 1. Read the shared [domain language](../../CONTEXT.md).
-2. Read the [decision map](../ECOSYSTEM-SECURITY-DECISION-MAP.md).
+2. Read the [OpenSpec specs](../../openspec/) for current behavior
+   (`openspec/specs/`) and in-flight changes (`openspec/changes/`). The
+   [decision map](../ECOSYSTEM-SECURITY-DECISION-MAP.md) is frozen history.
 3. Read the accepted [distribution model](../decisions/distribution-model.md).
 4. Read the [documentation architecture](../DOCUMENTATION-ARCHITECTURE.md).
 5. Identify whether the change affects a consumer interface, execution trust,

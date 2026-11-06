@@ -5,6 +5,7 @@ on:
     paths:
       - README.md
       - CONTEXT.md
+      - openspec/**
       - docs/**
       - examples/**
       - actions/**
@@ -16,6 +17,7 @@ on:
       - threat-model/**
       - .github/workflows/**
       - scripts/check-docs.sh
+      - scripts/check-openspec.sh
       - scripts/roadmap.sh
       - scripts/test-roadmap.sh
       - scripts/check-execution-trust.sh
@@ -51,6 +53,7 @@ on:
     paths:
       - README.md
       - CONTEXT.md
+      - openspec/**
       - docs/**
       - examples/**
       - actions/**
@@ -62,6 +65,7 @@ on:
       - threat-model/**
       - .github/workflows/**
       - scripts/check-docs.sh
+      - scripts/check-openspec.sh
       - scripts/roadmap.sh
       - scripts/test-roadmap.sh
       - scripts/check-execution-trust.sh
@@ -120,6 +124,13 @@ jobs:
 
       - name: Test machine-readable roadmap state
         run: bash scripts/test-roadmap.sh
+
+      - name: Install the pinned OpenSpec CLI
+        # Exact version; package lifecycle scripts are disabled.
+        run: npm install --global --ignore-scripts @fission-ai/openspec@1.16.0
+
+      - name: Validate OpenSpec specs and changes
+        run: bash scripts/check-openspec.sh
 
       - name: Validate execution-trust classification
         run: bash scripts/check-execution-trust.sh

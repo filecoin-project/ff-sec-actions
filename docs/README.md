@@ -69,7 +69,8 @@ policy, exceptions, upgrades, and rollback across projects.
 - [Fork pull-request safety](reference/fork-pr-safety.md)
 - [Filecoin Security Profile detection](reference/profile-detection.md)
 - [Documentation architecture](DOCUMENTATION-ARCHITECTURE.md)
-- [Ecosystem security decision map](ECOSYSTEM-SECURITY-DECISION-MAP.md)
+- [OpenSpec specs and changes](../openspec/)
+- [Ecosystem security decision map (frozen history)](ECOSYSTEM-SECURITY-DECISION-MAP.md)
 - [Distribution model decision](decisions/distribution-model.md)
 - [Machine-readable implementation roadmap](../roadmap/README.md)
 
@@ -83,7 +84,8 @@ policy, exceptions, upgrades, and rollback across projects.
 
 ## Current Planning Status
 
-This repository is pre-v1. The decision map is authoritative for product
-decisions, and the machine-readable roadmap is authoritative for implementation
-order and status. Planned pages and profiles are not documented as available
+This repository is pre-v1. OpenSpec specs are authoritative for current
+behavior and OpenSpec changes for in-flight work. The machine-readable roadmap
+is authoritative for implementation order, dependencies, and release gates, and
+derives each task's status from its linked change. Planned pages and profiles are not documented as available
 until their implementation and contract tests exist.

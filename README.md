@@ -42,8 +42,10 @@ selection, policy, exceptions, health, and rollback.
 
 The [documentation home](docs/README.md) is the complete navigation index.
 
-The [machine-readable implementation roadmap](roadmap/README.md) shows the
-dependency-ordered work queue and the commands used to claim and complete work.
+Current behavior is specified in [OpenSpec](openspec/) (`openspec/specs/`),
+and in-flight work lives in OpenSpec changes. The
+[machine-readable implementation roadmap](roadmap/README.md) shows the
+dependency-ordered work queue and how to claim a task by linking it to a change.
 
 ## What Exists Today?
 
@@ -57,8 +59,9 @@ dependency-ordered work queue and the commands used to claim and complete work.
 | Path-scoped Filecoin project classification | Composite detector action and versioned profile catalog | Implemented pre-v1; immutable consumer pin pending release |
 | Normalized Evaluation Result and Evidence Bundle | Five baseline evaluations plus `Profile Conclusion` | Evaluation Result `1.1.0`; Evidence Bundle `1.0.0` in the alpha baseline |
 
-See the [decision map](docs/ECOSYSTEM-SECURITY-DECISION-MAP.md) for release
-gates and active design work.
+See the [roadmap](roadmap/README.md) for release gates and the
+[decision map](docs/ECOSYSTEM-SECURITY-DECISION-MAP.md) for the history of
+product decisions.
 
 ## Repository Map
 
@@ -70,7 +73,8 @@ examples/                executable consumer workflow examples
 profiles/                versioned Filecoin Security Profile catalog
 prompts/                 shared and Filecoin-specific AI review guidance
 scripts/                 local tooling and documentation checks
-roadmap/                 canonical machine-readable implementation state
+openspec/                specs (current behavior) and changes (in-flight work)
+roadmap/                 task order, dependencies, and release gates
 ```
 
 ## Trust Boundaries

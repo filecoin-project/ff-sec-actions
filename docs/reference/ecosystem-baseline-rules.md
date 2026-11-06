@@ -21,9 +21,16 @@ result means only that the declared rules completed over the reported scope.
 
 The rules are loaded from the same immutable repository commit as the
 [`semgrep-scan` action](../../actions/semgrep-scan/action.yml). The baseline does
-not use Semgrep registry aliases or Consumer Project configuration. Projects
-may run additional rules separately, but those results are not part of the
-versioned Ecosystem Baseline conclusion.
+not use Semgrep registry aliases or rules from a Consumer Project Semgrep
+configuration file. Projects may run additional rules separately, but those
+results are not part of the versioned Ecosystem Baseline conclusion.
+
+> **Known limitation:** Semgrep still honors a `.semgrepignore` file and inline
+> `nosemgrep` comments in the scanned repository, including ones added by a
+> fork pull request. They can exclude files or findings from this evaluation
+> while it still reports `complete`. Review changes to `.semgrepignore` and new
+> `nosemgrep` comments as security-relevant until the baseline removes this
+> consumer control.
 
 ## Next
 
