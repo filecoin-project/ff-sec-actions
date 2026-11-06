@@ -25,8 +25,10 @@ SUMMARY_FILE="${SUMMARY_FILE:-${RUNNER_TEMP:-$PWD}/${EVALUATION_ID}-summary.md}"
 case "$BLOCKING" in true|false) ;; *) printf 'evaluation-adapter error: BLOCKING must be true or false\n' >&2; exit 2 ;; esac
 case "$TOOL_OUTCOME" in success|failure|cancelled|timed-out|skipped) ;; *) printf 'evaluation-adapter error: invalid TOOL_OUTCOME\n' >&2; exit 2 ;; esac
 case "$MAX_SUMMARY_FINDINGS" in ''|*[!0-9]*) printf 'evaluation-adapter error: MAX_SUMMARY_FINDINGS must be an integer\n' >&2; exit 2 ;; esac
-[ "$MAX_SUMMARY_FINDINGS" -ge 1 ] && [ "$MAX_SUMMARY_FINDINGS" -le 100 ] \
-  || { printf 'evaluation-adapter error: MAX_SUMMARY_FINDINGS must be between 1 and 100\n' >&2; exit 2; }
+if [ "$MAX_SUMMARY_FINDINGS" -lt 1 ] || [ "$MAX_SUMMARY_FINDINGS" -gt 100 ]; then
+  printf 'evaluation-adapter error: MAX_SUMMARY_FINDINGS must be between 1 and 100\n' >&2
+  exit 2
+fi
 
 for coverage_json in "$COVERAGE_INCLUDED" "$COVERAGE_EXCLUDED" "$COVERAGE_LIMITATIONS"; do
   jq -e 'type == "array" and all(.[]; type == "string")' <<< "$coverage_json" >/dev/null \

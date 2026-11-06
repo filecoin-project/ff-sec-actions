@@ -4,7 +4,10 @@
 # Optional environment:
 #   BASELINE_RUN_DETECTION=true enables planted-fixture result validation.
 #   BASELINE_RESULT_FILE points to an existing Semgrep JSON result; when empty,
-#   the script runs an installed semgrep executable itself.
+#   the script runs the semgrep executable on PATH itself. Self-scan is the CI
+#   path: it scans a temporary copy of the fixture (outside any test/ directory
+#   that Semgrep ignores by default) and also runs the planted consumer
+#   .semgrep.yml check. TMPDIR controls where the copy is made.
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -132,10 +135,20 @@ YAML
     fi
   fi
   [ -s "$result" ] || fail "Semgrep detection result is missing or empty: $result"
+  # Every planted file must reach the rules; a skipped path (for example by
+  # Semgrep's default ignore list) must not surface as a missing detection.
+  fixture_files="$(find "$fixture" -type f | wc -l | tr -d ' ')"
+  scanned_files="$(jq '.paths.scanned | length' "$result")"
+  [ "$scanned_files" -eq "$fixture_files" ] \
+    || fail "Semgrep scanned $scanned_files of $fixture_files planted fixture files"
   for expected in "${expected_rules[@]}"; do
     jq -e --arg id "$expected" 'any(.results[]; .check_id | endswith($id))' "$result" >/dev/null \
       || fail "Semgrep did not detect planted fixture: $expected"
   done
 fi
 
-printf 'Ecosystem Baseline composition%s checks passed.\n' "$([ "${BASELINE_RUN_DETECTION:-false}" = true ] && printf ' and detection' || true)"
+detection_suffix=""
+if [ "${BASELINE_RUN_DETECTION:-false}" = true ]; then
+  detection_suffix=" and detection"
+fi
+printf 'Ecosystem Baseline composition%s checks passed.\n' "$detection_suffix"
