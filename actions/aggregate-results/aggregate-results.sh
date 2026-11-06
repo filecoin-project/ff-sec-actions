@@ -56,9 +56,12 @@ elif [ "$missing_count" -gt 0 ] || [ "$incomplete_count" -gt 0 ] || [ "$skipped_
 fi
 
 findings_observed="$(jq '[.[].findings.count // 0] | add // 0' <<< "$results")"
-findings_authoritative="$(jq 'all(.[]; .findings.count != null and .completion.status == "complete")' <<< "$results")"
+# A total is authoritative only when every required evaluation was received.
+findings_authoritative="$(jq --argjson missing "$missing_count" \
+  '$missing == 0 and length > 0 and all(.[]; .findings.count != null and .completion.status == "complete")' <<< "$results")"
 suppressions_observed="$(jq '[.[].suppressions.count // 0] | add // 0' <<< "$results")"
-suppressions_authoritative="$(jq 'all(.[]; .suppressions.count != null)' <<< "$results")"
+suppressions_authoritative="$(jq --argjson missing "$missing_count" \
+  '$missing == 0 and length > 0 and all(.[]; .suppressions.count != null)' <<< "$results")"
 highest_severity="$(jq -r '
   def rank: {"critical":6,"high":5,"medium":4,"low":3,"info":2,"none":1,"unknown":0}[.] // 0;
   [.[].findings.highest_severity] | if length == 0 then "unknown" else max_by(rank) end
