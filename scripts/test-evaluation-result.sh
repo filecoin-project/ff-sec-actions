@@ -105,6 +105,18 @@ if bash "$checker" "$test_directory/invalid-v1-1-missing-artifact.json" >/dev/nu
   fail "Evaluation Result 1.1 accepted evidence without artifact identity"
 fi
 
+jq 'del(.coverage)' \
+  "$test_directory/scanner-complete.json" > "$test_directory/invalid-missing-field.json"
+if bash "$checker" "$test_directory/invalid-missing-field.json" >/dev/null 2>&1; then
+  fail "a result missing a required top-level field was accepted"
+fi
+
+jq '.evidence[0] = {type: "sarif", path: "result.sarif", sha256: null}' \
+  "$test_directory/scanner-complete.json" > "$test_directory/invalid-evidence-digest.json"
+if bash "$checker" "$test_directory/invalid-evidence-digest.json" >/dev/null 2>&1; then
+  fail "evidence with a path but no SHA-256 digest was accepted"
+fi
+
 mkdir -p "$test_directory/bin" "$test_directory/runner"
 printf 'base prompt\n' > "$test_directory/base.md"
 printf 'domain prompt\n' > "$test_directory/domain.md"

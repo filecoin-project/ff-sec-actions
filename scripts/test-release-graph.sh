@@ -102,4 +102,22 @@ jq '.expected_assets["actions/demo"] += ["actions/demo/missing.sh"]' \
 mv "$fixture_root/security/release-graph.tmp" "$fixture_root/security/release-graph.json"
 expect_rejection "does not select expected asset"
 
+jq '.required_markers[".github/workflows/root.yml"] = ["TOOL_VERSION: 9.9.9"]' \
+  "$fixture_root/security/release-graph.json" > "$fixture_root/security/release-graph.tmp"
+mv "$fixture_root/security/release-graph.tmp" "$fixture_root/security/release-graph.json"
+expect_rejection "required immutable tool marker"
+jq '.required_markers = {}' \
+  "$fixture_root/security/release-graph.json" > "$fixture_root/security/release-graph.tmp"
+mv "$fixture_root/security/release-graph.tmp" "$fixture_root/security/release-graph.json"
+
+cp "$fixture_root/.github/workflows/root.yml" "$fixture_root/.github/workflows/root.yml.bak"
+cat >> "$fixture_root/.github/workflows/root.yml" <<'YAML'
+  local:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./actions/demo
+YAML
+expect_rejection "worktree-relative action"
+mv "$fixture_root/.github/workflows/root.yml.bak" "$fixture_root/.github/workflows/root.yml"
+
 printf 'release-graph contract tests passed.\n'

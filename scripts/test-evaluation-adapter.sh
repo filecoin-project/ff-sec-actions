@@ -112,4 +112,25 @@ run_case crash failure "" false 2 error fail null
 run_case malformed success "$test_root/malformed.sarif" false 2 error fail null
 run_case skipped skipped "" false 0 skipped not-evaluated null
 
+# The default presentation cap renders 20 findings while the result keeps all.
+jq '.runs[0].results = [range(0; 25) as $i | .runs[0].results[0]
+    | .locations[0].physicalLocation.region.startLine = ($i + 1)]' \
+  "$test_root/findings.sarif" > "$test_root/many.sarif"
+run_case many-findings success "$test_root/many.sarif" false 0 complete pass 25
+# shellcheck disable=SC2016 # match literal Markdown code spans
+rendered_rows="$(grep -c '^| `error` | `fixture:high`' "$test_root/many-findings.md" || true)"
+[ "$rendered_rows" -eq 20 ] \
+  || { printf 'evaluation-adapter test failure: rendered %s findings, expected the default cap of 20\n' "$rendered_rows" >&2; exit 1; }
+rendered_annotations="$(grep -c '^::warning file=' "$test_root/many-findings.commands.log" || true)"
+[ "$rendered_annotations" -eq 20 ] \
+  || { printf 'evaluation-adapter test failure: emitted %s annotations, expected the default cap of 20\n' "$rendered_annotations" >&2; exit 1; }
+grep -Fq 'Showing 20 of 25 findings' "$test_root/many-findings.md" \
+  || { printf 'evaluation-adapter test failure: capped summary does not point to the complete result\n' >&2; exit 1; }
+
+# A SARIF result without a level is summarized as unknown severity.
+jq 'del(.runs[0].results[0].level)' "$test_root/findings.sarif" > "$test_root/no-level.sarif"
+run_case no-level success "$test_root/no-level.sarif" false 0 complete pass 1
+jq -e '.findings.highest_severity == "unknown"' "$test_root/no-level.json" >/dev/null \
+  || { printf 'evaluation-adapter test failure: a level-less finding was not summarized as unknown\n' >&2; exit 1; }
+
 printf 'evaluation adapter lifecycle contract tests passed.\n'
