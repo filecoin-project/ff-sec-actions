@@ -73,15 +73,18 @@ jobs:
 
       - name: Validate Ecosystem Baseline composition and planted fixtures
         run: |
-          result_file="${RUNNER_TEMP}/ecosystem-baseline-detection.json"
-          docker run --rm \
-            --volume "${GITHUB_WORKSPACE}:/src:ro" \
-            --workdir /src \
+          # The test script scans a temporary copy of the fixture: scanning it in
+          # place would hit Semgrep's default ignore of test/ and scan nothing.
+          # Only RUNNER_TEMP is mounted into the pinned Semgrep container.
+          mkdir -p "${RUNNER_TEMP}/bin"
+          cat > "${RUNNER_TEMP}/bin/semgrep" <<'WRAPPER'
+          #!/usr/bin/env bash
+          docker run --rm --volume "${RUNNER_TEMP}:${RUNNER_TEMP}" --workdir "${PWD}" \
             semgrep/semgrep:1.93.0@sha256:f35c7891e2030110a84a721fdd556ce8f3da6e7e69d7fab1d3660ae1bb334474 \
-            semgrep scan --metrics=off --disable-version-check \
-              --config rules/ecosystem-baseline.yml \
-              --json test/fixtures/ecosystem-baseline/monorepo > "$result_file"
-          BASELINE_RUN_DETECTION=true BASELINE_RESULT_FILE="$result_file" \
+            semgrep "$@"
+          WRAPPER
+          chmod +x "${RUNNER_TEMP}/bin/semgrep"
+          PATH="${RUNNER_TEMP}/bin:${PATH}" TMPDIR="${RUNNER_TEMP}" BASELINE_RUN_DETECTION=true \
             bash scripts/test-ecosystem-baseline.sh
           bash scripts/test-consumer-alpha.sh
 
