@@ -27,6 +27,7 @@ workflow, understand its authority, and interpret the first result.
 - [Choose a security profile](docs/consumers/choose-a-profile.md)
 - [Understand results and merge gates](docs/consumers/understand-results.md)
 - [Configure permissions and secrets](docs/consumers/permissions-and-secrets.md)
+- [Let a coding agent pick and add the right workflows](skills/README.md)
 
 ### Change Or Extend The Platform
 
@@ -73,6 +74,7 @@ examples/                executable consumer workflow examples
 profiles/                versioned Filecoin Security Profile catalog
 prompts/                 shared and Filecoin-specific AI review guidance
 scripts/                 local tooling and documentation checks
+skills/                  agent skills Consumer Projects can install
 openspec/                specs (current behavior) and changes (in-flight work)
 roadmap/                 task order, dependencies, and release gates
 ```

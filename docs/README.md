@@ -15,6 +15,7 @@ Consumer Project:
 - [Understand Evaluation Results](consumers/understand-results.md)
 - [Permissions and secrets](consumers/permissions-and-secrets.md)
 - [Troubleshooting](consumers/troubleshooting.md)
+- [Agent skill: adopt ff-sec-actions by project context](../skills/ff-sec-adopt/SKILL.md)
 - [Legacy consumer-documentation entry point](CONSUMING.md)
 
 ## Consumable Workflows
