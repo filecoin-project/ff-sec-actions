@@ -63,4 +63,21 @@ for relative_path in "${workflows[@]}"; do
     || fail "$relative_path actions differ from the reviewed baseline policy"
 done
 
+# Baseline classification runs git on the untrusted checkout. It must accept
+# only a full commit SHA and must disable repository hooks and the filesystem
+# monitor for every git invocation Semgrep makes.
+semgrep_scan="$scan_root/actions/semgrep-scan/semgrep-scan.sh"
+if [ -f "$semgrep_scan" ] && grep -Fq -- '--baseline-commit' "$semgrep_scan"; then
+  # shellcheck disable=SC2016 # match literal source text
+  for required in \
+    'GIT_CONFIG_KEY_0=safe.directory' \
+    'GIT_CONFIG_KEY_1=core.hooksPath GIT_CONFIG_VALUE_1=/dev/null' \
+    'GIT_CONFIG_KEY_2=core.fsmonitor GIT_CONFIG_VALUE_2=false' \
+    'export GIT_CONFIG_COUNT=3' \
+    '[[ "$BASELINE_REF" =~ ^[0-9a-f]{40}$ ]]'; do
+    grep -Fq -- "$required" "$semgrep_scan" \
+      || fail "semgrep-scan baseline classification is missing git hardening: $required"
+  done
+fi
+
 printf 'baseline no-execution checks passed.\n'

@@ -36,6 +36,17 @@ available rule help. Secret-producing scanners must redact messages before the
 adapter receives them; the shared Gitleaks invocation uses full redaction. The
 complete result remains in the named raw-evidence artifact.
 
+When raw evidence marks findings with SARIF `baselineState` (the Semgrep
+evaluations do this on pull requests by comparing against the base commit), the
+summary adds `New in this change: N; existing before this change: M`, the
+findings table gains a `Change` column, findings the change introduced are
+rendered and annotated first, and existing findings beyond the cap are counted
+as `...and K existing findings in raw evidence.` The finding count, gate
+conclusion, and raw evidence are unchanged by this classification. Without
+`baselineState`, presentation is byte-for-byte the same as before. If a scanner
+cannot classify findings, the evaluation still completes over its full scope
+and records the missing classification as a coverage limitation.
+
 Blocking findings exit `1` only after the Evaluation Result, job summary, and
 annotations are emitted. Operational or completion errors exit `2` with a
 summary describing the next action. Advisory findings exit `0` without hiding

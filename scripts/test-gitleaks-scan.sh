@@ -70,6 +70,34 @@ for planted_value in AKIA7QWERTY8ZXCVBNM2 7xQwErTyUiOpAsDfGhJkLzXcVbNm1234567890
   fi
 done
 
+grep -Fq 'filecoin_rules=applied' "$test_directory/fork-pr.outputs" \
+  || fail "repository-owned Filecoin rules were not applied without a consumer config"
+
+# A hex-encoded `lotus wallet export` (fake secp256k1 key) is a secret.
+wallet_key_info='{"Type":"secp256k1","PrivateKey":"Zm9jLWZpeHR1cmUtbm90LWEtcmVhbC1rZXktMDAwMDA="}'
+wallet_export="$(printf '%s' "$wallet_key_info" | od -An -v -tx1 | tr -d ' \n')"
+printf 'FIL_WALLET=%s\n' "$wallet_export" > "$fixture_repo/wallet.env"
+git -C "$fixture_repo" add wallet.env
+git -C "$fixture_repo" -c commit.gpgsign=false commit -qm "plant fixture wallet export"
+wallet_head="$(git -C "$fixture_repo" rev-parse HEAD)"
+run_scan wallet-export auto pull_request "$head_sha" "$wallet_head"
+jq -e 'any(.runs[].results[]; .ruleId == "filecoin-wallet-key-export")' \
+  "$test_directory/wallet-export.sarif" >/dev/null \
+  || fail "a committed Filecoin wallet export was not detected"
+if grep -Fq "$wallet_export" "$test_directory/wallet-export.sarif" \
+  || grep -Fq 'Zm9jLWZpeHR1cmUtbm90LWEtcmVhbC1rZXktMDAwMDA' "$test_directory/wallet-export.sarif"; then
+  fail "SARIF contains an unredacted wallet key"
+fi
+
+# A Consumer Project config keeps precedence and the gap is reported.
+printf '[extend]\nuseDefault = true\n' > "$fixture_repo/.gitleaks.toml"
+run_scan consumer-config auto pull_request "$base_sha" "$head_sha"
+grep -Fq 'filecoin_rules=not-applied' "$test_directory/consumer-config.outputs" \
+  || fail "a consumer .gitleaks.toml did not report that the Filecoin rules were not applied"
+rm -f "$fixture_repo/.gitleaks.toml"
+git -C "$fixture_repo" rm -q wallet.env
+git -C "$fixture_repo" -c commit.gpgsign=false commit -qm "remove fixture wallet export"
+
 git -C "$fixture_repo" rm -q planted.env
 git -C "$fixture_repo" -c commit.gpgsign=false commit -qm "remove fixture secret"
 run_scan scheduled-history auto schedule "" ""

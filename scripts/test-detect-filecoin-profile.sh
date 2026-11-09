@@ -19,7 +19,7 @@ fail() {
 [ -f "$profile_catalog" ] || fail "the versioned profile catalog is missing"
 jq -e '
   .schema_version == 1
-  and .catalog_version == "0.1.0"
+  and .catalog_version == "0.2.0"
   and ([.profiles[].id] == [
     "fevm-contract",
     "fvm-actor",
@@ -35,10 +35,15 @@ jq -e '
     and (.confidence_basis | type == "string" and length > 0)
     and (.planned_evaluations | type == "array")
   )
+  and ([.add_ons[].id] == ["foc"])
+  and all(.add_ons[];
+    (.label | type == "string" and length > 0)
+    and (.description | type == "string" and length > 0)
+    and (.evaluations | type == "array"))
 ' "$profile_catalog" >/dev/null \
   || fail "the profile catalog does not expose the detector's versioned profile contract"
 
-for output in completion result-file summary profiles-json component-count coverage-gaps-count; do
+for output in completion result-file summary profiles-json add-ons-json component-count coverage-gaps-count; do
   awk '
     /^outputs:[[:space:]]*$/ { in_outputs = 1; next }
     in_outputs && /^[^[:space:]#]/ { in_outputs = 0 }
@@ -83,6 +88,13 @@ jq -e '
 
 grep -Fq 'profiles_json=[{"id":"go-node","paths":["."]}]' "$lotus_outputs" \
   || fail "the selected profile was not exposed through the action interface"
+grep -Fxq 'add_ons_json=[]' "$lotus_outputs" \
+  || fail "a project without FOC signals did not report an empty add-on list"
+jq -e '.add_ons == []' "$lotus_result" >/dev/null \
+  || fail "a project without FOC signals reported an add-on"
+if grep -Fq 'Add-ons detected' "$lotus_summary"; then
+  fail "a project without FOC signals summarized an add-on"
+fi
 grep -Fq 'completion=complete' "$lotus_outputs" \
   || fail "successful detection did not expose an explicit completion status"
 grep -Fq '| <code>.</code> | Go node | high |' "$lotus_summary" \
@@ -277,6 +289,47 @@ jq -e '
 ' "$solidity_result" >/dev/null \
   || fail "source-only generic Solidity was silently omitted from unsupported coverage"
 
+# FOC integration is reported as an add-on with path-scoped evidence and does
+# not change component classification.
+foc_result="$test_directory/foc.json"
+REPOSITORY_PATH="$fixture_root/foc-integrator" \
+RESULT_FILE="$foc_result" \
+SUMMARY_FILE="$test_directory/foc.md" \
+GITHUB_OUTPUT="$test_directory/foc.outputs" \
+  bash "$detector" >/dev/null
+jq -e '
+  (.add_ons | length == 1)
+  and .add_ons[0].id == "foc"
+  and .add_ons[0].label == "Filecoin Onchain Cloud integration"
+  and (.add_ons[0].evidence | any(.path == "app/package.json" and .reason == "declares the Synapse SDK dependency"))
+  and (.add_ons[0].evidence | any(.path == "contracts/src/StorageService.sol"
+    and .reason == "imports a Filecoin Pay or PDP integration interface"))
+  and all(.components[]; all(.profiles[]; .id != "foc"))
+' "$foc_result" >/dev/null \
+  || fail "an FOC integration was not reported as an add-on with path-scoped evidence"
+grep -Fxq 'add_ons_json=[{"id":"foc","paths":["app/package.json","contracts/src/StorageService.sol"]}]' \
+  "$test_directory/foc.outputs" \
+  || fail "the FOC add-on was not exposed through the action interface"
+# shellcheck disable=SC2016 # match a literal Markdown code span
+grep -Fq 'Filecoin Onchain Cloud integration (`foc`)' "$test_directory/foc.md" \
+  || fail "the FOC add-on was not summarized"
+# Removing the FOC signals leaves classification exactly as before.
+cp -R "$fixture_root/foc-integrator" "$test_directory/foc-without-signals"
+jq 'del(.dependencies["@filoz/synapse-sdk"])' "$fixture_root/foc-integrator/app/package.json" \
+  > "$test_directory/foc-without-signals/app/package.json"
+sed -i.bak '/^import/d' "$test_directory/foc-without-signals/contracts/src/StorageService.sol"
+rm -f "$test_directory/foc-without-signals/contracts/src/StorageService.sol.bak"
+REPOSITORY_PATH="$test_directory/foc-without-signals" \
+RESULT_FILE="$test_directory/foc-without-signals.json" \
+SUMMARY_FILE="$test_directory/foc-without-signals.md" \
+GITHUB_OUTPUT="$test_directory/foc-without-signals.outputs" \
+  bash "$detector" >/dev/null
+[ "$(jq -c '[.components, .coverage]' "$foc_result")" = \
+  "$(jq -c '[.components, .coverage]' "$test_directory/foc-without-signals.json")" ] \
+  || fail "FOC add-on reporting changed component classification or coverage"
+jq -e '.add_ons == []' "$test_directory/foc-without-signals.json" >/dev/null \
+  || fail "removing FOC signals still reported the add-on"
+
 catalog_override="$test_directory/profile-catalog.json"
 jq '(.profiles[] | select(.id == "go-node").label) = "Catalog-owned Go node"' \
   "$profile_catalog" > "$catalog_override"
@@ -327,6 +380,20 @@ if PROFILE_CATALOG="$test_directory/no-go-node.json" \
 fi
 if [ -f "$unknown_profile_result" ] && jq -e '.completion == "complete"' "$unknown_profile_result" >/dev/null 2>&1; then
   fail "an unknown profile reference emitted a complete result"
+fi
+
+jq '.add_ons = []' "$profile_catalog" > "$test_directory/no-add-ons.json"
+unknown_add_on_result="$test_directory/unknown-add-on.json"
+if PROFILE_CATALOG="$test_directory/no-add-ons.json" \
+  REPOSITORY_PATH="$fixture_root/foc-integrator" \
+  RESULT_FILE="$unknown_add_on_result" \
+  SUMMARY_FILE="$test_directory/unknown-add-on.md" \
+  GITHUB_OUTPUT="$test_directory/unknown-add-on.outputs" \
+  bash "$detector" >/dev/null 2>&1; then
+  fail "detection succeeded while referencing an add-on absent from the catalog"
+fi
+if [ -f "$unknown_add_on_result" ] && jq -e '.completion == "complete"' "$unknown_add_on_result" >/dev/null 2>&1; then
+  fail "an unknown add-on reference emitted a complete result"
 fi
 
 printf 'profile detection tests passed.\n'

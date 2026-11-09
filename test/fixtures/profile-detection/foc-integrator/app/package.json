@@ -1,0 +1,9 @@
+{
+  "name": "foc-storage-app",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@filoz/synapse-sdk": "^0.30.0",
+    "viem": "^2.21.0"
+  }
+}

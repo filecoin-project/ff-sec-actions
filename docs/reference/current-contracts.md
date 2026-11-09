@@ -158,7 +158,8 @@ Source:
 
 The secretless detector inspects repository files without executing Consumer
 Project code. It emits `completion`, `result-file`, `summary`, `profiles-json`,
-`component-count`, and `coverage-gaps-count`. Selected profiles are path-scoped
+`add-ons-json`, `component-count`, and `coverage-gaps-count`. Add-ons such as
+`foc` are reported only and do not change classification. Selected profiles are path-scoped
 and carry confidence, evidence, and reasons. Ambiguous and unsupported
 components remain visible as coverage gaps and warning annotations.
 

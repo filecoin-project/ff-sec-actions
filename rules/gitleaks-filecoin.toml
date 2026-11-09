@@ -1,0 +1,15 @@
+# Repository-owned Gitleaks rules for Filecoin Consumer Projects.
+# Used by actions/gitleaks-scan when the Consumer Project has no .gitleaks.toml.
+# It extends, and never replaces, the Gitleaks default rules.
+title = "ff-sec-actions Filecoin secret rules"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "filecoin-wallet-key-export"
+description = "Filecoin wallet private key exported by `lotus wallet export` (hex-encoded KeyInfo for secp256k1, bls, or delegated keys)"
+# hex('{"Type":"') + hex(key type) + hex('","PrivateKey":"') + hex(base64 key) + hex('"}')
+regex = '''(?i)7b2254797065223a22(?:736563703235366b31|626c73|64656c656761746564)222c22507269766174654b6579223a22(?:[0-9a-f]{2}){20,100}?227d'''
+keywords = ["7b2254797065223a22"]
+tags = ["filecoin", "wallet", "private-key"]

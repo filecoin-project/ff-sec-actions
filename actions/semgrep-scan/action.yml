@@ -14,6 +14,13 @@ inputs:
     description: SARIF destination.
     required: false
     default: semgrep-baseline.sarif
+  baseline-ref:
+    description: >-
+      Optional full commit SHA (usually the pull-request base). When set, each finding
+      is marked new or unchanged with SARIF baselineState. Requires that commit in the
+      checkout's history.
+    required: false
+    default: ""
 
 outputs:
   scanner-outcome:
@@ -22,6 +29,9 @@ outputs:
   result-file:
     description: SARIF path.
     value: ${{ steps.scan.outputs.result_file }}
+  classification:
+    description: classified, unavailable (baseline requested but not computed), or not-requested.
+    value: ${{ steps.scan.outputs.classification }}
 
 runs:
   using: composite
@@ -32,4 +42,5 @@ runs:
         SCAN_TARGET: ${{ inputs.target }}
         SEMGREP_CONFIG: ${{ inputs.config }}
         RESULT_FILE: ${{ inputs.result-file }}
+        BASELINE_REF: ${{ inputs.baseline-ref }}
       run: bash "${GITHUB_ACTION_PATH}/semgrep-scan.sh"

@@ -15,7 +15,10 @@ inputs:
     required: false
     default: ""
   config-path:
-    description: Optional Gitleaks configuration path.
+    description: >-
+      Consumer Project Gitleaks configuration path. When the file exists it is used and the
+      repository-owned Filecoin rules are not applied; otherwise rules/gitleaks-filecoin.toml
+      (the Gitleaks defaults plus Filecoin wallet-key detection) is used.
     required: false
     default: .gitleaks.toml
   result-file:
@@ -33,6 +36,9 @@ outputs:
   result-file:
     description: SARIF result path.
     value: ${{ steps.scan.outputs.result_file }}
+  filecoin-rules:
+    description: applied when the repository-owned Filecoin rules ran; not-applied when a Consumer Project config replaced them.
+    value: ${{ steps.scan.outputs.filecoin_rules }}
 
 runs:
   using: composite
