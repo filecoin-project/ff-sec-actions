@@ -98,8 +98,12 @@ semgrep_script="$repo_root/actions/semgrep-scan/semgrep-scan.sh"
 # shellcheck disable=SC2016 # match the literal variable reference in the script
 grep -Fq -- '--config "$SEMGREP_CONFIG"' "$semgrep_script" \
   || fail "semgrep-scan does not pass an explicit rules file"
-grep -Fq 'rules/ecosystem-baseline.yml' "$semgrep_script" \
+# shellcheck disable=SC2016 # match the literal default in the script
+grep -Fq 'RULESET="${RULESET:-ecosystem-baseline}"' "$semgrep_script" \
   || fail "semgrep-scan does not default to the versioned baseline rules"
+# shellcheck disable=SC2016 # match the literal path expression in the script
+grep -Fq '/rules/${RULESET}.yml"' "$semgrep_script" \
+  || fail "semgrep-scan named rulesets do not resolve to repository-owned rules"
 if sed -n '/actions\/semgrep-scan@/,/^      - /p' "$repo_root/.github/workflows/sec-semgrep.yml" | grep -Eq '^[[:space:]]+config:'; then
   fail "the baseline Semgrep workflow forwards a rules config"
 fi

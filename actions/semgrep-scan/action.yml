@@ -6,8 +6,14 @@ inputs:
     description: Source tree to inspect.
     required: false
     default: .
+  ruleset:
+    description: >-
+      Repository-owned ruleset at this action's commit: ecosystem-baseline (default) or
+      foc-integrator. Ignored when config is set.
+    required: false
+    default: ecosystem-baseline
   config:
-    description: Rules file; empty selects the versioned Ecosystem Baseline rules.
+    description: Rules file override for maintainers and tests; empty selects the named ruleset.
     required: false
     default: ""
   result-file:
@@ -41,6 +47,7 @@ runs:
       env:
         SCAN_TARGET: ${{ inputs.target }}
         SEMGREP_CONFIG: ${{ inputs.config }}
+        RULESET: ${{ inputs.ruleset }}
         RESULT_FILE: ${{ inputs.result-file }}
         BASELINE_REF: ${{ inputs.baseline-ref }}
       run: bash "${GITHUB_ACTION_PATH}/semgrep-scan.sh"

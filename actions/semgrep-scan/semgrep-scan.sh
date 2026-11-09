@@ -8,8 +8,20 @@ RESULT_FILE="${RESULT_FILE:-semgrep-baseline.sarif}"
 BASELINE_REF="${BASELINE_REF:-}"
 GITHUB_OUTPUT="${GITHUB_OUTPUT:-/dev/null}"
 
+RULESET="${RULESET:-ecosystem-baseline}"
+
+# A named ruleset always resolves to a repository-owned file at this action's
+# own commit; an explicit SEMGREP_CONFIG (tests and maintainers) overrides it.
 if [ -z "$SEMGREP_CONFIG" ]; then
-  SEMGREP_CONFIG="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/rules/ecosystem-baseline.yml"
+  case "$RULESET" in
+    ecosystem-baseline|foc-integrator) ;;
+    *)
+      printf 'semgrep-scan error: ruleset must be ecosystem-baseline or foc-integrator\n' >&2
+      printf 'scanner_outcome=failure\nresult_file=%s\nclassification=not-requested\n' "$RESULT_FILE" >> "$GITHUB_OUTPUT"
+      exit 1
+      ;;
+  esac
+  SEMGREP_CONFIG="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/rules/${RULESET}.yml"
 fi
 
 if [ ! -f "$SEMGREP_CONFIG" ]; then

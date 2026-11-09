@@ -166,5 +166,24 @@ if jq -e 'any(.runs[].results[]; has("baselineState"))' "$work/not-requested.sar
   fail "a scan without a baseline ref marked findings"
 fi
 
+# Named rulesets resolve only to repository-owned files beside the action.
+control="$work/control"
+mkdir -p "$control/actions/semgrep-scan" "$control/rules"
+cp "$scan_action" "$control/actions/semgrep-scan/semgrep-scan.sh"
+cp "$rules" "$control/rules/foc-integrator.yml"
+: > "$work/ruleset.out"
+(cd "$history" && SCAN_TARGET=. RULESET=foc-integrator RESULT_FILE="$work/ruleset.sarif" \
+  GITHUB_OUTPUT="$work/ruleset.out" bash "$control/actions/semgrep-scan/semgrep-scan.sh" >/dev/null 2>&1) \
+  || fail "the foc-integrator ruleset did not run from the action's own rules directory"
+[ "$(jq '[.runs[].results[]] | length' "$work/ruleset.sarif")" -eq 4 ] \
+  || fail "the foc-integrator ruleset did not load the FOC integrator pack"
+: > "$work/bad-ruleset.out"
+if (cd "$history" && SCAN_TARGET=. RULESET=../../tmp/consumer RESULT_FILE="$work/bad-ruleset.sarif" \
+  GITHUB_OUTPUT="$work/bad-ruleset.out" bash "$control/actions/semgrep-scan/semgrep-scan.sh" >/dev/null 2>&1); then
+  fail "an unknown ruleset name was accepted"
+fi
+grep -Fq 'scanner_outcome=failure' "$work/bad-ruleset.out" \
+  || fail "an unknown ruleset name was not reported as an operational failure"
+
 printf 'FOC integrator pack checks passed (%s rules, %s fixture files).\n' \
   "${#rule_ids[@]}" "$fixture_files"
