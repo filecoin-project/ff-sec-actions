@@ -128,6 +128,28 @@ jq -e '.completion.missing_evaluations == ["fixture-scan", "fixture-second"]' \
   "$test_root/no-results/bundle.json" >/dev/null \
   || { printf 'aggregate-results test failure: missing required evaluations were not listed\n' >&2; exit 1; }
 
+# The Ecosystem Baseline requires semgrep-foc: a run whose other five results
+# are complete still fails its profile when the FOC result is missing.
+baseline_workflow="$repo_root/.github/workflows/ecosystem-baseline.yml"
+baseline_required="$(sed -n "s/^[[:space:]]*required-evaluations: '\(.*\)'$/\1/p" "$baseline_workflow")"
+jq -e 'index("semgrep-foc") != null' <<< "$baseline_required" >/dev/null \
+  || { printf 'aggregate-results test failure: the Ecosystem Baseline does not require semgrep-foc\n' >&2; exit 1; }
+foc_missing="$test_root/foc-missing"
+mkdir -p "$foc_missing/results"
+for evaluation_id in $(jq -r '.[] | select(. != "semgrep-foc")' <<< "$baseline_required"); do
+  jq --arg id "$evaluation_id" '.evaluation.id = $id' "$base_result" > "$foc_missing/results/$evaluation_id.json"
+done
+foc_missing_exit=0
+PROFILE_ID=ecosystem-baseline PROFILE_VERSION=1.1.0 REQUIRED_EVALUATIONS="$baseline_required" \
+REQUIRE_COMPLETE=true RESULTS_DIRECTORY="$foc_missing/results" BUNDLE_FILE="$foc_missing/bundle.json" \
+SUMMARY_FILE="$foc_missing/summary.md" EVALUATION_VALIDATOR="$validator" \
+  bash "$aggregator" >/dev/null 2>&1 || foc_missing_exit="$?"
+[ "$foc_missing_exit" -eq 1 ] \
+  || { printf 'aggregate-results test failure: a missing semgrep-foc result exited %s, expected 1\n' "$foc_missing_exit" >&2; exit 1; }
+jq -e '.completion.missing_evaluations == ["semgrep-foc"] and .merge_gate.conclusion == "fail"' \
+  "$foc_missing/bundle.json" >/dev/null \
+  || { printf 'aggregate-results test failure: a missing semgrep-foc result did not fail the profile\n' >&2; exit 1; }
+
 # A result that fails Evaluation Result validation is an operational failure.
 make_clean_pair "$test_root/malformed/results"
 jq 'del(.coverage)' "$test_root/malformed/results/two.json" > "$test_root/malformed/results/two.tmp"

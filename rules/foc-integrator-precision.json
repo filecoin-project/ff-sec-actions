@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "ruleset": "rules/foc-integrator.yml",
+  "scanner": "semgrep 1.93.0",
+  "corpus": [
+    {
+      "repository": "FilOzone/filecoin-services",
+      "commit": "32a43799a8e4fd33799fff436ab181da9a043674",
+      "files_scanned": 63,
+      "partially_parsed": [
+        "service_contracts/script/lib/JosukeFacetSet.sol",
+        "service_contracts/src/Extsload.sol",
+        "service_contracts/src/ProviderIdSet.sol",
+        "service_contracts/src/ServiceProviderRegistryStorage.sol",
+        "service_contracts/src/examples/MultiMethodAuthorizer.sol",
+        "service_contracts/src/lib/BigEndian.sol",
+        "service_contracts/src/lib/BloomSet.sol",
+        "service_contracts/src/lib/FilecoinWarmStorageServiceStateInternalLibrary.sol",
+        "service_contracts/src/lib/FilecoinWarmStorageServiceStateLibrary.sol",
+        "service_contracts/src/lib/LibRails.sol",
+        "service_contracts/src/lib/LibSignatureVerification.sol",
+        "service_contracts/src/lib/LibStorageTerms.sol",
+        "service_contracts/src/modules/FWSSDataSetModule.sol",
+        "service_contracts/src/modules/FWSSFilBeamModule.sol",
+        "service_contracts/src/modules/FWSSViewModule.sol",
+        "service_contracts/src/storage/FWSSStorage.sol"
+      ]
+    },
+    {
+      "repository": "FilOzone/pdp",
+      "commit": "3d486ae9ef6a5040acd55a0430307aa2802103c5",
+      "files_scanned": 13,
+      "partially_parsed": [
+        "src/PDPVerifier.sol",
+        "src/PieceMetadata.sol",
+        "src/Proofs.sol"
+      ]
+    },
+    {
+      "repository": "FilOzone/filecoin-pay",
+      "commit": "04ded6af6c15c4b5d98545f393dc656004d4aede",
+      "files_scanned": 5,
+      "partially_parsed": [
+        "src/FilecoinPayV1.sol"
+      ]
+    },
+    {
+      "repository": "FilOzone/synapse-sdk",
+      "commit": "c93782351b4bdc5be4f1308bba06e26407d6946f",
+      "files_scanned": 348,
+      "partially_parsed": [
+        "packages/synapse-core/src/erc20/approve.ts",
+        "packages/synapse-core/src/pay/deposit.ts",
+        "packages/synapse-core/src/pay/set-operator-approval.ts",
+        "packages/synapse-core/src/pay/settle-rail.ts",
+        "packages/synapse-core/src/pay/settle-terminated-rail-without-validation.ts",
+        "packages/synapse-core/src/pay/withdraw.ts",
+        "packages/synapse-core/src/sp-registry/add-product.ts",
+        "packages/synapse-core/src/sp-registry/register-provider.ts",
+        "packages/synapse-core/src/sp-registry/remove-product.ts",
+        "packages/synapse-core/src/sp-registry/remove-provider.ts",
+        "packages/synapse-core/src/sp-registry/update-product.ts",
+        "packages/synapse-core/src/sp-registry/update-provider-info.ts",
+        "packages/synapse-core/src/types.ts",
+        "packages/synapse-core/src/warm-storage/add-approved-provider.ts",
+        "packages/synapse-core/src/warm-storage/remove-approved-provider.ts",
+        "packages/synapse-core/src/warm-storage/terminate-service.ts"
+      ]
+    }
+  ],
+  "rules": {
+    "foc.solidity.callback-missing-caller-check": {
+      "count": 0,
+      "findings": []
+    },
+    "foc.solidity.rail-terminated-can-revert": {
+      "count": 2,
+      "findings": [
+        {
+          "repository": "FilOzone/filecoin-services",
+          "commit": "32a43799a8e4fd33799fff436ab181da9a043674",
+          "path": "service_contracts/src/modules/FWSSProvingModule.sol",
+          "line": 271,
+          "code": "revert Errors.ServiceContractMustTerminateRail();",
+          "triage": "false-positive",
+          "note": "Intentional: FWSS requires service-initiated termination (terminator == address(this)) and gives payers a separate termination path through the service, which the rule cannot see. A third-party validator without such a path would trap funds."
+        },
+        {
+          "repository": "FilOzone/filecoin-services",
+          "commit": "32a43799a8e4fd33799fff436ab181da9a043674",
+          "path": "service_contracts/src/modules/FWSSProvingModule.sol",
+          "line": 275,
+          "code": "require(dataSetId != 0, Errors.DataSetNotFoundForRail(railId));",
+          "triage": "false-positive",
+          "note": "Invariant check: FWSS maps every rail it creates to a data set, so this cannot revert for a rail FWSS created."
+        }
+      ]
+    },
+    "foc.solidity.transfer-send-reentrancy": {
+      "count": 0,
+      "findings": []
+    },
+    "foc.solidity.hardcoded-gas": {
+      "count": 0,
+      "findings": []
+    },
+    "foc.solidity.block-randomness": {
+      "count": 0,
+      "findings": []
+    },
+    "foc.typescript.browser-exposed-private-key": {
+      "count": 0,
+      "findings": []
+    },
+    "foc.typescript.unlimited-operator-allowance": {
+      "count": 1,
+      "findings": [
+        {
+          "repository": "FilOzone/synapse-sdk",
+          "commit": "c93782351b4bdc5be4f1308bba06e26407d6946f",
+          "path": "packages/synapse-core/src/pay/fund.ts",
+          "line": 92,
+          "code": "return setOperatorApproval(client, {",
+          "triage": "false-positive",
+          "note": "Intentional SDK default: fund() grants the trusted Warm Storage (FWSS) operator a maxUint256 allowance. An application doing the same for its own operator is the pattern the rule targets."
+        }
+      ]
+    }
+  }
+}

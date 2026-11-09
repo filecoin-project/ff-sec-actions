@@ -27,7 +27,7 @@ for expected in "${expected_workflows[@]}"; do
     || fail "profile does not immutably compose $expected"
 done
 
-expected_evaluations=(zizmor-actions trivy-dependencies gitleaks trivy-iac semgrep-baseline)
+expected_evaluations=(zizmor-actions trivy-dependencies gitleaks trivy-iac semgrep-baseline semgrep-foc)
 for expected in "${expected_evaluations[@]}"; do
   grep -Fq "\"$expected\"" "$workflow" \
     || fail "Profile Conclusion does not require $expected"

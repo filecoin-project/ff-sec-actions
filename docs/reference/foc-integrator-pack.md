@@ -64,7 +64,8 @@ A rule becomes eligible to block merges only when all of these hold:
    [`test/fixtures/foc-integrator/positive/`](../../test/fixtures/foc-integrator/positive/)
    that it detects on the annotated lines, and a clean fixture under
    [`clean/`](../../test/fixtures/foc-integrator/clean/) that it does not.
-2. It has an entry in the precision record, `rules/foc-integrator-precision.json`,
+2. It has an entry in
+   [`rules/foc-integrator-precision.json`](../../rules/foc-integrator-precision.json)
    from a scan of the FilOzone reference repositories (`filecoin-services`,
    `pdp`, `filecoin-pay`, `synapse-sdk`) at pinned commits, with every finding
    triaged as a true or false positive.

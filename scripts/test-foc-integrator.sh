@@ -13,6 +13,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 rules="$repo_root/rules/foc-integrator.yml"
 fixture="$repo_root/test/fixtures/foc-integrator"
 baseline_fixture="$repo_root/test/fixtures/ecosystem-baseline/monorepo"
+precision="${FOC_PRECISION_RECORD:-$repo_root/rules/foc-integrator-precision.json}"
 
 fail() { printf 'foc-integrator test failure: %s\n' "$*" >&2; exit 1; }
 
@@ -35,6 +36,28 @@ scan() {
   semgrep scan --metrics=off --disable-version-check --strict \
     --config "$work/rules/foc-integrator.yml" --json --output "$1" "$2"
 }
+
+# Every rule has a triaged precision measurement against the reference corpus
+# (written by scripts/measure-foc-precision.sh). This needs no scanner.
+[ -f "$precision" ] || fail "precision record is missing: $precision"
+jq -e '
+  .schema_version == 1
+  and (.corpus | type == "array" and length > 0)
+  and all(.corpus[]; (.repository | type == "string" and length > 0) and (.commit | test("^[0-9a-f]{40}$")))
+' "$precision" >/dev/null || fail "precision record does not name a corpus at full commit SHAs"
+for id in "${rule_ids[@]}"; do
+  jq -e --arg id "$id" '
+    (.corpus | map(.repository + "@" + .commit)) as $scanned
+    | .rules[$id] as $rule
+    | $rule != null
+    and ($rule.count == ($rule.findings | length))
+    and all($rule.findings[];
+      ((.repository + "@" + .commit) | IN($scanned[]))
+      and (.triage | IN("true-positive", "false-positive"))
+      and (.note | type == "string" and length > 0))
+  ' "$precision" >/dev/null \
+    || fail "rule $id has no complete, triaged precision record entry"
+done
 
 # Every rule has exactly one positive and one clean fixture file.
 for id in "${rule_ids[@]}"; do

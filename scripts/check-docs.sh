@@ -91,6 +91,7 @@ required_pages=(
   "rules/ecosystem-baseline.yml"
   "rules/foc-integrator.yml"
   "rules/gitleaks-filecoin.toml"
+  "rules/foc-integrator-precision.json"
   "security/workflow-policy.json"
   "scripts/check-baseline-no-exec.sh"
   "scripts/check-scanner-gates.sh"
@@ -110,6 +111,7 @@ required_pages=(
   "scripts/test-aggregate-results.sh"
   "scripts/test-ecosystem-baseline.sh"
   "scripts/test-foc-integrator.sh"
+  "scripts/measure-foc-precision.sh"
   "scripts/test-gitleaks-scan.sh"
   "scripts/test-zizmor-scan.sh"
   "scripts/test-detect-filecoin-profile.sh"
@@ -199,6 +201,7 @@ if [ -f ".github/workflows/g0-contract.yml" ]; then
   require_text ".github/workflows/g0-contract.yml" "bash scripts/check-fork-pr.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-fork-pr.sh"
   require_text ".github/workflows/g0-contract.yml" "bash scripts/test-ecosystem-baseline.sh"
+  require_text ".github/workflows/g0-contract.yml" "bash scripts/test-foc-integrator.sh"
   require_text ".github/workflows/g0-contract.yml" "BASELINE_RUN_DETECTION=true"
   require_text ".github/workflows/g0-contract.yml" "semgrep/semgrep:1.93.0@sha256:f35c7891e2030110a84a721fdd556ce8f3da6e7e69d7fab1d3660ae1bb334474"
 fi
