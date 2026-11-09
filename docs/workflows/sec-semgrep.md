@@ -47,7 +47,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@c95d54087ff3a4783aea814776243990d9778c93
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@d1bef8f75b5321bbac0a2862877750de811913f6
 ```
 
 ## Limitations

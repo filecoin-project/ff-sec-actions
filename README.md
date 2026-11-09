@@ -58,7 +58,7 @@ dependency-ordered work queue and how to claim a task by linking it to a change.
 | Filecoin review invariants | Versioned prompts | Available to AI review |
 | Ecosystem Security Profiles | Secretless Ecosystem Baseline | Consumer-testable alpha with one immutable pin |
 | Path-scoped Filecoin project classification | Composite detector action and versioned profile catalog | Implemented pre-v1; immutable consumer pin pending release |
-| Normalized Evaluation Result and Evidence Bundle | Five baseline evaluations plus `Profile Conclusion` | Evaluation Result `1.1.0`; Evidence Bundle `1.0.0` in the alpha baseline |
+| Normalized Evaluation Result and Evidence Bundle | Six baseline evaluations plus `Profile Conclusion` | Evaluation Result `1.1.0`; Evidence Bundle `1.0.0` in the alpha baseline |
 
 See the [roadmap](roadmap/README.md) for release gates and the
 [decision map](docs/ECOSYSTEM-SECURITY-DECISION-MAP.md) for the history of

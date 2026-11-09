@@ -83,7 +83,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@c95d54087ff3a4783aea814776243990d9778c93
+    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@d1bef8f75b5321bbac0a2862877750de811913f6
 ```
 
 For pull-request use, add `pull-requests: write` for Dependency Review. Add `security-events: write` only when enabling a Security-tab publisher, and add `id-token: write` only for Scorecard publication. Enabling CodeQL or Slither opts into build-analysis risk and should be reviewed separately.
