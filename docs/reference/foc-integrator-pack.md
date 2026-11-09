@@ -80,6 +80,11 @@ A rule becomes eligible to block merges only when all of these hold:
   repository, as described in the
   [baseline static rules](ecosystem-baseline-rules.md). Reporting those
   exclusions is BASE-01 work.
+- The pinned Semgrep 1.93.0 grammar only partially parses some modern Solidity
+  and TypeScript (for example `assembly ("memory-safe")` blocks and named
+  mapping parameters); rules may miss findings in those files, and the result
+  does not yet list them. The precision record names the affected reference
+  files.
 - The pack does not cover FilOzone core-protocol checks (storage layout,
   selector collisions, settlement invariants), calibration and mainnet
   configuration mix-ups, or `CALLCODE` and `SELFDESTRUCT` use.

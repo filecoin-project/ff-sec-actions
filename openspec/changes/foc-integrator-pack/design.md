@@ -159,6 +159,20 @@ The maintainer then sets each finding to `true-positive` or `false-positive` wit
 | consumable-output: new findings lead; no classification; classification unavailable | `scripts/test-evaluation-adapter.sh`, with SARIF fixtures that have and lack `baselineState`; the byte-identical case reuses the existing expected output. Plus `test-foc-integrator.sh` for the unavailable path |
 | profile-detection: add-on scenarios and empty `add-ons-json` | `scripts/test-detect-filecoin-profile.sh`, with new fixtures under `test/fixtures/profile-detection/` |
 
+## Implementation Notes
+
+These were recorded during apply and do not change the specs:
+- **`semgrep-scan` gained a `ruleset` input** (`ecosystem-baseline` or `foc-integrator`). It resolves to `rules/<name>.yml` at the action's own commit. A workflow running in the Semgrep container has no stable path to the action's `rules/` directory, and the consumer must never supply a config path. An unknown name fails operationally.
+- **Classification accepts only a full 40-hex `baseline-ref`**, so the ref can never be read as an option. Git hardening is passed through `GIT_CONFIG_COUNT`/`GIT_CONFIG_KEY_n` environment variables, and the G0 Docker wrapper forwards them.
+- **Output contract:** `security/output-contract.json` gained `additional_evaluations` for workflows that emit more than one normalized evaluation. `security/scanner-gates.json` marks `semgrep-foc` as `advisory` with an `evaluation_id`. `check-scanner-gates.sh` asserts that this evaluation's adapter step uses a literal `blocking: false`.
+- **Release layers.** Assets: `d2eb10f`, then `6cef278` for the `ruleset` input. Leaf workflows: `882368d`. Umbrella workflows: `d1bef8f`. Consumer pins advance to `d1bef8f`, and the Ecosystem Baseline `profile-version` is now `1.1.0`.
+- **First precision record.** It found 3 findings across the four FilOzone repositories, and all of them are intentional designs triaged `false-positive`:
+  - Two are FWSS `railTerminated` reverts. FWSS requires service-initiated termination.
+  - One is the SDK's own `fund()`, which grants FWSS a `maxUint256` allowance.
+
+  The `rail-terminated-can-revert` and `unlimited-operator-allowance` rules therefore need a design-aware exemption before they can be promoted.
+- **Partial parsing.** Semgrep 1.93.0's grammar only partly parses some modern Solidity and TypeScript: `assembly ("memory-safe")`, named mapping parameters, and similar. That covers 16 of 63 files in `filecoin-services` and 16 of 348 in `synapse-sdk`. The precision record lists those files. Production scans do not report partial parsing as a coverage limitation. This is a pre-existing gap for `semgrep-baseline` too, and reporting it belongs with BASE-01's coverage work.
+
 ## Risks / Trade-offs
 
 - [Semgrep 1.93.0 Solidity support may not express "function body never references `msg.sender`" cleanly] → Task 2.1 spikes each pattern first. Any rule that cannot stay silent on its clean fixture is narrowed or dropped from v1, and the drop is recorded in the precision record. The spec's rule list then needs a matching edit before archive.
