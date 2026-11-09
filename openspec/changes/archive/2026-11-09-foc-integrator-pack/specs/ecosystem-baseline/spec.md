@@ -26,7 +26,7 @@ The baseline SHALL aggregate all six results into an Evidence Bundle under profi
 - **THEN** the bundle reports `semgrep-foc` as missing and `Profile Conclusion` fails under default policy
 
 ### Requirement: Static rules are versioned and repository-owned
-The static-analysis evaluations SHALL load rules only from the same immutable commit as their scanner action. They SHALL NOT use registry aliases or rules from a Consumer Project Semgrep configuration file. The baseline rules SHALL cover JavaScript/TypeScript and Rust dynamic shell command construction, Go TLS verification disablement, Solidity `tx.origin` authorization, and Dockerfile remote-response piping into a shell. The FOC integrator pack rules SHALL be loaded from their own repository-owned file and reported under `semgrep-foc`.
+Static-analysis evaluations SHALL load rules only from their scanner action's immutable commit, never from registry aliases or Consumer Project Semgrep configuration. Baseline rules SHALL cover JavaScript/TypeScript and Rust shell command construction, Go TLS verification disablement, Solidity `tx.origin` authorization, and Dockerfile remote-response piping into a shell. FOC integrator pack rules SHALL come from their own repository-owned file and report under `semgrep-foc`.
 
 #### Scenario: Consumer repository contains a Semgrep config
 - **WHEN** the Consumer Project has its own Semgrep configuration file

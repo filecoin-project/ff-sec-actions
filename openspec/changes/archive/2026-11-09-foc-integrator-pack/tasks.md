@@ -62,7 +62,7 @@
 
 ## 5. Integration
 
-- [ ] 5.1 Run every step of `.github/workflows/g0-contract.yml` locally in order, using the Docker `semgrep` wrapper. Then push, and verify that the G0 Trustworthy Foundation run on the PR succeeds.
+- [x] 5.1 Run every step of `.github/workflows/g0-contract.yml` locally in order, using the Docker `semgrep` wrapper. Then push, and verify that the G0 Trustworthy Foundation run on the PR succeeds.
 - [x] 5.2 Run `openspec validate foc-integrator-pack --strict` and `bash scripts/roadmap.sh validate`. Verify that both pass and that every spec scenario's proving check in design Decision 8 exists and ran in task 5.1.
 
 ## Workflow follow-up
