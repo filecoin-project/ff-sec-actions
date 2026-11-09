@@ -30,10 +30,8 @@ Only one task may be `in_progress`. A task cannot be claimed until all its
 dependencies are `done`, and a `done` task cannot depend on unfinished work.
 A link to a change that does not exist fails validation.
 
-Migration exemption: tasks finished before OpenSpec link to
-`bootstrap-security-gate-specs`. Until that change is archived they read
-`in_progress`, count as `done` for dependency checks, and do not occupy the
-single in-progress slot.
+Tasks finished before OpenSpec link to the archived
+`bootstrap-security-gate-specs` change and derive `done` like any other task.
 
 ## Read The Queue
 

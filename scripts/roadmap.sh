@@ -20,11 +20,6 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 state_file="${ROADMAP_STATE_FILE:-$repo_root/roadmap/state.json}"
 changes_dir="${ROADMAP_CHANGES_DIR:-$repo_root/openspec/changes}"
 
-# Migration exemption: tasks completed before OpenSpec link to the bootstrap
-# change. Until it is archived they count as done for dependency checks and do
-# not occupy the single in-progress slot. Remove after the bootstrap archive.
-bootstrap_change="bootstrap-security-gate-specs"
-
 fail() {
   printf 'roadmap error: %s\n' "$*" >&2
   exit 1
@@ -54,29 +49,26 @@ change_names() {
   } | jq -R . | jq -s 'unique'
 }
 
-# Print the state document with a derived .status and .satisfied on each task.
+# Print the state document with a derived .status and .ready on each task.
 derived_state() {
   local active archived
   active="$(change_names active)"
   archived="$(change_names archived)"
 
-  jq --argjson active "$active" --argjson archived "$archived" \
-    --arg bootstrap "$bootstrap_change" '
+  jq --argjson active "$active" --argjson archived "$archived" '
     def lifecycle:
       if .cancelled == true then "cancelled"
       elif .change != null and (.change | IN($archived[])) then "done"
       elif .change != null and (.change | IN($active[])) then "in_progress"
       else "unclaimed" end;
-    def exempt: .change == $bootstrap and lifecycle == "in_progress";
 
-    .tasks |= map(. + {lifecycle: lifecycle, exempt: exempt})
+    .tasks |= map(. + {lifecycle: lifecycle})
     | .tasks as $tasks
     | .tasks |= map(
         . as $task
         | ([$task.blocked_by[] as $dependency
-            | any($tasks[]; .id == $dependency and (.lifecycle == "done" or .exempt))]
+            | any($tasks[]; .id == $dependency and .lifecycle == "done")]
            | all) as $ready
-        | .satisfied = (.lifecycle == "done" or .exempt)
         | .ready = $ready
         | .status = (if .lifecycle == "unclaimed"
             then (if $ready then "pending" else "blocked" end)
@@ -138,11 +130,11 @@ validate() {
   ' <<< "$derived" >/dev/null || fail "a linked change does not exist under the OpenSpec changes directory"
 
   jq -e '
-    [.tasks[] | select(.status == "in_progress" and (.exempt | not))] | length <= 1
+    [.tasks[] | select(.status == "in_progress")] | length <= 1
   ' <<< "$derived" >/dev/null || fail "only one task may be in progress"
 
   jq -e '
-    all(.tasks[] | select(.status == "in_progress" and (.exempt | not)); .ready)
+    all(.tasks[] | select(.status == "in_progress"); .ready)
   ' <<< "$derived" >/dev/null || fail "an in-progress task depends on unfinished tasks"
 
   jq -e '
@@ -153,7 +145,7 @@ validate() {
 next_task() {
   validate
   derived_state | jq -c '
-    first(.tasks[] | select(.status == "pending") | del(.satisfied, .ready, .exempt)) // null
+    first(.tasks[] | select(.status == "pending") | del(.ready)) // null
   '
 }
 
@@ -197,7 +189,7 @@ claim() {
   if [ "$change" = archive ] || [ ! -d "$changes_dir/$change" ]; then
     fail "create the change first: openspec new change \"$change\""
   fi
-  jq -e '[.tasks[] | select(.status == "in_progress" and (.exempt | not))] | length == 0' \
+  jq -e '[.tasks[] | select(.status == "in_progress")] | length == 0' \
     <<< "$derived" >/dev/null || fail "another task is already in progress"
 
   now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
