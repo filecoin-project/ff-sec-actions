@@ -108,9 +108,17 @@
       "evaluation_id": "semgrep-baseline",
       "raw_artifact": "semgrep-baseline-results",
       "normalized_artifact": "evaluation-result-semgrep-baseline",
+      "additional_evaluations": [
+        {
+          "evaluation_id": "semgrep-foc",
+          "raw_artifact": "semgrep-foc-results",
+          "normalized_artifact": "evaluation-result-semgrep-foc",
+          "gate": "advisory"
+        }
+      ],
       "lifecycle_test": "scripts/test-evaluation-adapter.sh",
       "failure_capture": "continue-on-error",
-      "consumer_surface": "GitHub job summary, source annotations, normalized result, and Semgrep SARIF artifact",
+      "consumer_surface": "GitHub job summary with new findings first on pull requests, source annotations, normalized results, and Semgrep SARIF artifacts for the baseline rules and the FOC integrator pack",
       "remediation_surface": "Rule guidance, safe replacement, regression-test, and suppression guidance"
     },
     ".github/workflows/sec-slither.yml": {
@@ -135,7 +143,7 @@
     },
     "actions/detect-filecoin-profile/action.yml": {
       "mode": "profile-detection",
-      "required_outputs": ["completion", "result-file", "summary", "profiles-json", "component-count", "coverage-gaps-count"],
+      "required_outputs": ["completion", "result-file", "summary", "profiles-json", "add-ons-json", "component-count", "coverage-gaps-count"],
       "consumer_surface": "Path-scoped profile detection JSON, readable component table, job summary, and coverage-gap annotations",
       "remediation_surface": "Unsupported components name their path and direct maintainers to select a profile manually or add a fixture-backed detector rule"
     },
@@ -154,8 +162,8 @@
     "actions/gitleaks-scan/action.yml": {
       "mode": "scanner-invocation",
       "consumer_workflow": ".github/workflows/sec-secrets.yml",
-      "required_outputs": ["scanner-outcome", "scan-scope", "result-file"],
-      "consumer_surface": "Redacted SARIF path and explicit scan scope",
+      "required_outputs": ["scanner-outcome", "scan-scope", "result-file", "filecoin-rules"],
+      "consumer_surface": "Redacted SARIF path, explicit scan scope, and whether the repository-owned Filecoin rules applied",
       "remediation_surface": "Consumed through the Evaluation Adapter"
     },
     "actions/scanner-outcome/action.yml": {
@@ -167,8 +175,8 @@
     "actions/semgrep-scan/action.yml": {
       "mode": "scanner-invocation",
       "consumer_workflow": ".github/workflows/sec-semgrep.yml",
-      "required_outputs": ["scanner-outcome", "result-file"],
-      "consumer_surface": "SARIF path and scanner operational outcome",
+      "required_outputs": ["scanner-outcome", "result-file", "classification"],
+      "consumer_surface": "SARIF path, scanner operational outcome, and new-versus-existing classification status",
       "remediation_surface": "Consumed through the Evaluation Adapter"
     },
     "actions/zizmor-scan/action.yml": {

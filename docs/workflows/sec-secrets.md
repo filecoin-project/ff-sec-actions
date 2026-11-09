@@ -23,7 +23,7 @@
 
 | Input | Default | Purpose |
 |---|---|---|
-| `config-path` | `.gitleaks.toml` | Repository configuration used only when present |
+| `config-path` | `.gitleaks.toml` | Repository configuration used only when present; otherwise the Gitleaks defaults plus the repository-owned [Filecoin wallet-key rule](../reference/foc-integrator-pack.md#wallet-key-secrets) run |
 | `scan-scope` | `auto` | `auto`, `pr-diff`, or `full-history` |
 | `blocking` | `true` | Fail on validated secret findings |
 
@@ -53,6 +53,8 @@ jobs:
 ```
 
 ## Limitations
+
+When the Consumer Project supplies its own `.gitleaks.toml`, it replaces the repository-owned rules, so the Filecoin wallet-key export rule does not run; the result records this as a coverage limitation.
 
 PR-range scanning does not re-audit older history. Rotate or revoke a real credential before source/history cleanup, and suppress only a verified false positive.
 

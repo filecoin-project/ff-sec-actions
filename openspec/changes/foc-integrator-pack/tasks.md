@@ -50,7 +50,7 @@
 
 ## 4. Workflow wiring, pins, and precision record
 
-- [ ] 4.1 Update the leaf workflows to pin the asset commit from task 3.6:
+- [x] 4.1 Update the leaf workflows to pin the asset commit from task 3.6:
   - `sec-semgrep.yml`: `fetch-depth: 0` on `pull_request`, a second scan with `rules/foc-integrator.yml`, `baseline-ref` from the PR base SHA, a `semgrep-foc` adapter call with literal `blocking: false`, coverage limitations forwarded when `classification=unavailable`, and `evaluation-result-semgrep-foc` and `semgrep-foc-results` uploads.
   - `sec-secrets.yml`: forward `filecoin-rules=not-applied` as a coverage limitation.
 

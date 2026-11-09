@@ -1,13 +1,14 @@
-# Reusable: Semgrep SAST (custom rules + community rulesets).
-# Ported from fil-one security.yaml (job: semgrep), generalized.
-# The custom-config step is skipped automatically when the repo has no such file.
+# Reusable: Semgrep SAST with repository-owned rules.
+# Runs the Ecosystem Baseline rules (semgrep-baseline, consumer-selected gate)
+# and the FOC integrator pack (semgrep-foc, always advisory). On pull requests,
+# findings are marked new or existing relative to the base commit.
 name: Semgrep SAST (reusable)
 
 on:
   workflow_call:
     inputs:
       blocking:
-        description: Fail the job on Ecosystem Baseline rule findings.
+        description: Fail the job on Ecosystem Baseline rule findings. FOC integrator pack findings are always advisory.
         type: boolean
         required: false
         default: false
@@ -25,15 +26,28 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
+          # Pull requests need the base commit to mark findings new or existing.
+          fetch-depth: ${{ github.event_name == 'pull_request' && '0' || '1' }}
 
       - name: Run Semgrep with versioned Ecosystem Baseline rules
         id: scan
-        uses: filecoin-project/ff-sec-actions/actions/semgrep-scan@b628c4771ea6e320f2f868ea6e158091bf8a9609
+        uses: filecoin-project/ff-sec-actions/actions/semgrep-scan@6cef278ad2970f904bb0ed80d1f72012d012610c
         continue-on-error: true
+        with:
+          baseline-ref: ${{ github.event.pull_request.base.sha }}
+
+      - name: Run Semgrep with the versioned FOC integrator pack
+        id: scan-foc
+        uses: filecoin-project/ff-sec-actions/actions/semgrep-scan@6cef278ad2970f904bb0ed80d1f72012d012610c
+        continue-on-error: true
+        with:
+          ruleset: foc-integrator
+          result-file: semgrep-foc.sarif
+          baseline-ref: ${{ github.event.pull_request.base.sha }}
 
       - name: Evaluate Ecosystem Baseline static analysis
         if: always()
-        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@5565507389b1444bfdb6b36d366d17206faf3dc3
+        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@6cef278ad2970f904bb0ed80d1f72012d012610c
         with:
           evaluation-id: semgrep-baseline
           tool-name: semgrep
@@ -47,7 +61,33 @@ jobs:
           blocking: ${{ inputs.blocking }}
           coverage-included: '["supported Go, Rust, JavaScript, TypeScript, Solidity, and Dockerfile source"]'
           coverage-excluded: '["unsupported languages and generated source"]'
-          coverage-limitations: '["the conservative baseline ruleset is not a complete language security audit"]'
+          coverage-limitations: >-
+            ${{ steps.scan.outputs.classification == 'unavailable'
+              && '["the conservative baseline ruleset is not a complete language security audit", "new-versus-existing classification against the pull-request base commit was unavailable"]'
+              || '["the conservative baseline ruleset is not a complete language security audit"]' }}
+
+      - name: Evaluate FOC integrator pack
+        if: always()
+        uses: filecoin-project/ff-sec-actions/actions/evaluation-adapter@6cef278ad2970f904bb0ed80d1f72012d012610c
+        with:
+          evaluation-id: semgrep-foc
+          tool-name: semgrep
+          tool-version: 1.93.0
+          tool-outcome: ${{ steps.scan-foc.outputs.scanner-outcome || 'failure' }}
+          raw-evidence: semgrep-foc.sarif
+          evidence-artifact: semgrep-foc-results
+          remediation-guidance: >-
+            Each finding states what breaks on Filecoin Onchain Cloud or FEVM and the fix. Apply the
+            fix, add a regression test, and see docs/reference/foc-integrator-pack.md. FOC findings
+            are advisory in this release.
+          # The FOC integrator pack is advisory in this release regardless of consumer inputs.
+          blocking: false
+          coverage-included: '["Solidity and JavaScript/TypeScript source that integrates Filecoin Pay, PDP, or the Synapse SDK, and FEVM-specific Solidity patterns"]'
+          coverage-excluded: '["FilOzone core-protocol invariants, storage layout, and selector collisions"]'
+          coverage-limitations: >-
+            ${{ steps.scan-foc.outputs.classification == 'unavailable'
+              && '["rules favor precision; callbacks with any modifier are treated as caller-checked", "new-versus-existing classification against the pull-request base commit was unavailable"]'
+              || '["rules favor precision; callbacks with any modifier are treated as caller-checked"]' }}
 
       - name: Upload normalized Semgrep Evaluation Result
         if: always()
@@ -57,9 +97,24 @@ jobs:
           path: ${{ runner.temp }}/semgrep-baseline-evaluation-result.json
           if-no-files-found: error
 
+      - name: Upload normalized FOC Evaluation Result
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evaluation-result-semgrep-foc
+          path: ${{ runner.temp }}/semgrep-foc-evaluation-result.json
+          if-no-files-found: error
+
       - name: Upload custom-rule results
         if: always() && hashFiles('semgrep-baseline.sarif') != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: semgrep-baseline-results
           path: semgrep-baseline.sarif
+
+      - name: Upload FOC integrator pack results
+        if: always() && hashFiles('semgrep-foc.sarif') != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: semgrep-foc-results
+          path: semgrep-foc.sarif

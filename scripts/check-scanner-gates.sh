@@ -49,6 +49,30 @@ done < <(jq -r '
   | @tsv
 ' "$policy")
 
+# An advisory evaluation that names its evaluation id must be wired with a
+# literal blocking: false in the adapter step that emits it, so no consumer
+# input can turn it into a blocking gate.
+while IFS=$'\t' read -r scanner workflow evaluation_id; do
+  [ -f "$workflow" ] || fail "$scanner workflow is missing: $workflow"
+  step="$(awk -v id="evaluation-id: $evaluation_id" '
+    /^      - / { if (found) exit; block = "" }
+    { block = block $0 "\n" }
+    index($0, id) { found = 1 }
+    END { if (found) printf "%s", block }
+  ' "$workflow")"
+  [ -n "$step" ] || fail "$scanner advisory evaluation $evaluation_id is not emitted by $workflow"
+  grep -Eq '^[[:space:]]+blocking:[[:space:]]*false[[:space:]]*$' <<< "$step" \
+    || fail "$scanner advisory evaluation $evaluation_id is not wired with blocking: false"
+  if grep -Fq 'inputs.' <<< "$(grep -E '^[[:space:]]+blocking:' <<< "$step")"; then
+    fail "$scanner advisory evaluation $evaluation_id reads its gate from an input"
+  fi
+done < <(jq -r '
+  .scanners | to_entries[]
+  | select(.value.gate_mode == "advisory" and (.value.evaluation_id // "") != "")
+  | [.key, .value.workflow, .value.evaluation_id]
+  | @tsv
+' "$policy")
+
 if grep -Eq 'continue-on-error:[[:space:]]+true([[:space:]#]|$)' \
   .github/workflows/sec-codeql.yml \
   .github/workflows/sec-dependency-review.yml \
