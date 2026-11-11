@@ -16,6 +16,59 @@ findings. Like every baseline rule, it is loaded from the same immutable commit
 as the [`semgrep-scan` action](../../actions/semgrep-scan/action.yml) and never
 from Consumer Project Semgrep configuration.
 
+## Using The Pack
+
+Adopt or advance the [Ecosystem Baseline](../consumers/ecosystem-baseline.md)
+pin; `semgrep-foc` runs on the next pull request. On a pull request the summary
+lists findings the change introduces first, so start there.
+
+### Run It Before You Push
+
+The rules are a single file at the commit your workflow pins. Scan with the same
+digest-pinned Semgrep image the baseline uses (replace `<pinned-sha>` with the
+SHA in your `ecosystem-baseline.yml@...` line):
+
+```bash
+curl -fsSL -o /tmp/foc-integrator.yml \
+  https://raw.githubusercontent.com/filecoin-project/ff-sec-actions/<pinned-sha>/rules/foc-integrator.yml
+docker run --rm -v "$PWD:/src" -v /tmp/foc-integrator.yml:/rules/foc-integrator.yml:ro -w /src \
+  semgrep/semgrep:1.93.0@sha256:f35c7891e2030110a84a721fdd556ce8f3da6e7e69d7fab1d3660ae1bb334474 \
+  semgrep scan --metrics=off --disable-version-check --config /rules/foc-integrator.yml .
+```
+
+Local rule IDs carry a path prefix such as `rules.foc.solidity.hardcoded-gas`;
+the part from `foc.` onward is the rule in the table below.
+
+### See A Finding And Its Fix
+
+Each rule has a paired example: the
+[`positive/`](../../test/fixtures/foc-integrator/positive/) file marks every
+line the rule reports with `// ruleid:`, and the same-named
+[`clean/`](../../test/fixtures/foc-integrator/clean/) file shows the fixed
+pattern the rule accepts. For example,
+[`positive/rail-terminated-can-revert.sol`](../../test/fixtures/foc-integrator/positive/rail-terminated-can-revert.sol)
+reverts and makes an unguarded external call in `railTerminated`;
+[`clean/rail-terminated-can-revert.sol`](../../test/fixtures/foc-integrator/clean/rail-terminated-can-revert.sol)
+keeps only the caller check, wraps the call in `try`/`catch`, and emits events.
+
+### Dismiss A Verified False Positive
+
+Fix the code when the finding applies. When your design intentionally does what
+the rule reports (for example, a service contract that must block payer-initiated
+rail termination), suppress that one line with the rule ID and a reason:
+
+```solidity
+// Intentional: only the service may terminate rails; see docs/payments.md.
+require(terminator == serviceProvider, "service-initiated only"); // nosemgrep: foc.solidity.rail-terminated-can-revert
+```
+
+Name the rule rather than writing a bare `nosemgrep`, which hides every rule on
+that line, and never use `.semgrepignore` to skip contract or SDK source.
+Suppressions are not yet listed in results (see
+[Known Limitations](#known-limitations)), so reviewers see them only in the
+diff. If a rule is wrong for a common FOC pattern, report it to the Control
+Repository instead so the rule can be narrowed for everyone.
+
 ## Rules
 
 | Rule | What breaks on FOC | Fix |

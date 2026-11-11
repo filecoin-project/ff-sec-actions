@@ -46,7 +46,10 @@ computed, the result says so under coverage limitations.
 
 The `semgrep-foc` evaluation runs the
 [FOC integrator pack](../reference/foc-integrator-pack.md). Each finding states
-what breaks on Filecoin Onchain Cloud or FEVM and how to fix it. These findings
+what breaks on Filecoin Onchain Cloud or FEVM and how to fix it; the pack's
+[usage guide](../reference/foc-integrator-pack.md#using-the-pack) shows how to
+run it locally, compare with fixed examples, and dismiss a verified false
+positive. These findings
 are advisory in this release regardless of `static-analysis-blocking`, but a
 failed or missing FOC scan still fails `Profile Conclusion` under
 `require-complete: true`. Secret scanning also reports committed Filecoin wallet
