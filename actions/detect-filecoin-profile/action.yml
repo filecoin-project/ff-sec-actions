@@ -28,6 +28,9 @@ outputs:
   profiles-json:
     description: Compact JSON array of selected profile IDs and their component paths.
     value: ${{ steps.detect.outputs.profiles_json }}
+  add-ons-json:
+    description: Compact JSON array of detected catalog add-ons (for example foc) and their evidence paths; reported only.
+    value: ${{ steps.detect.outputs.add_ons_json }}
   component-count:
     description: Number of recognized project components.
     value: ${{ steps.detect.outputs.component_count }}

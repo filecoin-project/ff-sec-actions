@@ -18,6 +18,11 @@ jq -e '
   and (.contract.normalized_surfaces | type == "array" and length > 0)
   and (.workflows | type == "object" and length > 0 and all(.[];
     (.mode | IN("normalized-evaluation", "provider-native", "profile-aggregate", "evaluation-collection"))
+    and ((.additional_evaluations // []) | type == "array" and all(.[];
+      (.evaluation_id | type == "string" and length > 0)
+      and (.raw_artifact | type == "string" and length > 0)
+      and (.normalized_artifact | type == "string" and length > 0)
+      and (.gate | IN("advisory", "configurable"))))
     and (.consumer_surface | type == "string" and length > 0)
     and (.remediation_surface | type == "string" and length > 0)
     and (if .mode == "normalized-evaluation"
@@ -79,6 +84,20 @@ while IFS= read -r workflow; do
       || fail "$workflow does not publish normalized artifact: $normalized_artifact"
     [ -f "$repo_root/$lifecycle_test" ] \
       || fail "$workflow does not name an executable lifecycle contract test"
+    # A workflow may emit further normalized evaluations from the same job.
+    while IFS=$'\t' read -r extra_id extra_raw extra_normalized; do
+      [ -n "$extra_id" ] || continue
+      grep -Fq "evaluation-id: $extra_id" "$path" \
+        || fail "$workflow does not expose its additional evaluation id: $extra_id"
+      grep -Fq "evidence-artifact: $extra_raw" "$path" \
+        || fail "$workflow does not map $extra_id raw evidence to artifact: $extra_raw"
+      grep -Fq "name: $extra_raw" "$path" \
+        || fail "$workflow does not publish $extra_id raw evidence artifact: $extra_raw"
+      grep -Fq "name: $extra_normalized" "$path" \
+        || fail "$workflow does not publish $extra_id normalized artifact: $extra_normalized"
+    done < <(jq -r --arg workflow "$workflow" \
+      '.workflows[$workflow].additional_evaluations // [] | .[] | [.evaluation_id, .raw_artifact, .normalized_artifact] | @tsv' \
+      "$manifest")
   else
     marker="$(jq -r --arg workflow "$workflow" '.workflows[$workflow].consumer_marker' "$manifest")"
     grep -Fq "$marker" "$path" \

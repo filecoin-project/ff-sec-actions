@@ -2,7 +2,7 @@
   "schema_version": 2,
   "roadmap_id": "filecoin-ecosystem-security-evaluation",
   "goal": "Provide secure, repeatable, and effective GitHub-based security evaluation for supported Filecoin ecosystem projects without representing incomplete evaluation as safety.",
-  "updated_at": "2026-11-06T02:00:07Z",
+  "updated_at": "2026-11-09T22:31:38Z",
   "canonical_decision_map": "docs/ECOSYSTEM-SECURITY-DECISION-MAP.md",
   "contract_command": "bash scripts/roadmap.sh validate",
   "status_semantics": {
@@ -494,8 +494,47 @@
       "change": "bootstrap-security-gate-specs"
     },
     {
-      "id": "BASE-01",
+      "id": "FOC-01",
       "order": 17,
+      "phase": "ecosystem-baseline",
+      "priority": "P0",
+      "kind": "implementation",
+      "title": "Ship the FOC integrator pack",
+      "objective": "Detect Filecoin Onchain Cloud integration mistakes (Filecoin Pay, PDP, FEVM runtime differences, Synapse SDK) in third-party builder code without executing it, with an FOC-specific explanation and fix for every finding.",
+      "blocked_by": [
+        "EVAL-03"
+      ],
+      "decision_refs": [
+        "scanner-runtime",
+        "evidence-interface"
+      ],
+      "acceptance_criteria": [
+        "The Ecosystem Baseline runs a semgrep-foc evaluation from a versioned, repository-owned ruleset with an advisory finding gate and required completion.",
+        "Every FOC finding states the impact on FOC, a concrete fix, and a documentation link.",
+        "Pull-request summaries lead with findings the pull request introduces while the Evidence Bundle keeps every finding.",
+        "Secret scanning detects exported Filecoin wallet keys and reports when a Consumer Project config prevents that rule from applying.",
+        "Profile detection reports the foc add-on with path-scoped evidence without changing which evaluations run."
+      ],
+      "verification": [
+        "bash scripts/test-foc-integrator.sh",
+        "bash scripts/test-evaluation-adapter.sh",
+        "bash scripts/test-gitleaks-scan.sh",
+        "bash scripts/test-detect-filecoin-profile.sh",
+        "Every pack rule has paired positive and clean fixtures and a triaged precision record against the FilOzone reference repositories."
+      ],
+      "artifacts": [
+        "rules/foc-integrator.yml",
+        "rules/foc-integrator-precision.json",
+        "rules/gitleaks-filecoin.toml",
+        "test/fixtures/foc-integrator/",
+        ".github/workflows/sec-semgrep.yml",
+        "docs/reference/foc-integrator-pack.md"
+      ],
+      "change": "foc-integrator-pack"
+    },
+    {
+      "id": "BASE-01",
+      "order": 18,
       "phase": "ecosystem-baseline",
       "priority": "P0",
       "kind": "implementation",
@@ -527,11 +566,11 @@
         "docs/consumers/quickstart.md",
         "examples/consumer-ecosystem-baseline.yml"
       ],
-      "change": "complete-ecosystem-baseline"
+      "change": null
     },
     {
       "id": "BASE-02",
-      "order": 18,
+      "order": 19,
       "phase": "ecosystem-baseline",
       "priority": "P1",
       "kind": "implementation",
@@ -558,7 +597,7 @@
     },
     {
       "id": "PROF-01",
-      "order": 19,
+      "order": 20,
       "phase": "security-profiles",
       "priority": "P0",
       "kind": "decision",
@@ -584,7 +623,7 @@
     },
     {
       "id": "PROF-02",
-      "order": 20,
+      "order": 21,
       "phase": "security-profiles",
       "priority": "P0",
       "kind": "implementation",
@@ -611,7 +650,7 @@
     },
     {
       "id": "PROF-03",
-      "order": 21,
+      "order": 22,
       "phase": "security-profiles",
       "priority": "P0",
       "kind": "implementation",
@@ -640,7 +679,7 @@
     },
     {
       "id": "BASE-03",
-      "order": 22,
+      "order": 23,
       "phase": "ecosystem-baseline",
       "priority": "P0",
       "kind": "verification",
@@ -668,7 +707,7 @@
     },
     {
       "id": "PROF-04",
-      "order": 23,
+      "order": 24,
       "phase": "security-profiles",
       "priority": "P0",
       "kind": "implementation",
@@ -697,7 +736,7 @@
     },
     {
       "id": "PROF-05",
-      "order": 24,
+      "order": 25,
       "phase": "security-profiles",
       "priority": "P1",
       "kind": "implementation",
@@ -726,7 +765,7 @@
     },
     {
       "id": "PROF-06",
-      "order": 25,
+      "order": 26,
       "phase": "security-profiles",
       "priority": "P1",
       "kind": "implementation",
@@ -755,7 +794,7 @@
     },
     {
       "id": "PROF-07",
-      "order": 26,
+      "order": 27,
       "phase": "security-profiles",
       "priority": "P1",
       "kind": "implementation",
@@ -784,7 +823,7 @@
     },
     {
       "id": "PROF-08",
-      "order": 27,
+      "order": 28,
       "phase": "security-profiles",
       "priority": "P1",
       "kind": "implementation",
@@ -815,7 +854,7 @@
     },
     {
       "id": "FILE-01",
-      "order": 28,
+      "order": 29,
       "phase": "filecoin-assurance",
       "priority": "P0",
       "kind": "implementation",
@@ -824,7 +863,8 @@
       "blocked_by": [
         "PROF-03",
         "PROF-04",
-        "PROF-06"
+        "PROF-06",
+        "FOC-01"
       ],
       "decision_refs": [
         "scanner-runtime",
@@ -845,7 +885,7 @@
     },
     {
       "id": "VERIFY-01",
-      "order": 29,
+      "order": 30,
       "phase": "verification",
       "priority": "P0",
       "kind": "verification",
@@ -874,7 +914,7 @@
     },
     {
       "id": "PRIV-01",
-      "order": 30,
+      "order": 31,
       "phase": "privileged-analysis",
       "priority": "P1",
       "kind": "decision",
@@ -902,7 +942,7 @@
     },
     {
       "id": "PRIV-02",
-      "order": 31,
+      "order": 32,
       "phase": "privileged-analysis",
       "priority": "P1",
       "kind": "implementation",
@@ -930,7 +970,7 @@
     },
     {
       "id": "PRIV-03",
-      "order": 32,
+      "order": 33,
       "phase": "privileged-analysis",
       "priority": "P1",
       "kind": "verification",
@@ -958,7 +998,7 @@
     },
     {
       "id": "GOV-01",
-      "order": 33,
+      "order": 34,
       "phase": "governance-release",
       "priority": "P0",
       "kind": "governance",
@@ -987,7 +1027,7 @@
     },
     {
       "id": "GOV-02",
-      "order": 34,
+      "order": 35,
       "phase": "governance-release",
       "priority": "P0",
       "kind": "governance",
@@ -1018,7 +1058,7 @@
     },
     {
       "id": "DOC-01",
-      "order": 35,
+      "order": 36,
       "phase": "governance-release",
       "priority": "P1",
       "kind": "implementation",
@@ -1044,7 +1084,7 @@
     },
     {
       "id": "MIG-01",
-      "order": 36,
+      "order": 37,
       "phase": "adoption",
       "priority": "P1",
       "kind": "implementation",
@@ -1071,7 +1111,7 @@
     },
     {
       "id": "ROLL-01",
-      "order": 37,
+      "order": 38,
       "phase": "adoption",
       "priority": "P0",
       "kind": "rollout",
@@ -1097,7 +1137,7 @@
     },
     {
       "id": "ROLL-02",
-      "order": 38,
+      "order": 39,
       "phase": "adoption",
       "priority": "P1",
       "kind": "rollout",
@@ -1124,7 +1164,7 @@
     },
     {
       "id": "REL-01",
-      "order": 39,
+      "order": 40,
       "phase": "public-v1",
       "priority": "P0",
       "kind": "governance",
@@ -1152,7 +1192,7 @@
     },
     {
       "id": "SCALE-01",
-      "order": 40,
+      "order": 41,
       "phase": "ecosystem-scale",
       "priority": "P1",
       "kind": "rollout",

@@ -32,6 +32,11 @@ jq -e '
   and all(.profiles[];
     (.id | type == "string" and length > 0)
     and (.label | type == "string" and length > 0))
+  and (.add_ons | type == "array")
+  and ([.add_ons[].id] | length == (unique | length))
+  and all(.add_ons[];
+    (.id | type == "string" and length > 0)
+    and (.label | type == "string" and length > 0))
 ' "$PROFILE_CATALOG" >/dev/null || fail "profile catalog is invalid"
 
 repository_root="$(cd "$REPOSITORY_PATH" && pwd -P)"
@@ -40,6 +45,8 @@ trap 'rm -rf "$work_directory"' EXIT
 detections_file="$work_directory/detections.ndjson"
 candidates_file="$work_directory/candidates.ndjson"
 ambiguities_file="$work_directory/ambiguities.ndjson"
+add_ons_file="$work_directory/add-ons.ndjson"
+: > "$add_ons_file"
 : > "$detections_file"
 : > "$candidates_file"
 : > "$ambiguities_file"
@@ -140,6 +147,18 @@ emit_detection() {
     }' >> "$detections_file"
 }
 
+# Add-ons are reported alongside profiles; they never change classification.
+emit_add_on() {
+  local add_on_id="$1"
+  local evidence_path="$2"
+  local reason="$3"
+
+  jq -e --arg id "$add_on_id" 'any(.add_ons[]; .id == $id)' "$PROFILE_CATALOG" >/dev/null \
+    || fail "detector references an unknown add-on: $add_on_id"
+  jq -cn --arg id "$add_on_id" --arg evidence_path "$evidence_path" --arg reason "$reason" \
+    '{id: $id, evidence: {path: $evidence_path, reason: $reason}}' >> "$add_ons_file"
+}
+
 emit_storage_provider_detection_if_matched() {
   local component_path="$1"
   local evidence_path="$2"
@@ -204,6 +223,11 @@ while IFS= read -r -d '' project_file; do
         emit_detection "$component_path" "storage-application" "high" "$file_path" \
           "declares a Filecoin or IPFS storage application dependency"
       fi
+      # The manifest is parsed as data; an unparseable manifest is not a signal.
+      if jq -e '((.dependencies // {}) + (.devDependencies // {})) | has("@filoz/synapse-sdk")' \
+        "$project_file" >/dev/null 2>&1; then
+        emit_add_on foc "$file_path" "declares the Synapse SDK dependency"
+      fi
       ;;
     *.sol)
       component_root="$(find_component_root "$(dirname "$project_file")")"
@@ -214,6 +238,11 @@ while IFS= read -r -d '' project_file; do
         "$project_file"; then
         emit_detection "$component_path" "fevm-contract" "high" "$file_path" \
           "imports a Filecoin Solidity API or precompile library"
+      fi
+      if LC_ALL=C grep -Eq \
+        '^[[:space:]]*import[^;]*(PDPListener|PDPVerifier|IValidator|FilecoinPay|Payments\.sol)' \
+        "$project_file"; then
+        emit_add_on foc "$file_path" "imports a Filecoin Pay or PDP integration interface"
       fi
       ;;
     *.tf)
@@ -302,6 +331,8 @@ jq -n \
   --slurpfile detections "$detections_file" \
   --slurpfile candidates "$candidates_file" \
   --slurpfile ambiguities "$ambiguities_file" \
+  --slurpfile add_ons "$add_ons_file" \
+  --slurpfile catalog "$PROFILE_CATALOG" \
   '
     ([
       $candidates[].component_path,
@@ -357,6 +388,18 @@ jq -n \
           | sort_by(.id, .path)
           | group_by(.id)
           | map({id: .[0].id, paths: map(.path)})
+        ),
+        add_ons: (
+          $add_ons
+          | sort_by(.id)
+          | group_by(.id)
+          | map(
+              .[0].id as $id
+              | {
+                  id: $id,
+                  label: ($catalog[0].add_ons[] | select(.id == $id) | .label),
+                  evidence: (map(.evidence) | unique_by(.path, .reason))
+                })
         ),
         coverage: {
           included: ($components | map(select((.profiles | length) > 0) | .path)),
@@ -424,6 +467,19 @@ jq -n \
     printf '| <code>%s</code> | %s | %s | %s |\n' \
       "$path" "$label" "$confidence" "$reason"
   done
+  if jq -e '.add_ons | length > 0' "$RESULT_FILE" >/dev/null; then
+    printf '\n**Add-ons detected** (reported only; they do not change which evaluations run):\n\n'
+    jq -r '
+      def markdown_cell:
+        gsub("&"; "&amp;")
+        | gsub("<"; "&lt;")
+        | gsub(">"; "&gt;")
+        | gsub("[|]"; "&#124;")
+        | gsub("`"; "&#96;");
+      .add_ons[]
+      | "- \(.label | markdown_cell) (`\(.id)`): \([.evidence[] | "<code>\(.path | markdown_cell)</code>"] | join(", "))"
+    ' "$RESULT_FILE"
+  fi
 } > "$SUMMARY_FILE"
 
 if [ -n "$GITHUB_STEP_SUMMARY" ]; then
@@ -448,6 +504,7 @@ jq -r '
 done
 
 profiles_json="$(jq -c '.selected_profiles' "$RESULT_FILE")"
+add_ons_json="$(jq -c '[.add_ons[] | {id: .id, paths: [.evidence[].path]}]' "$RESULT_FILE")"
 component_count="$(jq '.components | length' "$RESULT_FILE")"
 coverage_gaps_count="$(jq '.coverage.gaps | length' "$RESULT_FILE")"
 
@@ -455,5 +512,6 @@ set_output completion complete
 set_output result_file "$RESULT_FILE"
 set_output summary "$SUMMARY_FILE"
 set_output profiles_json "$profiles_json"
+set_output add_ons_json "$add_ons_json"
 set_output component_count "$component_count"
 set_output coverage_gaps_count "$coverage_gaps_count"

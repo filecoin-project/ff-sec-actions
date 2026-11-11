@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "catalog_version": "0.1.0",
+  "catalog_version": "0.2.0",
   "profiles": [
     {
       "id": "fevm-contract",
@@ -50,6 +50,15 @@
       "description": "Infrastructure that deploys or authorizes Lotus Miner, Boost, Curio, Venus Sealer, or related storage-provider software.",
       "confidence_basis": "Infrastructure configuration names storage-provider software, privileged API variables, or proof-parameter storage.",
       "planned_evaluations": ["sec-filecoin-secrets", "sec-filecoin-rpc", "sec-storage-provider"]
+    }
+  ],
+  "add_ons": [
+    {
+      "id": "foc",
+      "label": "Filecoin Onchain Cloud integration",
+      "description": "Code that integrates Filecoin Onchain Cloud: Synapse SDK applications and Solidity services built on Filecoin Pay or PDP.",
+      "confidence_basis": "A @filoz/synapse-sdk dependency in package.json, or a Solidity import of PDPListener, IValidator, or Filecoin Pay interfaces.",
+      "evaluations": ["semgrep-foc"]
     }
   ]
 }

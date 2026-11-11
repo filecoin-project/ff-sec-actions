@@ -46,10 +46,10 @@ The run should contain five evaluation jobs plus `Profile Conclusion`:
 - Git history or the pull-request range with Gitleaks;
 - dependency manifests and lockfiles with Trivy;
 - infrastructure configuration with Trivy;
-- the versioned ecosystem Semgrep rules.
+- the versioned ecosystem Semgrep rules and the FOC integrator pack, in one job.
 
 Open `Profile Conclusion`, then download `ecosystem-baseline-evidence`. The
-bundle must contain all five Evaluation Results with explicit completion,
+bundle must contain all six Evaluation Results with explicit completion,
 coverage, tool version, findings count, and evidence references.
 
 Accept the installation only when:

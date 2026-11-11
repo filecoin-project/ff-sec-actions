@@ -15,6 +15,10 @@ high-signal checks for:
 - Solidity `tx.origin` authorization;
 - Dockerfile remote-response piping into a shell.
 
+Filecoin Onchain Cloud integration rules live in a separate pack,
+[`rules/foc-integrator.yml`](../../rules/foc-integrator.yml), reported as its own
+advisory `semgrep-foc` evaluation. See the [FOC integrator pack](foc-integrator-pack.md).
+
 These rules complement, rather than replace, workflow security, Gitleaks,
 recursive Trivy manifest/lockfile analysis, and Trivy IaC evaluation. A clean
 result means only that the declared rules completed over the reported scope.
@@ -34,5 +38,6 @@ results are not part of the versioned Ecosystem Baseline conclusion.
 
 ## Next
 
+- [FOC integrator pack](foc-integrator-pack.md)
 - [Evaluation adapter](evaluation-adapter.md)
 - [Evidence Bundle](evidence-bundle.md)

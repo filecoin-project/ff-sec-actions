@@ -54,7 +54,7 @@ jobs:
   secrets:
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@952f6ad35aafc052b4bc938cef90e45ca17ced7d
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@882368d7d079c136c168a5af049561971ed700d2
     with:
       blocking: ${{ inputs.secrets-blocking }}
 
@@ -71,7 +71,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@952f6ad35aafc052b4bc938cef90e45ca17ced7d
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@882368d7d079c136c168a5af049561971ed700d2
     with:
       blocking: ${{ inputs.static-analysis-blocking }}
 
@@ -97,8 +97,8 @@ jobs:
         with:
           results-directory: evaluation-results
           profile-id: ecosystem-baseline
-          profile-version: 1.0.0
-          required-evaluations: '["zizmor-actions","trivy-dependencies","gitleaks","trivy-iac","semgrep-baseline"]'
+          profile-version: 1.1.0
+          required-evaluations: '["zizmor-actions","trivy-dependencies","gitleaks","trivy-iac","semgrep-baseline","semgrep-foc"]'
           require-complete: ${{ inputs.require-complete }}
 
       - name: Upload Ecosystem Baseline Evidence Bundle

@@ -16,7 +16,7 @@ not equivalent to zero findings.
 
 ## Current Behavior
 
-The Ecosystem Baseline's five scanner adapters and the AI review action emit
+The Ecosystem Baseline's six scanner evaluations and the AI review action emit
 the pre-v1 [Evaluation Result contract](../reference/evaluation-result.md):
 
 - scanner outputs may appear in job logs, SARIF, or artifacts;
@@ -25,7 +25,7 @@ the pre-v1 [Evaluation Result contract](../reference/evaluation-result.md):
 - scanner event/configuration skips are represented as `skipped`;
 - AI refusal and large-diff or response truncation are `incomplete`;
 - a missing Anthropic secret is `skipped`, never zero findings;
-- the Ecosystem Baseline aggregates its five required results into one Evidence
+- the Ecosystem Baseline aggregates its six required results into one Evidence
   Bundle and one authoritative `Profile Conclusion` check.
 
 For the Ecosystem Baseline, start with `Profile Conclusion` and the
@@ -36,6 +36,25 @@ Each normalized evaluation job also has a summary containing the finding rule,
 file and line, redacted message, remediation guidance, evaluated scope, gate
 reason, and exact raw-evidence artifact name. Capped source annotations link the
 run to affected files; the artifact contains the complete finding set.
+
+On pull requests, the Semgrep evaluations compare against the base commit. Their
+summaries show `New in this change: N; existing before this change: M`, a
+`Change` column, and the findings your pull request introduced first; existing
+findings past the display cap are counted and remain in the raw evidence. This
+classification never changes the finding count or the gate. If it could not be
+computed, the result says so under coverage limitations.
+
+The `semgrep-foc` evaluation runs the
+[FOC integrator pack](../reference/foc-integrator-pack.md). Each finding states
+what breaks on Filecoin Onchain Cloud or FEVM and how to fix it; the pack's
+[usage guide](../reference/foc-integrator-pack.md#using-the-pack) shows how to
+run it locally, compare with fixed examples, and dismiss a verified false
+positive. These findings
+are advisory in this release regardless of `static-analysis-blocking`, but a
+failed or missing FOC scan still fails `Profile Conclusion` under
+`require-complete: true`. Secret scanning also reports committed Filecoin wallet
+exports unless your repository's own `.gitleaks.toml` replaces the shared rules,
+which the Gitleaks result records as a limitation.
 
 The legacy full security pipeline has not migrated every scanner to the
 aggregate contract. In that pipeline, inspect each scanner's result, raw

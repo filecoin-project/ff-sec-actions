@@ -30,7 +30,7 @@ jobs:
       contents: read
       security-events: write
       pull-requests: write # dependency-review PR comments
-    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@217da702dc30df7fbee0ce0f6ff7c186f5529041
+    uses: filecoin-project/ff-sec-actions/.github/workflows/security-pipeline.yml@d1bef8f75b5321bbac0a2862877750de811913f6
     with:
       # Safe baseline: inspect manifests and lockfiles without running package
       # installation hooks from repository content.
@@ -59,6 +59,6 @@ jobs:
       # slither-fail-on: high
   # À la carte alternative — call individual scanners as separate jobs:
   # semgrep:
-  #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+  #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@d1bef8f75b5321bbac0a2862877750de811913f6
   # secrets-scan:
-  #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@defb8d4171a07bc4e0001c998cb866c96c4d5750
+  #   uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@d1bef8f75b5321bbac0a2862877750de811913f6

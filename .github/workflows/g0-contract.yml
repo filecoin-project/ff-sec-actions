@@ -71,21 +71,27 @@ jobs:
           bash scripts/check-fork-pr.sh
           bash scripts/test-fork-pr.sh
 
-      - name: Validate Ecosystem Baseline composition and planted fixtures
+      - name: Validate Ecosystem Baseline composition, FOC integrator pack, and planted fixtures
         run: |
-          # The test script scans a temporary copy of the fixture: scanning it in
-          # place would hit Semgrep's default ignore of test/ and scan nothing.
-          # Only RUNNER_TEMP is mounted into the pinned Semgrep container.
+          # The test scripts scan temporary copies of the fixtures: scanning them
+          # in place would hit Semgrep's default ignore of test/ and scan nothing.
+          # Only RUNNER_TEMP is mounted into the pinned Semgrep container; the git
+          # hardening variables set by semgrep-scan are forwarded into it.
           mkdir -p "${RUNNER_TEMP}/bin"
           cat > "${RUNNER_TEMP}/bin/semgrep" <<'WRAPPER'
           #!/usr/bin/env bash
           docker run --rm --volume "${RUNNER_TEMP}:${RUNNER_TEMP}" --workdir "${PWD}" \
+            --env GIT_CONFIG_COUNT --env GIT_CONFIG_KEY_0 --env GIT_CONFIG_VALUE_0 \
+            --env GIT_CONFIG_KEY_1 --env GIT_CONFIG_VALUE_1 \
+            --env GIT_CONFIG_KEY_2 --env GIT_CONFIG_VALUE_2 \
             semgrep/semgrep:1.93.0@sha256:f35c7891e2030110a84a721fdd556ce8f3da6e7e69d7fab1d3660ae1bb334474 \
             semgrep "$@"
           WRAPPER
           chmod +x "${RUNNER_TEMP}/bin/semgrep"
           PATH="${RUNNER_TEMP}/bin:${PATH}" TMPDIR="${RUNNER_TEMP}" BASELINE_RUN_DETECTION=true \
             bash scripts/test-ecosystem-baseline.sh
+          PATH="${RUNNER_TEMP}/bin:${PATH}" TMPDIR="${RUNNER_TEMP}" \
+            bash scripts/test-foc-integrator.sh
           bash scripts/test-consumer-alpha.sh
 
       - name: Validate shell, workflow, example, and fork-fixture syntax
