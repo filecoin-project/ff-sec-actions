@@ -57,9 +57,26 @@ evidence_artifact_for_result() {
   fi
 }
 
-render_findings() {
+# Findings whose SARIF baselineState marks them new sort first. jq sort_by is
+# stable, so evidence without baselineState keeps its original order.
+NEW_FIRST_JQ='def new_first: sort_by(if .baselineState == "new" then 0 else 1 end);'
+
+# Prints "<new> <existing>" when any finding carries SARIF baselineState, else
+# nothing. Unparseable evidence yields nothing; validation reports it elsewhere.
+baseline_counts() {
   [ -n "$RAW_EVIDENCE" ] && [ -s "$RAW_EVIDENCE" ] || return 0
-  jq -r --argjson limit "$MAX_SUMMARY_FINDINGS" '
+  jq -r '
+    [.runs[] | (.results // [])[]] as $results
+    | if any($results[]; has("baselineState")) then
+        "\([$results[] | select(.baselineState == "new")] | length) \([$results[] | select(.baselineState != "new")] | length)"
+      else empty end
+  ' "$RAW_EVIDENCE" 2>/dev/null || true
+}
+
+render_findings() {
+  local classified="${1:-false}"
+  [ -n "$RAW_EVIDENCE" ] && [ -s "$RAW_EVIDENCE" ] || return 0
+  jq -r --argjson limit "$MAX_SUMMARY_FINDINGS" --argjson classified "$classified" "$NEW_FIRST_JQ"'
     def clean:
       tostring
       | gsub("[\\r\\n|`]"; " ")
@@ -70,6 +87,8 @@ render_findings() {
           | from_entries) as $help
       | ($run.results // [])[]
       | {
+          change: (if .baselineState == "new" then "new" else "existing" end),
+          baselineState: .baselineState,
           severity: (.level // "unknown" | clean),
           rule: (.ruleId // "unknown" | clean),
           location: (
@@ -80,8 +99,9 @@ render_findings() {
           message: (.message.text // .message.markdown // "No description supplied" | clean),
           help: (($help[.ruleId] // "See the scanner rule documentation") | clean)
         }
-    ][0:$limit][]
-    | "| `\(.severity)` | `\(.rule)` | `\(.location)` | \(.message) | \(.help) |"
+    ] | new_first | .[0:$limit][]
+    | (if $classified then "| \(.change) " else "" end)
+      + "| `\(.severity)` | `\(.rule)` | `\(.location)` | \(.message) | \(.help) |"
   ' "$RAW_EVIDENCE"
 }
 
@@ -89,7 +109,7 @@ emit_annotations() {
   local annotation=warning
   [ "$BLOCKING" = false ] || annotation=error
   [ -n "$RAW_EVIDENCE" ] && [ -s "$RAW_EVIDENCE" ] || return 0
-  jq -r --argjson limit "$MAX_SUMMARY_FINDINGS" '
+  jq -r --argjson limit "$MAX_SUMMARY_FINDINGS" "$NEW_FIRST_JQ"'
     def command_data:
       tostring
       | gsub("%"; "%25")
@@ -99,7 +119,7 @@ emit_annotations() {
       command_data
       | gsub(":"; "%3A")
       | gsub(","; "%2C");
-    [.runs[] | (.results // [])[]][0:$limit][]
+    [.runs[] | (.results // [])[]] | new_first | .[0:$limit][]
     | [
         (.locations[0].physicalLocation.artifactLocation.uri // "" | command_property),
         ((.locations[0].physicalLocation.region.startLine // 1)
@@ -125,17 +145,26 @@ render_summary() {
   local gate_conclusion="$5"
   local rendered_count=0
   local artifact_display
+  local baseline new_count=0 existing_count=0 classified=false hidden_existing
 
   artifact_display="$(evidence_artifact_for_result)"
   artifact_display="${artifact_display:-not-published}"
 
   [ "$findings_count" = null ] || rendered_count="$findings_count"
+  baseline="$(baseline_counts)"
+  if [ -n "$baseline" ]; then
+    classified=true
+    read -r new_count existing_count <<< "$baseline"
+  fi
   mkdir -p "$(dirname "$SUMMARY_FILE")"
   {
     printf '# Evaluation: %s\n\n' "$EVALUATION_ID"
     printf -- "- Tool: \`%s@%s\`\n" "$TOOL_NAME" "$TOOL_VERSION"
     printf -- '- Completion: **%s** — %s\n' "$completion" "$reason"
     printf -- '- Findings: **%s**; highest severity: **%s**\n' "$findings_count" "$highest_severity"
+    if [ "$classified" = true ]; then
+      printf -- '- New in this change: **%s**; existing before this change: **%s**\n' "$new_count" "$existing_count"
+    fi
     printf -- '- Gate: **%s** (%s)\n' "$gate_conclusion" "$([ "$BLOCKING" = true ] && printf blocking || printf advisory)"
     printf -- "- Scope: \`%s\`\n" "$SCOPE_TARGET"
     printf -- "- Evidence artifact: \`%s\`; file: \`%s\`\n" "$artifact_display" "${RAW_EVIDENCE:-none}"
@@ -143,12 +172,22 @@ render_summary() {
     printf -- '- Coverage limitations: %s\n\n' "$(jq -r 'if length == 0 then "none declared" else join("; ") end' <<< "$COVERAGE_LIMITATIONS")"
     if [ "$rendered_count" -gt 0 ] && [ -s "$RAW_EVIDENCE" ]; then
       printf '## Findings\n\n'
-      printf '| Severity | Rule | Location | What was found | Rule guidance |\n'
-      printf '|---|---|---|---|---|\n'
-      render_findings
+      if [ "$classified" = true ]; then
+        printf '| Change | Severity | Rule | Location | What was found | Rule guidance |\n'
+        printf '|---|---|---|---|---|---|\n'
+      else
+        printf '| Severity | Rule | Location | What was found | Rule guidance |\n'
+        printf '|---|---|---|---|---|\n'
+      fi
+      render_findings "$classified"
       if [ "$rendered_count" -gt "$MAX_SUMMARY_FINDINGS" ]; then
         printf "\nShowing %s of %s findings; download \`%s\` for the complete result.\n" \
           "$MAX_SUMMARY_FINDINGS" "$rendered_count" "$artifact_display"
+        if [ "$classified" = true ]; then
+          hidden_existing=$(( existing_count - (MAX_SUMMARY_FINDINGS > new_count ? MAX_SUMMARY_FINDINGS - new_count : 0) ))
+          [ "$hidden_existing" -le 0 ] \
+            || printf '...and %s existing findings in raw evidence.\n' "$hidden_existing"
+        fi
       fi
       printf '\n## How to remediate\n\n%s\n' "$REMEDIATION_GUIDANCE"
     elif [ "$completion" = complete ]; then

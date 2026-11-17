@@ -7,6 +7,7 @@ SCAN_SCOPE="${SCAN_SCOPE:-auto}"
 BASE_SHA="${BASE_SHA:-}"
 HEAD_SHA="${HEAD_SHA:-}"
 CONFIG_PATH="${CONFIG_PATH:-.gitleaks.toml}"
+CONTROL_CONFIG="${CONTROL_CONFIG:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/rules/gitleaks-filecoin.toml}"
 RESULT_FILE="${RESULT_FILE:-gitleaks-results.sarif}"
 EVENT_NAME="${EVENT_NAME:-}"
 GITHUB_OUTPUT="${GITHUB_OUTPUT:-/dev/null}"
@@ -118,6 +119,22 @@ if [ ! -x "$gitleaks_binary" ]; then
   exit 0
 fi
 
+# A Consumer Project configuration keeps precedence (and its allowlists); the
+# repository-owned Filecoin rules apply only when the project has none, and the
+# outcome is reported so the gap is visible.
+if [ -n "$CONFIG_PATH" ] && [ -f "$CONFIG_PATH" ]; then
+  selected_config="$CONFIG_PATH"
+  set_output filecoin_rules not-applied
+elif [ -f "$CONTROL_CONFIG" ]; then
+  selected_config="$CONTROL_CONFIG"
+  set_output filecoin_rules applied
+else
+  printf 'gitleaks-scan error: repository-owned Gitleaks rules are missing: %s\n' "$CONTROL_CONFIG" >&2
+  set_output filecoin_rules not-applied
+  set_output scanner_outcome failure
+  exit 0
+fi
+
 arguments=(
   git
   --no-banner
@@ -128,10 +145,7 @@ arguments=(
   --exit-code 10
   --log-opts "$log_options"
 )
-if [ -n "$CONFIG_PATH" ] && [ -f "$CONFIG_PATH" ]; then
-  arguments+=(--config "$CONFIG_PATH")
-fi
-arguments+=(.)
+arguments+=(--config "$selected_config" .)
 
 set +e
 "$gitleaks_binary" "${arguments[@]}"

@@ -127,6 +127,32 @@ rendered_annotations="$(grep -c '^::warning file=' "$test_root/many-findings.com
 grep -Fq 'Showing 20 of 25 findings' "$test_root/many-findings.md" \
   || { printf 'evaluation-adapter test failure: capped summary does not point to the complete result\n' >&2; exit 1; }
 
+# Evidence without SARIF baselineState renders exactly as it did before
+# new-versus-existing classification existed (golden output, temp path masked).
+golden="$repo_root/test/fixtures/evaluation-adapter/unclassified"
+for output in many-findings.md many-findings.commands.log; do
+  sed "s|$test_root|@TEST_ROOT@|g" "$test_root/$output" | diff -u "$golden/$output" - >&2 \
+    || { printf 'evaluation-adapter test failure: unclassified %s changed\n' "$output" >&2; exit 1; }
+done
+
+# Classified evidence: 22 existing and 3 new findings, with the new ones last.
+jq '.runs[0].results |= (to_entries | map(.value + {baselineState: (if .key >= 22 then "new" else "unchanged" end)}))' \
+  "$test_root/many.sarif" > "$test_root/classified.sarif"
+run_case classified success "$test_root/classified.sarif" false 0 complete pass 25
+grep -Fq 'New in this change: **3**; existing before this change: **22**' "$test_root/classified.md" \
+  || { printf 'evaluation-adapter test failure: classified summary does not state new and existing counts\n' >&2; exit 1; }
+# shellcheck disable=SC2016 # match literal Markdown code spans
+first_rows="$(grep '^| \(new\|existing\) |' "$test_root/classified.md" | head -n 4 | cut -d '|' -f 2,5 | tr -d ' `' | paste -sd ';' -)"
+[ "$first_rows" = 'new|src/fixture,file.js:23;new|src/fixture,file.js:24;new|src/fixture,file.js:25;existing|src/fixture,file.js:1' ] \
+  || { printf 'evaluation-adapter test failure: new findings are not rendered first: %s\n' "$first_rows" >&2; exit 1; }
+classified_rows="$(grep -c '^| \(new\|existing\) |' "$test_root/classified.md" || true)"
+[ "$classified_rows" -eq 20 ] \
+  || { printf 'evaluation-adapter test failure: classified summary rendered %s rows, expected the cap of 20\n' "$classified_rows" >&2; exit 1; }
+grep -Fq '...and 5 existing findings in raw evidence.' "$test_root/classified.md" \
+  || { printf 'evaluation-adapter test failure: hidden existing findings are not counted\n' >&2; exit 1; }
+head -n 1 "$test_root/classified.commands.log" | grep -Fq ',line=23,' \
+  || { printf 'evaluation-adapter test failure: annotations do not lead with new findings\n' >&2; exit 1; }
+
 # A SARIF result without a level is summarized as unknown severity.
 jq 'del(.runs[0].results[0].level)' "$test_root/findings.sarif" > "$test_root/no-level.sarif"
 run_case no-level success "$test_root/no-level.sarif" false 0 complete pass 1

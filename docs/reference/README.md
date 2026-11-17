@@ -12,6 +12,7 @@ will replace manual tables after the evaluation and profile schemas stabilize.
 - [Evidence Bundle and profile conclusion](evidence-bundle.md)
 - [Consumable output contract](consumable-output.md)
 - [Ecosystem Baseline static rules](ecosystem-baseline-rules.md)
+- [FOC integrator pack](foc-integrator-pack.md)
 - [Permission-free Zizmor adapter](zizmor-scan.md)
 - [Release integrity](release-integrity.md)
 - [Fork pull-request safety](fork-pr-safety.md)

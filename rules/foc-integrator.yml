@@ -1,0 +1,194 @@
+# FOC integrator pack: Filecoin Onchain Cloud integration rules for third-party
+# builders (Filecoin Pay, PDP, FEVM runtime differences, Synapse SDK).
+# Every rule is advisory in this release. See docs/reference/foc-integrator-pack.md
+# for promotion criteria and rules/foc-integrator-precision.json for measured noise.
+rules:
+  - id: foc.solidity.callback-missing-caller-check
+    languages: [solidity]
+    severity: ERROR
+    message: >-
+      FOC impact: this PDPListener or IValidator callback never checks msg.sender, so anyone can
+      call it with forged proof, data-set, or rail events, and payments that follow those events
+      can be faked. Fix: require msg.sender to be the stored PDPVerifier or Filecoin Pay address
+      (or apply an onlyVerifier-style modifier) before changing state.
+    metadata:
+      foc-impact: Forged proof or rail callbacks can drive payment and data-set state.
+      fix: Require msg.sender == the stored PDPVerifier or Filecoin Pay address, or use a caller-restricting modifier.
+      confidence: high
+      references:
+        - https://github.com/FilOzone/pdp/blob/main/src/PDPVerifier.sol
+        - https://github.com/FilOzone/filecoin-pay/blob/main/docs/integration.md
+    patterns:
+      - pattern: |
+          function $F(...) { ... }
+      - metavariable-regex:
+          metavariable: $F
+          regex: ^(dataSetCreated|dataSetDeleted|piecesAdded|piecesScheduledRemove|possessionProven|nextProvingPeriod|storageProviderChanged|validatePayment|railTerminated)$
+      # Any modifier is trusted as a caller restriction (precision over recall).
+      - pattern-not: |
+          function $F(...) $M { ... }
+      - pattern-not: |
+          function $F(...) $M(...) { ... }
+      - pattern-not: |
+          function $F(...) {
+            ...
+            <... msg.sender ...>;
+            ...
+          }
+
+  - id: foc.solidity.rail-terminated-can-revert
+    languages: [solidity]
+    severity: ERROR
+    message: >-
+      FOC impact: Filecoin Pay calls railTerminated while terminating a rail, and a revert here
+      blocks termination, removing the payer's exit and trapping their funds. Fix: never revert
+      in railTerminated; move checks into validatePayment, wrap external calls in try/catch, and
+      emit an event instead of failing.
+    metadata:
+      foc-impact: A reverting railTerminated blocks rail termination and traps payer funds.
+      fix: Do not revert in railTerminated; use try/catch for external calls and emit events instead of failing.
+      confidence: high
+      references:
+        - https://github.com/FilOzone/filecoin-pay/blob/main/docs/integration.md
+    patterns:
+      - pattern-inside: |
+          function railTerminated(...) { ... }
+      - pattern-either:
+          - pattern: require(...);
+          - pattern: assert(...);
+          - pattern: revert(...);
+          - pattern: revert $ERROR(...);
+          - pattern: $CONTRACT.$METHOD(...);
+      # A caller check only reverts for callers other than Filecoin Pay.
+      - pattern-not: require(<... msg.sender ...>, ...);
+      - pattern-not-inside: |
+          if (<... msg.sender ...>) { ... }
+      - pattern-not-inside: |
+          if (<... msg.sender ...>) $STATEMENT;
+      - pattern-not: abi.$METHOD(...);
+      - pattern-not: string.concat(...);
+      - pattern-not: bytes.concat(...);
+      - pattern-not-inside: |
+          try $CALL { ... } catch { ... }
+      - pattern-not-inside: |
+          try $CALL returns (...) { ... } catch { ... }
+
+  - id: foc.solidity.transfer-send-reentrancy
+    languages: [solidity]
+    severity: WARNING
+    message: >-
+      FEVM impact: FEVM has no 2300 gas stipend; transfer and send forward enough gas for the
+      recipient to re-enter, so this is not reentrancy protection on Filecoin. Fix: follow
+      checks-effects-interactions, add a reentrancy guard, and use call with an explicit success
+      check.
+    metadata:
+      foc-impact: transfer/send do not limit gas on FEVM, so the recipient can re-enter.
+      fix: Update state before the transfer, add a reentrancy guard, and use call with a checked result.
+      confidence: medium
+      references:
+        - https://docs.filecoin.io/smart-contracts/filecoin-evm-runtime/difference-with-ethereum
+    pattern-either:
+      - pattern: $RECIPIENT.transfer($AMOUNT);
+      - pattern: $RECIPIENT.send($AMOUNT)
+
+  - id: foc.solidity.hardcoded-gas
+    languages: [solidity]
+    severity: WARNING
+    message: >-
+      FEVM impact: FEVM gas costs differ from Ethereum and can change at network upgrades, so a
+      hard-coded gas amount can make this call or check fail on Filecoin. Fix: forward all
+      available gas or make the amount configurable, and never rely on a fixed gas budget.
+    metadata:
+      foc-impact: Fixed gas amounts can break on FEVM gas accounting or after a network upgrade.
+      fix: Do not hard-code gas; forward available gas or make the value configurable.
+      confidence: medium
+      references:
+        - https://docs.filecoin.io/smart-contracts/filecoin-evm-runtime/difference-with-ethereum
+    pattern-either:
+      - pattern-regex: '\.(?:call|delegatecall|staticcall)\s*\{[^}]*\bgas\s*:\s*[0-9]'
+      - patterns:
+          - pattern-either:
+              - pattern: gasleft() < $LIMIT
+              - pattern: gasleft() <= $LIMIT
+              - pattern: gasleft() > $LIMIT
+              - pattern: gasleft() >= $LIMIT
+          - metavariable-regex:
+              metavariable: $LIMIT
+              regex: ^[0-9][0-9_]*(e[0-9]+)?$
+
+  - id: foc.solidity.block-randomness
+    languages: [solidity]
+    severity: WARNING
+    message: >-
+      FEVM impact: prevrandao and difficulty are not unbiasable randomness on Filecoin, and
+      blockhash returns an earlier block's hash across null rounds, so values derived from them
+      are predictable. Fix: use Filecoin's drand-based randomness (the randomness precompile) or
+      a commit-reveal scheme.
+    metadata:
+      foc-impact: Block-derived values are predictable on FEVM and blockhash repeats across null rounds.
+      fix: Use drand randomness from the Filecoin randomness precompile or a commit-reveal scheme.
+      confidence: medium
+      references:
+        - https://docs.filecoin.io/smart-contracts/filecoin-evm-runtime/difference-with-ethereum
+    pattern-either:
+      - pattern: block.prevrandao
+      - pattern: block.difficulty
+      - pattern: blockhash(...)
+
+  - id: foc.typescript.browser-exposed-private-key
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      FOC impact: this private key comes from a browser-exposed environment variable, so it is
+      bundled into client code and anyone can take the wallet that pays for storage. Fix: keep the
+      key server-side, or have the user's own wallet sign (or use a scoped Synapse session key).
+    metadata:
+      foc-impact: A bundled private key exposes the funded wallet that pays for FOC storage.
+      fix: Sign server-side with a non-public variable, use the user's wallet, or use a scoped session key.
+      confidence: high
+      references:
+        - https://github.com/FilOzone/synapse-sdk
+        - https://docs.filecoin.io/build-on-filecoin/filecoin-onchain-cloud
+    patterns:
+      - pattern-either:
+          - pattern: privateKeyToAccount($KEY, ...)
+          - pattern: new $LIBRARY.Wallet($KEY, ...)
+          - pattern: new Wallet($KEY, ...)
+          - pattern: '$SYNAPSE.create({..., privateKey: $KEY, ...})'
+      - metavariable-pattern:
+          metavariable: $KEY
+          pattern-either:
+            - pattern-regex: (?:process|import\.meta)\.env\.(?:NEXT_PUBLIC_|VITE_|REACT_APP_|PUBLIC_)\w+
+            - pattern-regex: (?:process|import\.meta)\.env\[\s*["'](?:NEXT_PUBLIC_|VITE_|REACT_APP_|PUBLIC_)\w+["']\s*\]
+
+  - id: foc.typescript.unlimited-operator-allowance
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >-
+      FOC impact: an unlimited rate or lockup allowance removes the cap on what the approved
+      operator can charge or lock from this payer in Filecoin Pay. Fix: set rateAllowance and
+      lockupAllowance to the amounts this application actually needs and re-approve when they
+      change.
+    metadata:
+      foc-impact: An unlimited operator allowance lets the operator charge or lock without a cap.
+      fix: Set bounded rateAllowance and lockupAllowance values sized to the application's usage.
+      confidence: high
+      references:
+        - https://github.com/FilOzone/filecoin-pay/blob/main/docs/integration.md
+        - https://github.com/FilOzone/synapse-sdk
+    patterns:
+      - pattern-either:
+          - pattern: '$PAYMENTS.approveService({..., rateAllowance: $AMOUNT, ...})'
+          - pattern: '$PAYMENTS.approveService({..., lockupAllowance: $AMOUNT, ...})'
+          - pattern: '$PAYMENTS.depositWithPermitAndApproveOperator({..., rateAllowance: $AMOUNT, ...})'
+          - pattern: '$PAYMENTS.depositWithPermitAndApproveOperator({..., lockupAllowance: $AMOUNT, ...})'
+          - pattern: '$PAYMENTS.setOperatorApproval($CLIENT, {..., rateAllowance: $AMOUNT, ...})'
+          - pattern: '$PAYMENTS.setOperatorApproval($CLIENT, {..., lockupAllowance: $AMOUNT, ...})'
+      - metavariable-pattern:
+          metavariable: $AMOUNT
+          pattern-either:
+            - pattern: maxUint256
+            - pattern: $MODULE.maxUint256
+            - pattern: MaxUint256
+            - pattern: $MODULE.MaxUint256
+            - pattern: 2n ** 256n - 1n

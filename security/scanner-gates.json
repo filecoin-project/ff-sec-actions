@@ -75,6 +75,12 @@
       "umbrella_input": "secrets-blocking",
       "enforcement_marker": "blocking: ${{ inputs.blocking }}"
     },
+    "semgrep-foc": {
+      "workflow": ".github/workflows/sec-semgrep.yml",
+      "gate_mode": "advisory",
+      "evaluation_id": "semgrep-foc",
+      "note": "FOC integrator pack findings are advisory in this release; the adapter step is wired with a literal blocking: false and completion still counts toward require-complete."
+    },
     "semgrep-custom": {
       "workflow": ".github/workflows/sec-semgrep.yml",
       "gate_mode": "configurable",

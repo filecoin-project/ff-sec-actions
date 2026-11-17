@@ -2,8 +2,8 @@
 
 **For:** a Consumer Engineer who wants the broad, secretless starting profile.
 
-**Outcome:** one reusable workflow runs five non-executing evaluations and
-produces one Evidence Bundle plus the stable `Profile Conclusion` check.
+**Outcome:** one reusable workflow runs six non-executing evaluations in five
+jobs and produces one Evidence Bundle plus the stable `Profile Conclusion` check.
 
 ## What Runs
 
@@ -14,6 +14,7 @@ produces one Evidence Bundle plus the stable `Profile Conclusion` check.
 | Trivy dependencies | Recursive manifests and lockfiles | Advisory findings; completion required |
 | Trivy IaC | Recognized infrastructure configuration | Advisory findings; completion required |
 | Semgrep | Versioned conservative Go, Rust, JavaScript/TypeScript, Solidity, and Dockerfile rules | Advisory findings; completion required |
+| Semgrep FOC integrator pack (`semgrep-foc`) | [Filecoin Onchain Cloud and FEVM integration rules](../reference/foc-integrator-pack.md) for Solidity and Synapse SDK code; silent on repositories without FOC | Always advisory in this release; completion required |
 
 All jobs run without repository or organization secrets, OIDC, write authority,
 shared caches, self-hosted runners, package installation, builds, or project
@@ -36,7 +37,9 @@ then enable the relevant `*-blocking` input.
 The available gates are `actions-security-blocking`, `dependency-blocking`,
 `secrets-blocking`, `iac-blocking`, and `static-analysis-blocking`. Treat
 Gitleaks findings as incident evidence even during advisory rollout: rotate
-real credentials before addressing source or history.
+real credentials before addressing source or history. `static-analysis-blocking`
+applies to the baseline Semgrep rules only; FOC integrator pack findings stay
+advisory until a rule is promoted with measured precision.
 
 The required branch check is `Profile Conclusion`, not the individual scanner
 job names. Download `ecosystem-baseline-evidence` when investigating a result.

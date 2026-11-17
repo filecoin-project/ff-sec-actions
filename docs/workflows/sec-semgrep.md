@@ -4,7 +4,7 @@
 **Status:** pre-v1 reusable evaluation<br>
 **Introduced:** commit `f816e783c0230a4c0f9d74c8e925f04e5a4a7c7c`<br>
 **Owner:** Filecoin ecosystem security platform maintainers<br>
-**Use when:** supported source languages need repository-owned Ecosystem Baseline pattern checks without project execution.
+**Use when:** supported source languages need repository-owned Ecosystem Baseline pattern checks, and Filecoin Onchain Cloud integrations need the FOC integrator pack, without project execution.
 
 ## Authority And Execution
 
@@ -22,17 +22,17 @@
 
 | Input | Default | Purpose |
 |---|---:|---|
-| `blocking` | `false` | Fail on validated Ecosystem Baseline findings |
+| `blocking` | `false` | Fail on validated Ecosystem Baseline findings; FOC integrator pack findings stay advisory |
 
 ## Outputs And Evidence
 
 **Declared workflow outputs:** none
 
-There are no `workflow_call` outputs. `evaluation-result-semgrep-baseline` contains the normalized result and `semgrep-baseline-results` contains SARIF. The summary and annotations include source locations and remediation guidance. Artifacts use the Consumer Project's configured GitHub Actions retention.
+There are no `workflow_call` outputs. The job emits two Evaluation Results: `semgrep-baseline` (`evaluation-result-semgrep-baseline`, SARIF in `semgrep-baseline-results`) and `semgrep-foc` (`evaluation-result-semgrep-foc`, SARIF in `semgrep-foc-results`) from the [FOC integrator pack](../reference/foc-integrator-pack.md). The summaries and annotations include source locations and remediation guidance. On pull requests the checkout includes history so each finding is marked new or existing relative to the base commit; summaries lead with new findings. Artifacts use the Consumer Project's configured GitHub Actions retention.
 
 ## Completion And Gating
 
-The scanner step preserves its exit status for normalization. `blocking` controls finding failure; missing output, invalid SARIF, timeout, or scanner failure produces an operational error.
+Each scanner step preserves its exit status for normalization. `blocking` controls `semgrep-baseline` finding failure; `semgrep-foc` is wired with `blocking: false`. For either evaluation, missing output, invalid SARIF, timeout, or scanner failure produces an operational error. If new-versus-existing classification is unavailable, the evaluation still completes and records a coverage limitation.
 
 ## Immutable Usage
 
@@ -47,12 +47,12 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@c95d54087ff3a4783aea814776243990d9778c93
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@d1bef8f75b5321bbac0a2862877750de811913f6
 ```
 
 ## Limitations
 
-Coverage is limited to maintained rules for supported Go, Rust, JavaScript, TypeScript, Solidity, and Dockerfile source. Generated and unsupported-language source is excluded.
+Coverage is limited to maintained rules for supported Go, Rust, JavaScript, TypeScript, Solidity, and Dockerfile source, plus the FOC integrator pack's Solidity and JavaScript/TypeScript rules. Generated and unsupported-language source is excluded.
 
 ## Compatibility
 

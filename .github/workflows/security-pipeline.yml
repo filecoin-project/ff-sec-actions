@@ -168,7 +168,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@952f6ad35aafc052b4bc938cef90e45ca17ced7d
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-semgrep.yml@882368d7d079c136c168a5af049561971ed700d2
     with:
       blocking: ${{ inputs.semgrep-blocking }}
 
@@ -218,7 +218,7 @@ jobs:
     if: inputs.enable-secrets
     permissions:
       contents: read
-    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@952f6ad35aafc052b4bc938cef90e45ca17ced7d
+    uses: filecoin-project/ff-sec-actions/.github/workflows/sec-secrets.yml@882368d7d079c136c168a5af049561971ed700d2
     with:
       blocking: ${{ inputs.secrets-blocking }}
 

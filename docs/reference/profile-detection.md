@@ -2,7 +2,7 @@
 
 **Stability:** pre-v1 composite-action contract
 
-**Introduced:** detector and result schema `0.1.0`
+**Introduced:** detector and result schema `0.1.0`; catalog add-ons in catalog `0.2.0`
 
 **Owner:** Filecoin ecosystem security platform maintainers; a formal
 `CODEOWNERS` path remains required before public v1.
@@ -54,6 +54,7 @@ checkout. Callers that override them own the safety of those paths.
 | `result-file` | Path to the complete JSON result |
 | `summary` | Path to the Markdown component/profile table |
 | `profiles-json` | Compact array of selected profile IDs and path scopes |
+| `add-ons-json` | Compact array of detected catalog add-ons (for example `foc`) and their evidence paths; `[]` when none |
 | `component-count` | Number of recognized components, including ambiguous and unsupported components |
 | `coverage-gaps-count` | Number of ambiguous or unsupported components requiring review |
 
@@ -81,7 +82,8 @@ The version `1` JSON document contains:
 - components with `classified`, `ambiguous`, or `unsupported` status;
 - selected profiles with confidence, path-scoped evidence, and reasons;
 - ambiguity evidence for weak signals shared by several project types;
-- selected profiles grouped by component path; and
+- selected profiles grouped by component path;
+- detected add-ons with their catalog label and path-scoped evidence; and
 - included paths, coverage gaps, remediation, and limitations.
 
 Strong signals currently cover Lotus/Venus nodes, FVM actor SDK/runtime crates,
@@ -95,6 +97,22 @@ The catalog at
 is the source of truth for profile IDs, labels, descriptions, confidence basis,
 and planned evaluations. Detection patterns remain implementation logic covered
 by planted fixtures; narrative documentation does not duplicate them.
+
+## Add-Ons
+
+An add-on marks an integration that spans profiles, such as Filecoin Onchain
+Cloud (FOC), whose builders often combine a Solidity service with a Synapse SDK
+application. Add-ons are listed in the catalog's `add_ons` array and reported
+in the result's `add_ons` field, the `add-ons-json` output, and an "Add-ons
+detected" line in the summary. They never change component status, selected
+profiles, coverage gaps, or which evaluations run; the detector fails if its
+logic references an add-on the catalog does not define.
+
+The `foc` add-on is reported for a `@filoz/synapse-sdk` dependency in any
+`package.json`, or a Solidity `import` of `PDPListener`, `PDPVerifier`,
+`IValidator`, `FilecoinPay`, or `Payments.sol`. The matching rules always run
+in the Ecosystem Baseline as the `semgrep-foc` evaluation; see the
+[FOC integrator pack](foc-integrator-pack.md).
 
 ## Events, Forks, And Artifacts
 
@@ -112,7 +130,7 @@ caller explicitly supplies `retention-days` to its upload step.
 The output names, result schema, profile IDs, and catalog version are pre-v1
 contracts. Removing or renaming them requires migration guidance and an
 immutable example-pin advance. There are no deprecated inputs or profile IDs in
-`0.1.0`. Additive detection signals still require fixtures because a new match
+catalog `0.2.0`, which adds the `add_ons` array. Additive detection signals still require fixtures because a new match
 can change a component from unsupported or ambiguous to classified.
 
 ## Maintainer Verification
